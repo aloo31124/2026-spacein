@@ -32,7 +32,7 @@ export class ReviewRoomOverviewComponent implements OnInit {
     // 取得 今日剩餘比率]
     this.reviewRoomService
       .getTodayRemanent()
-        .subscribe(todayRemanent => {
+        .subscribe((todayRemanent: any) => {
           this.todayRemanent = todayRemanent;
         });
       this.getTodayRemanet();
@@ -50,8 +50,8 @@ export class ReviewRoomOverviewComponent implements OnInit {
     // 取得 Room教室
     this.fireStoreService
       .getAll("Room")
-      .subscribe(roomList => {
-        roomList.forEach(room => {
+      .subscribe((roomList: any) => {
+        roomList.forEach((room: any) => {
           // 取得 該 擁有者 之 空間(教室)
           if(room["ownerId"] === ownerId) {
             ownerRoomList.push(new Room(room));
@@ -62,8 +62,8 @@ export class ReviewRoomOverviewComponent implements OnInit {
         const today = new Date();
         this.fireStoreService
           .getAll("Booking")
-          .subscribe(bookingList => {
-            bookingList.forEach(booking => {
+          .subscribe((bookingList: any) => {
+            bookingList.forEach((booking: any) => {
               ownerRoomList.forEach(room => {
                 if(booking["roomId"] === room.id
                   && new Date(booking["startDate"]).getDate() === today.getDate()) {

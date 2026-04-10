@@ -35,11 +35,11 @@ export class EcpayFormComponent implements OnInit {
     this.http
       .get(apiUrl)
       .subscribe(
-        x => {
+        (x: any) => {
           console.log(x);
           return x;
         },
-        error => {
+        (error: any) => {
           this.paymentPageEl.nativeElement.innerHTML = error.error.text;
           
           return error.error.text;          

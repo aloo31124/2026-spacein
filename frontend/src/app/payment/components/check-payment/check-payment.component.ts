@@ -34,7 +34,7 @@ export class CheckPaymentComponent {
     const userId = this.googleAuthService.getCurrentUser().id;
     this.ecpayService
       .getUserToPayment(userId).pipe(
-        tap(res => {
+        tap((res: any) => {
           if (!res.result) {
             this.paymentDescription = "尚未購買，需選擇方案才可升級為擁有者";
             alert(this.paymentDescription);
@@ -61,12 +61,12 @@ export class CheckPaymentComponent {
             throw new Error("paymentId 不存在");
           }
         }),
-      switchMap(res => this.ecpayService.getPayment(res.result.paymentId)),
-      catchError(err => {
+      switchMap((res: any) => this.ecpayService.getPayment(res.result.paymentId)),
+      catchError((err: any) => {
         console.warn("流程中斷:", err.message);
         return of(null); // 中斷流程，但不進入 subscribe
       })
-    ).subscribe(res => {
+    ).subscribe((res: any) => {
       if (res && res.result) {
         this.payment = res.result;
       }

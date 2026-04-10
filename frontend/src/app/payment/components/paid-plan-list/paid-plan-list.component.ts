@@ -35,10 +35,10 @@ export class PaidPlanListComponent {
     // 取得所有方案
     this.ecpayService.getPaymentList()
       .subscribe({
-        next: res => {
+        next: (res: any) => {
           this.paymentList = res.result;
         },
-        error: err => {
+        error: (err: any) => {
           alert("取得購買方案失敗 err : " + err);
         }
       })

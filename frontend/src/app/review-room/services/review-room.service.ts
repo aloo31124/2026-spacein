@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 import { CloudFunService } from 'src/app/firebase-api/services/cloud-fun.service';
 import { ChartTimeModel } from '../models/chartTimeModel.model';
 import { RateModel } from '../models/rate.model';

@@ -39,7 +39,7 @@ export class ReviewBookingFormComponent {
     this.userMail = this.googleAuthUser.email;
 
     // 提取日期参数
-    this.activatedRoute.queryParams.subscribe(params => {
+    this.activatedRoute.queryParams.subscribe((params: any) => {
       this.id = params['id'];
       this.selectDate = params['startDate'];
       this.startTime = params['startTime'];
@@ -57,11 +57,11 @@ export class ReviewBookingFormComponent {
     this.reviewBookingService
       .deleteBookingById(this.id)
       .subscribe({
-        next: res => {
+        next: (res: any) => {
           alert("成功刪除");
           this.routeUrlRecordService.nextPage("review-booking-calendar", {});
         },
-        error: err => {
+        error: (err: any) => {
           console.log("刪除異常, 請稍後再試 : " + err)
           alert("刪除異常, 請稍後再試 : " + err);
         }

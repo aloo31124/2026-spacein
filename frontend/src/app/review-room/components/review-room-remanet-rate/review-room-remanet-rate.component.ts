@@ -58,10 +58,10 @@ export class ReviewRoomRemanetRateComponent {
     let ownerId = this.googleAuthService.getCurrentUser().id;
     this.reviewRoomService
       .getBookingRate("all", this.selectDate)
-      .subscribe(res => {
+      .subscribe((res: any) => {
         this.rateList = res;
         this.isLoading = false;
-      }, error => {
+      }, (error: any) => {
         alert(" 取空間剩餘率錯誤 error : " + error);
       });
 

@@ -22,7 +22,7 @@ export class UserRoleListComponent {
     exportAllUser() {
       this.sysDashboardService.searchUserRole("", "")
         .subscribe({
-          next: res => {
+          next: (res: any) => {
             if (res.result && res.result.length > 0) {
                 const csvData = this.exportService.convertToCSV(res.result);
                 this.exportService.downloadCSV(csvData, '使用者角色資料.csv');
@@ -30,7 +30,7 @@ export class UserRoleListComponent {
                 alert('無可匯出的資料');
             }
           },
-          error: err => {
+          error: (err: any) => {
             alert("匯出失敗 : " + err.error.message);
           }
         });
@@ -42,11 +42,11 @@ export class UserRoleListComponent {
 
       this.sysDashboardService.searchUserRole(this.searchMail, this.searchRole)
         .subscribe({
-          next: res => {
+          next: (res: any) => {
             this.userRoleList = res.result;
             this.isLoading = false;
           },
-          error: err => {
+          error: (err: any) => {
             alert(`搜尋失敗 : ${err.error.message}`);
             this.isLoading = false;
           }

@@ -49,7 +49,7 @@ export class ReviewRoomTrendComponent {
   createChart(selectTimeModel: string){
     this.reviewRoomService
       .getChartByTimeType(selectTimeModel)
-      .subscribe(res => {
+      .subscribe((res: any) => {
         this.isLoading = false;
         const chartTitle = res.timeTitle;
         const charCharSite = res.siteCount;
@@ -65,7 +65,7 @@ export class ReviewRoomTrendComponent {
             },
             options: { aspectRatio:1}
         });
-      },error => {
+      },(error: any) => {
         alert(" 取得預約趨勢資料錯誤  " + error);
       });
   }

@@ -45,10 +45,10 @@ export class ReviewBookingCalendarComponent {
 
     this.bookingService
       .getAllBooking()
-      .subscribe(bookingList => {
+      .subscribe((bookingList: any) => {
         this.bookingList = [];
         bookingList
-          .forEach(booking => {
+          .forEach((booking: any) => {
             if(booking["mail"] === mail) {
               this.bookingList.push(new Booking(
                 //booking["fireStoreId"],
