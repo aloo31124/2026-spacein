@@ -1,0 +1,8 @@
+<div class="container">
+    請靜待5分鐘, 待驗證碼至您的信箱: 
+    <br>
+    {{ mail }}
+    <br>
+    <input type="text" placeholder="請輸入驗證碼" [(ngModel)]="verifyCode">
+    <button (click)="sendCode()">送出</button>
+</div>

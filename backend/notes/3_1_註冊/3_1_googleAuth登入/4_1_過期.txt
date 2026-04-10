@@ -1,0 +1,66 @@
+
+2025/04/25, 4/28
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+如下 angular 專案, 
+使用 @codetrix-studio/capacitor-google-auth,
+為 cap 轉 app 時, google Auth 判斷,
+請優化功能, 判斷是否為 App 或 Web,
+若為 Web網頁, 則另外新增精簡穩定的寫法來 google OneTap 授權登入
+
+angular 程式碼:
+    src\app\auth-route\services\google-auth.service.ts
+        import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+        import { GoogleAuthUser } from '../models/google-auth-user.model';
+
+        export class GoogleAuthService {
+
+            private isLoginIn = false;
+            private currentUser!: GoogleAuthUser;
+
+            constructor(...
+            ) { 
+                GoogleAuth.initialize({
+                    clientId: '587558372608-rindb3vos2vo4p21ourdh9qtf98ofkun.apps.googleusercontent.com',
+                    scopes: ['profile', 'email'],
+                    grantOfflineAccess: true,
+                });
+                this.checkToken();
+            }
+            async loginByGoogle() {
+                // 登入判斷
+                const googleUser = await GoogleAuth.signIn();
+                ...
+            }
+        }
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+chrom 瀏覽器錯誤訊息: 
+    zone.js:177 Uncaught 
+        details: "You have created a new client application that uses libraries for user authentication or authorization that are deprecated. New clients must use the new libraries instead. See the [Migration Guide](https://developers.google.com/identity/gsi/web/guides/gis-migration) for more information."
+        error: "idpiframe_initialization_failed"
+        [[Prototype]]: Object
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

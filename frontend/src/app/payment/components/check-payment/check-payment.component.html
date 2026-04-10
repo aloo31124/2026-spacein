@@ -1,0 +1,13 @@
+
+<h2> {{ paymentDescription }}</h2>
+<div *ngIf="payment">
+    <h3>購買方案為:</h3>
+    <p>方案名稱: {{ payment.planName }}</p>
+    <p>方案介紹: {{ payment.planDesc }}</p>
+    <p>方案費用: {{ payment.cost }}</p>
+    <p>方案期間: {{ traslatePlanTimeType(payment.planTimeType) }}</p>
+    <p>方案座位數: {{ payment.siteTotal || 0 }} </p>
+    <p>購買日期: {{ userToPayment.purchaseDate }}</p>
+    <p>方案期限: {{ userToPayment.expiryDate }}</p>
+    <button *ngIf="isExpired" (click)="routeToECPayForm()">續約</button>
+</div>

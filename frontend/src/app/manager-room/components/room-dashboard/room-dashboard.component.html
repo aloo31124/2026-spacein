@@ -1,0 +1,23 @@
+<div class="manager-container">
+    <img
+      class="iconBtn"
+      src="assets/images/icon/icon_next.png"
+      (click)="toggleMenu()"
+      [style.display]="isMenuVisible ? 'none' : 'block'"
+    />
+    <div class="manager-menu" [style.display]="isMenuVisible ? 'flex' : 'none'">
+      <img
+        class="iconBtn"
+        src="assets/images/icon/icon_back.png"
+        (click)="toggleMenu()"
+      />
+        <button routerLink="/manager-room/room-site-import" routerLinkActive="active">教室座位匯入</button>
+        <button routerLink="/manager-room/room" routerLinkActive="active">教室管理</button>
+        <button routerLink="/manager-room/site" routerLinkActive="active">座位管理</button>
+        <button routerLink="/manager-room/booking-user" routerLinkActive="active">預約者管理</button>
+        <button routerLink="/manager-room/booking" routerLinkActive="active">預約紀錄管理</button>
+    </div>
+    <div class="manager-container">
+        <router-outlet></router-outlet>
+    </div>
+</div>

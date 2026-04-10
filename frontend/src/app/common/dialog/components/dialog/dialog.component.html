@@ -1,0 +1,29 @@
+
+
+    <div class="dialog-container" [ngStyle]="{ display: isHiddenDialog ? 'none' : 'flex' }">
+        <div class="dialog-mask" (click)="hiddenDialog()">
+        </div>
+
+        <div class="dialog">
+
+            <div class="dialog-header">
+                <div class="title"> {{ dialogTitle }} </div>
+            </div>
+
+            <div class="dialog-content">
+                <div class="row" [ngClass]="{'row-click': selectItemId === item.id}"
+                    *ngFor="let item of itemList"
+                    [ngStyle]="{opacity:item.isDisabled ? '0.5' : '1'}"
+                    (click)="clickItem(item.id, item.isDisabled?item.isDisabled:false)" > 
+                        {{ item.name }}
+                </div>
+            </div>
+
+            
+            <div class="dialog-footer">
+                <img class="img-next" src="assets/images/icon/icon_check_ok.png" (click)="emitSelectItem()">    
+            </div>
+            
+        </div>
+
+    </div>

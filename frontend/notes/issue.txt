@@ -1,0 +1,245 @@
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm; 
+
+
+如下為 angular component 程式, 若按下 button 後, 可在 deleteAccount 中取得 input 輸入值
+
+html:
+    <div class="delete-container">
+        <input type="text">
+        <button>刪除帳號</button>
+    </div>
+ts
+  deleteAccount() { }
+
+
+法1
+=> 使用 #綁定
+  <div class="delete-container">
+      <input #accountInput type="text">
+      <button (click)="deleteAccount(accountInput.value)">刪除帳號</button>
+  </div>
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+04/16, 05/23
+新 win 設備安裝, 出現錯誤:
+
+> ng s
+ng : 因為這個系統上已停用指令碼執行，所以無法載入 C:\Program Files\nodejs\ng.ps1 檔案
+如需詳細資訊，請參閱 about_Execution_Policies，網址為 https:/go.microsoft.com/fwlink/?LinkID=135170。
+位於 線路:1 字元:1
+
+
+> Get-ExecutionPolicy -List
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process       Undefined
+  CurrentUser       Undefined
+ LocalMachine       Undefined
+
+
+
+解決方法
+=> windows shell + 系統管理員身分 + [ISE](重要!!) 方式開啟 , 執行如下:
+> Set-ExecutionPolicy RemoteSigned
+=> 不要只做一半
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+2024/04/08
+
+firebase get document by field
+
+https://cloud.google.com/firestore/docs/query-data/get-data#get_multiple_documents_from_a_collection
+
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+const q = query(collection(db, "cities"), where("capital", "==", true));
+
+const querySnapshot = await getDocs(q);
+querySnapshot.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  console.log(doc.id, " => ", doc.data());
+});
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+2024/03/24
+
+css 使用 @media 偵測設備切換三種圖片: a.png, b.png, c.png,
+1. 1500px 以上使用 a.png
+2. 500~1500px 以內使用 b.png
+3. 500 以內使用 c.png 圖片
+
+min-width => 最小 "只能" 這樣 , 切換
+max-width => 最大 "只能" 這樣 , 切換
+
+@media (min-width: 1500px) {
+  img {
+    content: url("a.png");
+  }
+}
+
+@media (min-width: 500px) and (max-width: 1500px) {
+  img {
+    content: url("b.png");
+  }
+}
+
+@media (max-width: 500px) {
+  img {
+    content: url("c.png");
+  }
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+2024/03/18
+angular router 攜帶參數之 變化
+
+https://stackoverflow.com/questions/44864303/send-data-through-routing-paths-in-angular
+
+router 攜帶參數：
+
+1. Required Paramater => "path/:id" =>  Router.navigate(["path", id]); 
+2. Optional Paramater => "path"     =>  Router.navigate(["path", {id:1, name:"loulou"}]);
+3. Query    paramater => "path"     =>  Router.navigate(["path"], queryParams: {id:1, name:"loulou"});
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+    const dotList = document.querySelectorAll('.dot');
+    Array.prototype.forEach.call( dotList, function( node ) {
+      node.parentNode.removeChild( node );
+    });
+
+    const dotList2 = document.querySelectorAll('.dot');
+    dotList2.forEach(e => {
+      console.log(e);
+    })
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+<div class="dot"></div>
+<div class="dot"></div>
+
+angular 修改上述 class="dot" 元素 display=none
+
+angular 移除全部 class="dot" 之元素
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// 2024/03/13
+行事曆 切換上下一個月份 , dot 紫點如何 "全部" 移除？
+
+---------------------------------------------
+法一
+viewchile() remove element
+https://stackoverflow.com/questions/52017507/how-delete-element-nativeelement-from-dom
+
+<div #dot>dot1</div>
+<div #dot>dot2</div>
+
+  @ViewChild("dot") dotElementRef!: ElementRef;
+
+  this.dotElementRef.nativeElement.remove(); => 無法 @_@
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// 2024/03/13
+// => 依照數字重複印出, 印出 dot
+
+<div *ngFor="let i of [].constructor(5)">
+</div>
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// 2024/03/12
+router outlet output
+https://stackoverflow.com/questions/37662456/angular-2-output-from-router-outlet
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// 2024/03/10
+
+HttpClient subscribe 型別轉換
+--------------------------------------
+
+this.httpClient.get("url").subscribe(x => {});
+如上, get 回傳 observable<object>, 其 x 為 object 型別, 
+如何將 x 轉換為指定型別物件？ 如:
+export class ChartTimeModel {
+    timeTitle = [];
+    roomCount = [];
+    siteCount = [];
+}
+=> gpt 魔幻回答 :)
+
+--------------------------------------
+英文關鍵字:
+httpClient get & Property xx does not exist on type 'Object'
+
+--------------------------------------
+https://stackoverflow.com/questions/47202177/angular-4-http-to-httpclient-property-someproperty-does-not-exist-on-type
+
+this.http.get< customer obj> (url)
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// 2024/03/04
+// 評估另一種方式開啟 綠界 form html
+window.open(url);
+window.open("https://getecpaysdkpage-querqokzna-uc.a.run.app");
+
+/////////////////////////////////////////////////////////////////////////////////////////
+2024/03/01
+//=> 使用 httpClient 取得 綠界 html 頁面
+
+  private async fetchPaymentPageHtml(): Promise<string> {
+    // 發送 HTTP 請求到綠界 API
+    const apiUrl = 'https://getecpayresult-querqokzna-uc.a.run.app';
+    this.http
+      .get(apiUrl)
+      .subscribe(
+        x => {
+          console.log("success!");
+          console.log(x);
+          return x;
+        },
+        error => {
+          console.log(" error 2 ! : " + error.error.text);
+          this.paymentPageEl.nativeElement.innerHTML = error.error.text;
+          
+          return error.error.text;          
+        }
+      );
+      return "畫面載入中,請稍等。";
+
+/////////////////////////////////////////////////////////////////////////////////////////
+2024/02/27
+刷新 html 畫面
+
+html: 
+<div #paymentPage></div>
+
+ts:
+  @ViewChild('paymentPage') paymentPageEl!: ElementRef;
+
+    // 將 HTML 內容設定給 paymentPageEl
+    this.paymentPageEl.nativeElement.innerHTML = paymentPageHtml;
+    console.log(document.getElementById('_form_aiochk'));
+

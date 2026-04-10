@@ -1,0 +1,81 @@
+
+2025/04/28
+=================================================================================
+------------------------------------------------
+
+ng s --host=127.0.0.1
+
+feat [space in] [註冊登入授權] goole OAuth 使用 FedCM 失敗... ="=
+
+https://developers.google.com/identity/gsi/web/guides/display-google-one-tap?hl=zh-tw
+https://developers.google.com/identity/gsi/web/guides/fedcm-migration?hl=zh-tw
+
+=================================================================================
+------------------------------------------------
+
+如下 angular 專案,
+按下按鈕 clickSignIn 之後,
+請改使用 FedCM GoogleAuth 登入 
+
+src\app\auth-route\components\login-page\login-page.component.html
+    <app-img-btn 
+        [imgUrl]="'assets/images/button/btn_google-auth.png'" 
+        [btnText]="''" (click)="clickSignIn()">
+    </app-img-btn>
+
+
+src\app\auth-route\components\login-page\login-page.component.ts
+    async clickSignIn() {
+        this.googleAuthService.loginByGoogleWebFedCM();
+    }
+
+
+
+src\app\auth-route\services\google-auth.service.ts
+    /*
+    * 網頁時, google 第三方登入, 使用 FedCM
+    */
+    async loginByGoogleWebFedCM() {
+
+    }
+
+
+=================================================================================
+------------------------------------------------
+
+feat error [space in] [註冊登入授權] 網頁登入 改 FedCM 失敗... 只跳出視窗...
+
+gpt 出錯
+
+  /*
+   * 網頁時, google 第三方登入, 使用 FedCM
+   */
+  async loginByGoogleWebFedCM(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      google.accounts.id.initialize({
+        client_id: this.clientId,
+        callback: (response: any) => {
+            // 無法進入此處 ="=
+            ...
+        },
+        auto_select: false,
+        cancel_on_tap_outside: false,
+      });
+
+      google.accounts.id.prompt(); // 出現 OneTap 登入 UI
+    });
+  }
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

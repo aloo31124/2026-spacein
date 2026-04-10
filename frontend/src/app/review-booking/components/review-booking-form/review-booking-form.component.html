@@ -1,0 +1,40 @@
+
+
+<div class="form-container">
+    <div class="form">
+        <div class="row">
+            <label>申請人</label>
+            <div class="select-item"> {{ userMail | wordShroten:8 }} </div>
+        </div>
+    
+        <div class="row">
+            <label>起迄日</label>        
+        </div>
+        <div class="row-time">
+            <div>
+                {{ selectDate }} {{ selectDate | dateToDayOfWeek:"tw" }} {{ startTime }}
+            </div>
+            <div>
+                {{ selectDate }} {{ selectDate | dateToDayOfWeek:"tw" }} {{ endTime }}
+            </div>
+        </div>
+
+        <div class="row">
+            <label>教室</label>
+            <div class="select-item">{{ selectRoom | wordShroten:6 }}</div>
+            <!-- <img src="assets/images/icon/icon_map_position.png" (click)="selectMap()"> -->
+        </div>
+
+        <div class="row" *ngIf="bookingType === 'site'">
+            <label>座位</label>
+            <div class="select-item"> {{ selectSite }} </div>
+        </div>
+    
+    </div>
+
+    <button (click)="deleteBooking()">
+        取消借用        
+    </button>
+
+</div>
+

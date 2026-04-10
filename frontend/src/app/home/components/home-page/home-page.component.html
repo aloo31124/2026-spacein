@@ -1,0 +1,49 @@
+<div class="container">
+    <app-check-payment *ngIf="isExpired">
+    </app-check-payment>
+    <div class="home-list-container" *ngIf="isHasRole">   
+        <app-img-btn [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'預約空間'"   
+                    (click)="nextPage('/booking-date')">
+        </app-img-btn>
+        <app-img-btn [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'已預約'"     
+                    (click)="nextPage('/review-booking-calendar')">
+        </app-img-btn>
+        <app-img-btn *ngIf="isOwner || isSystem" 
+                    [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'空間總覽'"   
+                    (click)="nextPage('/review-room-overview')">
+        </app-img-btn>
+        <app-img-btn *ngIf="isOwner || isSystem" 
+                    [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'購買方案'"   
+                    (click)="nextPage('/chekc-payment')">
+        </app-img-btn>
+        <app-img-btn *ngIf="isOwner || isSystem" 
+                    [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'空間管理'"   
+                    (click)="nextPage('/manager-room/room-site-import')">
+        </app-img-btn>
+
+        <app-img-btn *ngIf="isSystem" 
+                    [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'系統管理'"   
+                    (click)="nextPage('/manager-sys/all-user')">
+        </app-img-btn>
+    </div>
+    <div class="home-list-container" *ngIf="!isHasRole">
+        <app-img-btn [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'預約者'"   
+                    (click)="nextPage('/booker-select-owner')">
+        </app-img-btn>
+        <app-img-btn [imgUrl]="'assets/images/button/button_main.png'" 
+                    [btnText]="'擁有者'"     
+                    (click)="nextPage('/chekc-payment')">
+        </app-img-btn>
+    </div>
+    
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

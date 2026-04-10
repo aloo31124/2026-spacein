@@ -1,0 +1,26 @@
+<button (click)="clickAddPayment()">新增</button>
+<button (click)="exportAllPayment()">匯出方案</button>
+<div class="search-bar">
+    <input type="text" placeholder="方案名稱不限" [(ngModel)]="planName">
+    <span>並且</span>
+    <input type="text" placeholder="方案期限不限" [(ngModel)]="planTimeType">
+    <span>並且</span>
+    <input type="text" placeholder="方案種類不限" [(ngModel)]="planType">
+    <br>
+    <br>
+    <button (click)="searchPayment()">搜尋</button>
+</div>
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isFirstSearch">開始搜尋</div>
+    <div *ngIf="paymentList.length === 0 && !isFirstSearch">沒有找到結果</div>
+    <ul  *ngIf="paymentList.length > 0">
+        <li *ngFor="let payment of paymentList">
+            <strong>名稱:</strong> {{ payment.planName }} |
+            <strong>時段:</strong> {{ payment.planTimeType }} |
+            <strong>種類:</strong> {{ payment.planType }} | 
+            <button (click)="clickEditPayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">編輯</button>
+            <button (click)="clickDeletePayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">刪除</button>
+        </li>
+    </ul>
+</div>

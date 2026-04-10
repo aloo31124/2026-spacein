@@ -1,0 +1,10 @@
+
+
+
+fire-store.service.ts:57 ERROR Error: Uncaught (in promise): 
+FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+FirebaseError: Missing or insufficient permissions.
+
+
+
+

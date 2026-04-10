@@ -1,0 +1,55 @@
+
+2025/04/25
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下 angualr 專案
+forEach(booking => {}) , 其 booking 出現錯物 : Parameter 'booking' implicitly has an 'any' type.
+請修正
+
+src\app\booking\services\booking.service.ts
+  constructor(
+    private http: HttpClient,
+  ) { }
+  getAll(): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/all`);
+  }
+
+src\app\review-booking\components\review-booking-calendar\review-booking-calendar.component.ts
+  bookingList = new Array<Booking>();
+  getAllBookingRecord() {...
+    this.bookingService
+      .getAll()
+      .subscribe(bookingList => {
+        this.bookingList = [];
+        bookingList
+          .forEach(booking => {
+            if(booking["mail"] === mail) {
+              this.bookingList.push(new Booking(
+                booking["fireStoreId"],...
+              ));
+            }
+          });
+        this.isLoading = false;
+      });
+  }
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+

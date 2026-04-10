@@ -1,0 +1,131 @@
+
+2025/04/21
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下 angular 專案, CheckPaymentComponent 注入 ecpayService,
+請在等 ecpayService.checkUserToPayment 執行完成後,
+將 方案檢查相關資訊 : 
+    paymentDescription = "";
+    payment : any = null;
+    isExpired = false;
+存入 CheckPaymentComponent:
+
+src\app\payment\components\check-payment\check-payment.component.ts
+  export class CheckPaymentComponent {
+    // 方案檢查相關資訊
+    paymentDescription = "";
+    payment : any = null;
+    isExpired = false;
+    constructor(
+      private ecpayService: EcpayService,
+    ) { 
+      this.ecpayService.checkUserToPayment();
+    }
+  }
+
+src\app\payment\services\ecpay.service.ts
+  export class EcpayService {
+    // 方案檢查相關資訊
+    paymentDescription = "";
+    payment : any = null;
+    isExpired = false;
+
+    constructor(
+      //private cloudFunService: CloudFunService,  // 棄用
+      private httpClient: HttpClient,
+      private googleAuthService: GoogleAuthService,
+      private routeUrlRecordService: RouteUrlRecordService<{}>
+    ) { }
+
+    openECPayWindow(planType:string, planTimeType:string) {
+      //導向綠界付款
+      //window.open(this.cloudFunService.cloudFunApiList.ECPAY_SELECT_PAY_PAGE + "?planType=" + planType + "&planTimeType=" + planTimeType);
+      window.open(`http://localhost:8082/api/pay/ecpay/${planType}/${planTimeType}`);
+    }
+
+    /*
+    * 新增 預約者 對應 角色
+    */
+    getUserToPayment(userId: string) {
+      return this.httpClient.get<any>(`http://localhost:8082/api/account/payment/${userId}`);
+    }
+
+    /*
+    * 搜尋 購買方案, 依照 paymentId
+    */
+    getPayment(paymentId: string) {
+      return this.httpClient.get<any>(`http://localhost:8082/api/account/payment/paymentId/${paymentId}`);
+    }
+
+    /**
+     * 檢查 當前使用者 
+     *  是否為 擁有者 
+     *  擁有者 方案是否過期
+     */
+    checkUserToPayment() {
+      const userId = this.googleAuthService.getCurrentUser().userFirestoreId;
+      this.getUserToPayment(userId).pipe(
+        tap(res => {
+          // 判斷是否已購買方案
+          if (!res.result) {
+            this.paymentDescription = "尚未購買，需選擇方案才可升級為擁有者";
+            alert(this.paymentDescription);
+            this.routeUrlRecordService.nextPage("pay-plan-list", {});
+            throw new Error("尚未購買");
+          }
+
+          // 判斷該 [擁有者] 是否購買方案
+          const { purchaseDate, expiryDate } = res.result;
+          const currentDate = new Date();
+          if (currentDate >= new Date(expiryDate)) {
+            this.paymentDescription = "購買方案已過期，需續約喔";
+            alert(this.paymentDescription);
+            this.isExpired = true;
+          } else {
+            this.paymentDescription = "已購買方案，成為擁有者";
+            alert(this.paymentDescription);
+          }
+
+          if (!res.result.paymentId) {
+            alert("查無該擁有者方案資訊");
+            // throw new Error("paymentId 不存在");
+          }
+        }),
+        // 取得方案資訊
+        switchMap(res => this.getPayment(res.result.paymentId)),
+        catchError(err => {
+          console.warn("流程中斷:", err.message);
+          return of(null); // 中斷流程，但不進入 subscribe
+        })
+      ).subscribe(res => {
+        // 將取得之 方案資訊 顯示於畫面
+        if (res && res.result) {
+          this.payment = res.result;
+        }
+      });
+    }
+  }
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+
+

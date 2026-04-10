@@ -1,0 +1,25 @@
+
+<div class="search-bar">
+    <button (click)="exportAllUser()">匯出所有使用者</button>
+    <br>
+    <input type="text" placeholder="使用者帳號不限" [(ngModel)]="searchName">
+    <span>並且</span>
+    <input type="text" placeholder="使用者信箱不限" [(ngModel)]="searchMail">
+    <br>
+    <button (click)="searchUser()">搜尋</button>
+</div>
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul *ngIf="users.length > 0">
+        <li *ngFor="let user of users">
+            <strong>id:</strong> {{ user.id }} |
+            <strong>姓名:</strong> {{ user.name }} | 
+            <strong>信箱:</strong> {{ user.email }}
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

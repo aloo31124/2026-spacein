@@ -1,0 +1,25 @@
+<div class="search-bar">
+    <button (click)="clickExportPayRecord()">匯出所有方案紀錄</button>
+    <br>
+    <input type="text" placeholder="購買者信箱不限" [(ngModel)]="searchMail">
+    <span>並且</span>
+    <input type="text" placeholder="方案名稱不限" [(ngModel)]="searchPlanName">
+    <br>
+    <button (click)="clickSearchPayRecord()">搜尋</button>
+</div>
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="payRecordList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul *ngIf="payRecordList.length > 0">
+        <li *ngFor="let payRecord of payRecordList">
+            <strong>購買者信箱:</strong> {{ payRecord.email }} | 
+            <strong>方案名稱:</strong> {{ payRecord.planName }} | 
+            <strong>資訊:</strong> {{ payRecord.message }} 
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

@@ -1,0 +1,32 @@
+
+
+
+03/02
+需求是 Angular 專案希望能取得 綠界的付款表單,
+後續將 綠界的 SDK 部署在 google cloud fun 處理：
+https://getecpaysdkpage-querqokzna-uc.a.run.app
+
+上述的方法會 response 一個 form表單 與 input hidden 參數,
+會讓瀏覽器執行 js 後再次對 綠界 api post 請求, 最終呈現 付款表單.
+
+但這種方法 在 angular 中是無法觸發的 :)
+因此又再次於 cloud fun 解析 form資料 並 post 給 綠界api
+angular 就可成功呈現了 ：）
+
+
+
+
+
+///////////////////////////////////////////////////////////////////
+03/03
+
+hi! 昨天已經成功將綠界付款（測試帳號）付款畫面
+上到 google cloud function 的 API 了：
+https://getecpaysdkpage-querqokzna-uc.a.run.app
+
+且手機端的程式也接收到了.
+這週付款的流程 與 其他功能會再做整理,
+下週預計處理 [安卓/ios] 的包版 *.apk, *.ipa
+
+
+

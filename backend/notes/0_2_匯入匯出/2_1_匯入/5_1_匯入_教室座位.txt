@@ -1,0 +1,113 @@
+
+2025/05/02
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下 node.js 專案,
+importRoomSite 中, room 會檢查是否重複,
+但仍重複新增 room表 教室資料,
+原因為何? 請修正。
+
+post request.body 資料:
+    {
+    "roomToSiteList": [
+            {
+                "roomName": "roomName_測試1",
+                "siteName": "siteName_測試1"
+            },
+            {
+                "roomName": "roomName_測試1",
+                "siteName": "siteName_測試2"
+            }
+    ]
+    }
+
+src\index.js
+    app.post('/api/manager/room/site/import/:ownerId', managerRoomApiController.importRoomJoinSiteByOwnerId);
+
+src\controllers\manager\managerRoom.api.controller.js
+    /* [空間管理] [教室座位] 匯入, 教室,座位, ownerId 綁定 */
+    exports.importRoomJoinSiteByOwnerId = async (req, res) => {
+        try {
+            console.log(" [importRoomJoinSiteByOwnerId] api 開始 req.params, req.body : ", req.params, req.body);
+            const { roomToSiteList } = req.body;
+            const { ownerId } = req.params;
+            const result = await roomToSiteService.importRoomSite(ownerId, roomToSiteList);
+            console.log(" [importRoomJoinSiteByOwnerId] api 結束 result : ", result);
+            res.status(200).json({ result });
+        } catch (error) {
+            res.status(500).json({ result: ' [importRoomJoinSiteByOwnerId] api 500', error: error.message });
+        }
+    }
+
+src\services\roomToSite.service.js
+    /* [空間管理] [教室座位] 匯入, 教室,座位, ownerId 綁定 */
+    exports.importRoomSite = async (ownerId, roomToSiteList) => {
+        try {
+            /** 1. 檢查 教室名稱, 是否空值, 是否存在系統, 不存在便新增 教室 */
+            return roomToSiteList.map(async roomToSite => {
+                let message = "";
+                let room = await roomService.findByName(roomToSite.roomName);
+                if(!room) {
+                    room = await roomService.add({name: roomToSite.roomName}, ownerId);
+                    console.log(`[importRoomSite] [空間管理] [教室座位] 匯入, [教室]新增成功 newRoom : ${room.id, room.name}`);
+                    message = message + ` ${roomToSite.roomName}:[教室]另外新增; `;
+                } else {
+                    console.log(`[importRoomSite] [空間管理] [教室座位] 匯入, [教室]已存在`);
+                    message = message + ` ${roomToSite.roomName}:[教室]已存在; `;
+                }
+                /** 2. 檢查 座位名稱, 是否空值, 是否存在系統, 不存在便新增 座位 */
+                const roomId = room.id;
+                if(!roomId) {
+                    console.log(`[importRoomSite]  [空間管理] [教室座位] 匯入, [教室]資訊異常 room : ${room}`);
+                    message = message + ` ${roomToSite.siteName}:[教室] 資訊異常; `;
+                    return await {...roomToSite, message};
+                }
+                const checkRoomToSite = await RoomToSite.findByName(roomToSite.siteName);
+                if(checkRoomToSite && checkRoomToSite.name) {
+                    console.log(`[importRoomSite]  [空間管理] [教室座位] 匯入, [教室座位]已存在 : ${checkRoomToSite.name}`);
+                    message = message + ` ${roomToSite.siteName}:[教室座位] 已存在 : ${checkRoomToSite.name} `;
+                    return await {...roomToSite, message};
+                }
+
+                const newRoomToSite = await RoomToSite.add({roomId, name: roomToSite.siteName});
+                if(newRoomToSite) {
+                    console.log(`[importRoomSite]  [空間管理] [教室座位] 匯入, [教室座位] 新增成功 newRoomToSite : ${newRoomToSite}`);
+                    message = message + ` ${roomToSite.siteName}:[教室座位] 新增成功; `;
+                } else {
+                    console.log(`[importRoomSite]  [空間管理] [教室座位] 匯入, [教室座位] 新增失敗 newRoomToSite : ${newRoomToSite}`);
+                    message = message + ` ${roomToSite.siteName}:[教室座位] 新增失敗; `;
+                }
+                return await {...roomToSite, message};
+            });
+        } catch (error) {
+            throw new Error(`[importRoomSite] error: ${error.message}`);
+        }
+    }
+
+
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

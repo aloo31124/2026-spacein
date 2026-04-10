@@ -1,0 +1,38 @@
+
+<div class="form-container">
+    <div class="row">
+        姓名: {{ currentUser.name }}
+    </div>
+    <div class="row">
+        信箱: {{ currentUser.email }}
+    </div>
+    <button (click)="loginOut()">登出</button>
+
+    <app-check-payment [isFromAccountPage]="true">
+    </app-check-payment>
+
+    維護版本號: fix2 #6ff5378
+    <br>
+    優化版本號: feat2 #aae893f
+    <br>
+    build 上架 10/31 17:30
+    <br>
+
+    <!-- dialog 確認刪除 -->
+    <div class="delete-container">
+
+        <h3>刪除帳號確認</h3>
+        <p>
+            確認刪除個人帳號?
+            <br>
+            若刪除, 預約與其他紀錄將無法復原。
+        </p>
+        <h3>確定刪除, 請輸入當前帳號信箱</h3>
+        <input type="text" #deleteAccountInput placeholder="輸入信箱">
+        <button (click)="deleteAccount(deleteAccountInput.value)">確定刪除帳號</button>
+    </div>
+
+</div>
+
+
+

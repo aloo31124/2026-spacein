@@ -1,0 +1,156 @@
+
+2025/04/01
+=================================================================================
+------------------------------------------------
+
+兩陣列 join 片段:
+        const roomList = await Room.getAllRoomList();
+
+        // 建立 roomId 映射表 (Map)
+        const roomMap = new Map(roomList.map(room => [room.id, room]));
+
+        // Join 数据
+        const joinedList = roomToSiteList.map(site => {
+            const room = roomMap.get(site.roomId) || {}; // 若找不到，则返回空对象
+            return {
+                ...site,
+                roomName: room.name || "未知教室",
+                roomOwner: room.ownerId || "未知擁有者",
+            };
+        });
+
+=================================================================================
+------------------------------------------------
+
+如下需搜尋 座位 與 其所屬教室 之資訊表,
+由 selectSiteJoinRoomList 進入開始搜尋,
+於 joinRoomByRoomId 中 roomToSiteList 之 roomId 與 roomList id 兩陣列合併 join
+
+class RoomToSite {
+    constructor(id, name, roomId) {
+        this.id = id;
+        this.name = name;
+        this.roomId = roomId;
+    }
+
+    /* 依照條件搜尋教室, 分頁 */
+    static async select(roomToSite, pagingParam) {
+        const { name } = roomToSite;
+        let { pageIndex, pageSize, sort, pageTotal, dataTotal } = pagingParam; // 分頁參數
+        let query = db.collection(COLLECTION_NAME);
+        const snapshot = await query.get();
+        let roomToSiteList = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        // 使用 Fuse.js 進行模糊搜尋
+        if(name) {
+            const fuse = new Fuse(roomToSiteList, {
+                keys: ['name'],
+                threshold: 0.3, // 設定匹配度（0 完全匹配，1 模糊匹配）
+                includeScore: false,
+            });
+            roomToSiteList = fuse.search(name).map(result => result.item);
+        }
+
+        // 分頁設定
+        dataTotal = (roomToSiteList.length);
+        pageTotal = Math.ceil(roomToSiteList.length / pageSize);
+        roomToSiteList = roomToSiteList.slice((pageIndex - 1) * pageSize, pageIndex * pageSize);
+
+        return {roomToSiteList, pagingParam:{...pagingParam, pageTotal, dataTotal}};
+    }
+
+    /* 將 座位資訊 join 教室 */
+    static async joinRoomByRoomId(roomToSiteList) {
+        const roomList = await Room.getAllRoomList();
+        console.log("roomToSiteList : ", roomToSiteList);
+        console.log("roomToSiteList[1] : ", roomToSiteList[1]);
+        console.log("roomToSiteList[1].name : ", roomToSiteList[1].name);
+        console.log("roomList : ", roomList);
+        console.log("roomList[1] : ", roomList[1]);
+        console.log("roomList[1].name : ", roomList[1].name);
+    }
+    
+    /* 搜尋 座位資訊, 與 join 教室資訊 */
+    static async selectSiteJoinRoomList(roomToSite, pagingParam) {
+        const roomToSiteListPaging = await this.select(roomToSite, pagingParam);
+        this.joinRoomByRoomId(roomToSiteListPaging.roomToSiteList);
+    }
+
+}
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+在 `joinRoomByRoomId` 方法中，`roomToSiteList` 和 `roomList` 需要进行 **基于 `roomId` 的 Join**，
+也就是将 `roomToSiteList` 的 `roomId` 与 `roomList` 的 `id` 进行匹配，从而获取完整的教室信息。  
+
+---
+
+### **修正 `joinRoomByRoomId` 方法**
+**实现思路：**  
+1. **获取 `roomList`**：包含所有教室的数据。  
+2. **转换 `roomList` 为 `Map`**：以 `roomId` 为 `key`，方便快速查找对应教室。  
+3. **遍历 `roomToSiteList`**，查找 `roomId` 对应的 `room`，然后合并数据。  
+
+    ```js
+    static async joinRoomByRoomId(roomToSiteList) {
+        const roomList = await Room.getAllRoomList();
+
+        // 建立 roomId 映射表 (Map)
+        const roomMap = new Map(roomList.map(room => [room.id, room]));
+
+        // Join 数据
+        const joinedList = roomToSiteList.map(site => {
+            const room = roomMap.get(site.roomId) || {}; // 若找不到，则返回空对象
+            return {
+                ...site,
+                roomName: room.name || "未知教室",
+                roomOwner: room.ownerId || "未知擁有者",
+            };
+        });
+
+        console.log("Joined Room & Site List: ", joinedList);
+        return joinedList;
+    }
+```
+
+---
+
+### **完整流程**
+1. `selectSiteJoinRoomList(roomToSite, pagingParam)`  
+   - 先从 `select(roomToSite, pagingParam)` 获取分页后的 `roomToSiteList`。  
+   - 然后调用 `joinRoomByRoomId(roomToSiteList)`，将 `roomToSiteList` 与 `roomList` 进行 `join` 处理。  
+
+2. `joinRoomByRoomId(roomToSiteList)`  
+   - **用 `Map` 加速查询**，避免 `O(N^2)` 的嵌套遍历，提高性能。  
+   - `roomId` 匹配不到时，提供默认值，避免 `undefined` 错误。  
+   - `joinedList` 结合座位和教室数据，返回完整结果。  
+
+---
+
+### **返回示例**
+假设 `roomToSiteList` 数据：
+```json
+... 略
+
+### **优化点**
+✅ **使用 `Map` 结构，提高查询效率**（避免 `O(N^2)` 遍历）。  
+✅ **避免 `undefined` 错误**，未匹配 `roomId` 时提供默认值（如 `"未知教室"`）。  
+✅ **`join` 逻辑清晰**，`roomId` 直接对照 `roomList`，代码更简洁高效。  
+
+这样你在 `selectSiteJoinRoomList` 里调用 `joinRoomByRoomId` 后，返回的就是完整的 `座位 + 教室` 数据 ✅
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

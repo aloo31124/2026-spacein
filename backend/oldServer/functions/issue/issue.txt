@@ -1,0 +1,265 @@
+//https://stackoverflow.com/questions/6158933/how-is-an-http-post-request-made-in-node-js
+
+
+==============================================================================================================
+
+
+
+==============================================================================================================
+03/06
+
+bookingList = [{"mail":"newaloo31124@gmail.com","selectTime":"03:00","bookingType":"room","selectDate":"2023-10-9"},
+{"mail":"newaloo31124@gmail.com","selectTime":"02:00","bookingType":"room","selectDate":"2023-10-18"},
+{"mail":"newaloo31124@gmail.com","selectTime":"02:00","bookingType":"site","selectDate":"2024-11-26"},
+{"mail":"newaloo31124@gmail.com","selectTime":"12:00","bookingType":"room","selectDate":"2024-11-23"},
+...]
+
+如何將上述陣列 bookingList , 每個月份依照 bookingType : room, site 分別統計出每個月份有多少次數。
+整理後資料範例如下:
+ [
+  {month: "10月", "11月"},
+  {roomCount: 2, 1},
+  {siteCount: 0, 1}
+ ];
+
+
+==============================================================================================================
+03/06
+
+bookingListFilter = [{"mail":"newaloo31124@gmail.com","selectTime":"03:00","bookingType":"room","selectDate":"2023-11-9"},
+{"mail":"newaloo31124@gmail.com","selectTime":"02:00","bookingType":"room","selectDate":"2023-10-18"},
+{"mail":"newaloo31124@gmail.com","selectTime":"02:00","bookingType":"site","selectDate":"2024-2-26"},
+{"mail":"newaloo31124@gmail.com","selectTime":"12:00","bookingType":"room","selectDate":"2024-1-23"},
+...]
+
+---------------------------------------------------------
+如何使用 js 從上述陣列 bookingList 中篩選出日期範圍: 2023-10-01~ 2024-01-31
+
+      const bookingListFilter = bookingList.filter((booking) => {
+        const startDate = new Date("2023-10-01");
+        const endDate = new Date("2024-01-31");
+        const bookingDate = new Date(booking.selectDate);
+        return bookingDate >= startDate && bookingDate <= endDate;
+      });
+
+
+
+
+==============================================================================================================
+03/06
+
+const paymentList = [
+  {planType: "studio", planTimeType: "month", cost: "1500"},
+  {planType: "studio", planTimeType: "year", cost: "15000"},
+  {planType: "group", planTimeType: "month", cost: "4000"},
+  {planType: "group", planTimeType: "year", cost: "41000"},
+  {planType: "enterprise", planTimeType: "month", cost: "6000"},
+  {planType: "enterprise", planTimeType: "year", cost: "60000"},
+];
+如何使用 js 取出 planType為 group, planTimeType為 year 之物件
+
+---------------------------------------------------------
+
+let planType = "group";
+let planTimeType = "month"
+
+ let payment1;
+ paymentList.forEach((payment) => {
+    if(payment.planType === planType && payment.planTimeType === planTimeType) {
+        payment1 = payment;
+        //return payment; // => 無法 
+    }
+ })
+
+---------------------------------------------------------
+
+let planType = "group";
+let planTimeType = "month"
+
+let payment1 = paymentList.find(
+  (payment) => payment.planType === planType && payment.planTimeType === planTimeType
+);
+
+
+
+==============================================================================================================
+//03/05
+
+export const getECPayResult = onRequest(async (request, response)=> {});
+ google cloud function 如何取得 uel?paramer=1 後面之參數？
+ 
+=> var planType = request.query.planType;
+
+
+==============================================================================================================
+//03/02
+// get html element by id from string
+=> https://stackoverflow.com/questions/11398419/trying-to-use-the-domparser-with-node-js
+=> cheerio 比較好用
+
+  const html = create.payment_client.aio_check_out_all(base_param);
+
+  ///////////////////////////////////////////
+  const cheerio = require('cheerio');
+  const $ = cheerio.load(html);
+  const CheckMacValue = $('input[name="CheckMacValue"]').val();
+
+  response.send("cheerio yo2 CheckMacValue : " + CheckMacValue);
+
+----------------------------------------
+//03/05
+// https://steam.oxxostudio.tw/category/html/info/path.html
+
+
+<link href="/Content/themes/WebStylePayment/css/payment.css?t=20240304065626" rel="stylesheet" />
+
+<link href="/Content/themes/WebStylePayment/css/pm_en.css" rel="stylesheet" />
+<link href="/Scripts/vue/plugin/simplert.css" rel="stylesheet" />
+
+		<a href="#" class="main-pic">
+			<img src="/Upload/PaymentBannerImg/201706/ac4bf08e-2b39-499c-96ac-04aa3e75dbb6_20170612133413.PNG" alt="使用綠界科技，血拼也能賺錢">
+		</a>
+
+	<div class="pp-container">
+			<img src="/Upload/Banner/20220926150843658.jpg" alt="下單刷【台北富邦、國泰世華、台新】至綠界官網完成登記，享不限金額抽 iPhone 14 pro ; 好禮加碼，消費金額滿$1,200元，再抽大杯美式乙杯，活動到5/31止。" />
+	</div>
+
+如上, 有多個 link 與 img, 如何使用 cheerio 逐個取出其 href 與 src 之路徑後,
+再將其相對路徑補上 https://payment-stage.ecpay.com.tw/ 成為絕對路徑？
+如： https://payment-stage.ecpay.com.tw/Upload/Banner/20220926150843658.jpg
+
+
+==============================================================================================================
+03/02
+// 在 firebase cloud function 使用 node.js 對 3-pard http post
+=> 使用 axios :)
+
+  const axios = require("axios");
+  axios.post('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5')
+    .then((x:any) => {
+      response.send(x.data);
+    })
+    .catch((error:any) => {
+      response.send("error" + error);
+    });
+
+
+==============================================================================================================
+02/09
+
+// 需要在 function目錄內 npm install 才有效
+=> ecpay_aio_nodejs, cheerio, axios 
+
+
+==============================================================================================================
+02/28
+
+// cloud function 須設定跨域, ng 才可取資料
+
+  response.set('Access-Control-Allow-Origin', '*');
+  response.set('Access-Control-Allow-Methods', 'GET');
+  response.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.set('Access-Control-Max-Age', '3600');
+
+
+==============================================================================================================
+1/20
+//參考資料
+// https://www.youtube.com/watch?v=ZbtZ_79UmjI
+// https://www.youtube.com/watch?v=MouZdENJddQ
+// 使用 https
+
+
+export const httpRequestTest = onRequest((request, response) => {
+  const https = require('https');
+  https.get('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5', (resp: any) => {
+
+    let data = '';
+    resp.on('data', (chunk:any) => {
+        data += chunk;
+    });
+
+    resp.on('end', ()=> {
+        response.send(data);
+    });
+  }).on("error", (e: string)=> {
+    response.send("https  Request test 5 error " + e);    
+  })
+});
+
+==============================================================================================================
+firebase 要錢 ="=
+
+Error: HTTP Error: 403, Write access to project 'spacein-ec8ab' was denied: please check billing account associated and retry
+
+
+
+==============================================================================================================
+01/07
+key: cloud function axios
+
+
+//https://stackoverflow.com/questions/51952295/how-to-do-axios-request-from-firebase-cloud-function
+
+const functions = require('firebase-functions');
+const axios = require('axios'); // => npm install
+exports.ecpaytest3 = functions.https.onRequest((req: any, res:any ) => {
+
+    const cors = require('cors')({ origin: true });
+
+  cors(req, res, () => {
+    if (req.method !== "GET") {
+      return res.status(401).json({message: "Not allowed"});
+    }
+
+    return axios.get('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5')
+      .then((response: { data: { ip: any; }; }) => {
+        console.log(response.data);
+        return res.status(200).json({
+          message: response.data.ip
+        })
+      })
+      .catch((err: any) => { return res.status(500).json({error: err})})
+
+  })
+});
+
+
+
+//https://ithelp.ithome.com.tw/articles/10325048 
+=> it幫幫
+
+
+
+
+
+=======================================================
+01/07
+
+key: cloud function how request third party
+//https://stackoverflow.com/questions/67205499/issues-firebase-cloud-function-call-third-party-api-using-node-js
+const functions = require('firebase-functions');
+const url ='https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5';
+//// => Error: Cannot find module 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5'
+
+exports.ecpaytest1 = functions.https.onRequest(require(url));
+
+
+//https://stackoverflow.com/questions/72016452/calling-a-3rd-party-api-through-a-cloud-function-in-firebase-with-axios-post
+// axios 無法使用=_=
+const axios = require('axios'); //Error: Cannot find module 'axios'
+
+export const ecpaytest2 = onRequest(async (request, response) => {
+  const res = await axios.post(
+    'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5',
+    {
+        headers: {            contentType: 'content/json',        },
+    }
+  )
+  console.log(res);
+});
+
+
+
+
+

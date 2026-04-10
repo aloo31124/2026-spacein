@@ -1,0 +1,348 @@
+
+2025/03/24
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下為 angular 匯入教室, 將 csv 轉為 json ,
+新增前端 UI 程式碼。
+
+angular 匯入UI 程式碼:
+    src\app\manager\components\backup\backup.component.html
+        <button (click)="importAllRoomList()">匯入教室</button>
+
+    src\app\manager\components\backup\backup.component.ts
+    // 匯入 教室
+    importAllRoomList() {
+        
+    }
+    // csv 轉 json
+    private csvToJson() {
+        
+    }
+
+    src\app\manager\services\backup.service.ts
+    // 匯入教室
+    importAllRoomList() {}
+
+csv 轉 json 之格式:
+    {
+        "importRoomList": [
+            {
+                "id": "test124_0323",
+                "name": "新增教室1_0323_2",
+                "ownerId": "F0gY5gNP4nW4EkHpfq2k"
+            },
+            {
+                "id": "test124_0324",
+                "name": "新增教室2",
+                "ownerId": "F0gY5gNP4nW4EkHpfq2k"
+            }
+        ]
+    }
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+你想要實作的功能：  
+
+1. **前端 UI**
+   - 提供 **檔案上傳** 的按鈕
+   - 允許用戶選擇 **CSV 檔案**  
+
+2. **CSV 轉 JSON**
+   - 解析 CSV 內容  
+   - 格式化為 JSON（符合 `importRoomList` 結構）  
+
+3. **將 JSON 傳送到後端**
+   - 透過 `POST` API 呼叫 `http://localhost:8082/api/backup/room/import`  
+   - 確保格式正確並處理錯誤  
+
+---
+
+### **📌 1️⃣ 更新 `backup.component.html`（新增上傳 UI）**
+```html
+<input type="file" (change)="handleFileInput($event)" accept=".csv" />
+<button (click)="importAllRoomList()">匯入教室</button>
+```
+✅ **允許用戶選擇 CSV 檔案**  
+✅ **按下「匯入教室」後處理上傳**  
+
+---
+
+### **📌 2️⃣ 更新 `backup.component.ts`（解析 CSV、轉 JSON、送 API）**
+```typescript
+import { Component } from '@angular/core';
+import { BackupService } from '../../services/backup.service';
+
+@Component({
+  selector: 'app-backup',
+  templateUrl: './backup.component.html',
+  styleUrls: ['./backup.component.css']
+})
+export class BackupComponent {
+  selectedFile: File | null = null;
+
+  constructor(private backupService: BackupService) {}
+
+  // 處理檔案選擇
+  handleFileInput(event: any) {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      this.selectedFile = file;
+    } else {
+      alert('請選擇 CSV 檔案！');
+    }
+  }
+
+  // 匯入教室
+  importAllRoomList() {
+    if (!this.selectedFile) {
+      alert('請先選擇 CSV 檔案！');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const csvData = e.target.result;
+      const jsonData = this.csvToJson(csvData);
+      this.backupService.importAllRoomList(jsonData).subscribe(response => {
+        console.log('匯入成功:', response);
+        alert('教室匯入成功！');
+      }, error => {
+        console.error('匯入失敗:', error);
+        alert('教室匯入失敗！');
+      });
+    };
+
+    reader.readAsText(this.selectedFile);
+  }
+
+  // CSV 轉 JSON
+  private csvToJson(csv: string) {
+    const lines = csv.split('\n').map(line => line.trim()).filter(line => line);
+    const headers = lines[0].split(',').map(header => header.trim());
+
+    const data = lines.slice(1).map(line => {
+      const values = line.split(',').map(value => value.trim());
+      let obj: any = {};
+      headers.forEach((header, index) => {
+        obj[header] = values[index] || '';
+      });
+      return obj;
+    });
+
+    return { importRoomList: data };
+  }
+}
+```
+
+✅ **用 `FileReader` 讀取 CSV 檔案**  
+✅ **解析 CSV 並轉換為 JSON**  
+✅ **透過 `BackupService` 送 API**  
+
+---
+
+### **📌 3️⃣ 更新 `backup.service.ts`（呼叫 API）**
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class BackupService {
+  private apiUrl = 'http://localhost:8082/api/backup/room/import';
+
+  constructor(private http: HttpClient) {}
+
+  // 送出 JSON 到後端
+  importAllRoomList(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
+}
+```
+
+✅ **送出 `POST` API，將 JSON 資料發送到後端**  
+✅ **可擴展 `error handling` 以處理不同的 API 狀況**  
+
+---
+
+### **📌 4️⃣ 測試與驗證**
+1️⃣ 上傳 **有效 CSV** 檔案（如：`room_list.csv`）  
+2️⃣ **檢查 JSON 轉換是否正確**（可在 `console.log(jsonData)` 查看輸出）  
+3️⃣ **API 回應成功時，應顯示「教室匯入成功」**  
+
+---
+
+這樣你的 **Angular 匯入 CSV 功能** 就完成了！🎉 🚀
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+你想要實作的功能：  
+
+1. **前端 UI**
+   - 提供 **檔案上傳** 的按鈕
+   - 允許用戶選擇 **CSV 檔案**  
+
+2. **CSV 轉 JSON**
+   - 解析 CSV 內容  
+   - 格式化為 JSON（符合 `importRoomList` 結構）  
+
+3. **將 JSON 傳送到後端**
+   - 透過 `POST` API 呼叫 `http://localhost:8082/api/backup/room/import`  
+   - 確保格式正確並處理錯誤  
+
+---
+
+### **📌 1️⃣ 更新 `backup.component.html`（新增上傳 UI）**
+```html
+<input type="file" (change)="handleFileInput($event)" accept=".csv" />
+<button (click)="importAllRoomList()">匯入教室</button>
+```
+✅ **允許用戶選擇 CSV 檔案**  
+✅ **按下「匯入教室」後處理上傳**  
+
+---
+
+### **📌 2️⃣ 更新 `backup.component.ts`（解析 CSV、轉 JSON、送 API）**
+```typescript
+import { Component } from '@angular/core';
+import { BackupService } from '../../services/backup.service';
+
+@Component({
+  selector: 'app-backup',
+  templateUrl: './backup.component.html',
+  styleUrls: ['./backup.component.css']
+})
+export class BackupComponent {
+  selectedFile: File | null = null;
+
+  constructor(private backupService: BackupService) {}
+
+  // 處理檔案選擇
+  handleFileInput(event: any) {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      this.selectedFile = file;
+    } else {
+      alert('請選擇 CSV 檔案！');
+    }
+  }
+
+  // 匯入教室
+  importAllRoomList() {
+    if (!this.selectedFile) {
+      alert('請先選擇 CSV 檔案！');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const csvData = e.target.result;
+      const jsonData = this.csvToJson(csvData);
+      this.backupService.importAllRoomList(jsonData).subscribe(response => {
+        console.log('匯入成功:', response);
+        alert('教室匯入成功！');
+      }, error => {
+        console.error('匯入失敗:', error);
+        alert('教室匯入失敗！');
+      });
+    };
+
+    reader.readAsText(this.selectedFile);
+  }
+
+  // CSV 轉 JSON
+  private csvToJson(csv: string) {
+    const lines = csv.split('\n').map(line => line.trim()).filter(line => line);
+    const headers = lines[0].split(',').map(header => header.trim());
+
+    const data = lines.slice(1).map(line => {
+      const values = line.split(',').map(value => value.trim());
+      let obj: any = {};
+      headers.forEach((header, index) => {
+        obj[header] = values[index] || '';
+      });
+      return obj;
+    });
+
+    return { importRoomList: data };
+  }
+}
+```
+
+✅ **用 `FileReader` 讀取 CSV 檔案**  
+✅ **解析 CSV 並轉換為 JSON**  
+✅ **透過 `BackupService` 送 API**  
+
+---
+
+### **📌 3️⃣ 更新 `backup.service.ts`（呼叫 API）**
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class BackupService {
+  private apiUrl = 'http://localhost:8082/api/backup/room/import';
+
+  constructor(private http: HttpClient) {}
+
+  // 送出 JSON 到後端
+  importAllRoomList(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
+}
+```
+
+✅ **送出 `POST` API，將 JSON 資料發送到後端**  
+✅ **可擴展 `error handling` 以處理不同的 API 狀況**  
+
+---
+
+### **📌 4️⃣ 測試與驗證**
+1️⃣ 上傳 **有效 CSV** 檔案（如：`room_list.csv`）  
+2️⃣ **檢查 JSON 轉換是否正確**（可在 `console.log(jsonData)` 查看輸出）  
+3️⃣ **API 回應成功時，應顯示「教室匯入成功」**  
+
+---
+
+這樣你的 **Angular 匯入 CSV 功能** 就完成了！🎉 🚀
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

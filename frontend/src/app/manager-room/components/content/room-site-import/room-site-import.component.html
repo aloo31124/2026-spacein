@@ -1,0 +1,30 @@
+<h2>匯入教室座位</h2>
+<p>1. 所有欄位為 必填欄位。(參考 [匯出範本] )</p>
+<p>2. 教室名稱 與 座位名稱 若都存在於系統, 則該筆資料不匯入。 </p>
+<p>3. 教室名稱 若不存在於系統, 將自動新增該 教室 與 座位。 </p>
+<p>4. 教室名稱 若已存在系統, 該 座位 直接新增於該 教室 下。 </p>
+
+
+<button (click)="clickSampleToCsv()">匯出範本</button>
+<input
+  type="file"
+  (change)="handleFiles($event)"
+  multiple
+  accept=".csv"
+  style="display: none"
+  #csvFileInput
+/>
+<button (click)="csvFileInput.click()">匯入教室座位</button>
+
+<h2>匯入結果</h2>
+<div *ngIf="resultList.length === 0 && !isLoading">尚無資料</div>
+<ul *ngIf="resultList.length !== 0 && !isLoading">
+  <li *ngFor="let result of resultList">
+    {{ result.message }}
+  </li>
+</ul>
+<div class="loading-gif" *ngIf="isLoading">
+    <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+</div>
+
+

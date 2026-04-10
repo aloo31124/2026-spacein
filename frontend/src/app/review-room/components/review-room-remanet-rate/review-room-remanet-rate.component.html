@@ -1,0 +1,54 @@
+
+<div class="main-container">
+    
+    <div class="review-container"> 
+        <div class="row">
+            <label class="title">空間種類</label>
+            <div class="select-item" (click)="isDialogHiddenRoomType=false"> {{ _selectRoomType.name }} </div>
+        </div>
+        
+        <div class="row">
+            <label class="title-second">顯示剩餘空間</label>
+            <div class="select-item" (click)="isDialogHiddenRemainRommRate=false"> {{ showRate }} %</div>
+            <label class="title-second">以下</label>
+        </div>
+
+        <!-- 剩餘率% 行事曆 -->
+        <app-calendar-picker
+            (selectDatInfo)="getEmitterSelectDay($event)"
+            [rateList]="rateList"
+            [showRate]="showRate">
+        </app-calendar-picker>
+
+    </div>
+    
+    <!-- 選擇剩餘空間% dialog -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'選擇剩餘空間比例'"
+            [isHiddenDialog]="isDialogHiddenRemainRommRate"
+            (hideDialog)="isDialogHiddenRemainRommRate=true"
+            (selectedItem)="selectDialogRate($event)"
+            [itemList]="dialogRemainRoomRate">
+        </app-dialog>
+    </div>
+    
+    <!-- 選擇空間種類 dialog -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'選擇剩餘空間種類'"
+            [isHiddenDialog]="isDialogHiddenRoomType"
+            (hideDialog)="isDialogHiddenRoomType=true"
+            (selectedItem)="selectDialogRoomType($event)"
+            [itemList]="dialogRoomTypeList">
+        </app-dialog>
+    </div>
+    
+
+    <!-- 畫面 loading 中 -->
+    <div class="loading-container">
+        <app-loading-basic [isLoading]="isLoading">
+        </app-loading-basic>
+    </div>
+
+</div>

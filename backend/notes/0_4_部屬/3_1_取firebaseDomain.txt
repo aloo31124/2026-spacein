@@ -1,0 +1,242 @@
+
+2025/04/28
+=================================================================================
+------------------------------------------------
+
+fix [space in] [上架部屬] 設定, 取 cloud fun 網域domain -> 從 .env  失敗 ="=
+
+=================================================================================
+------------------------------------------------
+
+deepseek回復:
+    const domain = `https://${process.env.FUNCTION_REGION}-${process.env.GCLOUD_PROJECT}.cloudfunctions.net/${process.env.FUNCTION_NAME}`;
+
+    const base_param = {
+        ReturnURL: `${domain}/api/pay/ecpay/pay/result/server`,
+        ClientBackURL: `${domain}/api/pay/ecpay/pay/result/client`
+    };
+
+
+gemini:
+    const CUSTOM_DOMAIN = 'your-custom-domain.com'; // 替換為您的自訂網域
+    exports.getPaySelectPageHtml = async (payment) => {
+        // ... 其他設定 ...
+
+        let base_param = {
+            ...
+            // 使用自訂網域
+            ReturnURL: `https://${CUSTOM_DOMAIN}/api/pay/ecpay/pay/result/server`,
+            ClientBackURL: `https://${CUSTOM_DOMAIN}/api/pay/ecpay/pay/result/client`,
+        };
+
+        const create = new ecpay_payment(options);
+        const html = create.payment_client.aio_check_out_all(base_param);
+        return html;
+    };
+
+
+
+=================================================================================
+------------------------------------------------
+
+如下為 node.js 部屬於 cloud function 環境,
+但 ReturnURL, ClientBackURL 希望可以在 cloud function 的 DOMAIN網域 上重新導向,
+每次部屬 cloud function 的 DOMAIN網域 可能會隨機更換,
+除了寫死, 是否有其他方式可取得 cloud function 的 DOMAIN網域
+
+src\services\pay-ecpay.service.js
+    exports.getPaySelectPageHtml = async (payment) => {
+        const options = {
+            OperationMode: 'Test',
+            MercProfile: { ... },
+            IgnorePayment: [...
+            ],
+            IsProjectContractor: false,
+        };
+        //////////////////////////////////////////
+        // SDK 提供的範例，參數設定
+        // https://github.com/ECPay/ECPayAIO_Node.js/blob/master/ECPAY_Payment_node_js/conf/config-example.js
+        let TradeNo;
+        const MerchantTradeDate = new Date().toLocaleString('zh-TW', {...
+        });
+        TradeNo = 'test' + new Date().getTime();
+        let base_param = {
+            ...
+            // firebase functions URl
+            ReturnURL: "https://api-hxybsyp7aa-uc.a.run.app/api/pay/ecpay/pay/result/server",
+            ClientBackURL: "https://api-hxybsyp7aa-uc.a.run.app/api/pay/ecpay/pay/result/client",
+        };
+        const create = new ecpay_payment(options);
+        // 注意：在此事直接提供 html + js 直接觸發的範例，直接從前端觸發付款行為
+        const html = create.payment_client.aio_check_out_all(base_param);
+        return html;
+    }
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+是的，Cloud Functions 的網域在每次部署後可能會隨機更換，因此寫死 URL 並非長久之計。您有幾種方式可以在 Cloud Functions 環境中動態取得其網域：
+
+**1. 使用 `process.env.CLOUD_RUNTIME_URL` (推薦，但可能不是所有環境都可用):**
+
+Cloud Functions 環境變數中，有時會提供 `CLOUD_RUNTIME_URL` 這個變數，它包含了當前 Cloud Function 的根網域。您可以嘗試使用這個變數來構建您的回傳 URL。
+
+```javascript
+exports.getPaySelectPageHtml = async (payment) => {
+    // ... 其他設定 ...
+
+    let base_param = {
+        ...
+        // 動態取得 Cloud Functions 網域
+        ReturnURL: `${process.env.CLOUD_RUNTIME_URL}/api/pay/ecpay/pay/result/server`,
+        ClientBackURL: `${process.env.CLOUD_RUNTIME_URL}/api/pay/ecpay/pay/result/client`,
+    };
+
+    const create = new ecpay_payment(options);
+    const html = create.payment_client.aio_check_out_all(base_param);
+    return html;
+};
+```
+
+**優點：**
+
+* 如果環境提供，這是最直接且官方的方式。
+
+**缺點：**
+
+* **不保證在所有 Cloud Functions 環境中都可用。** 尤其是在較舊的版本或特定的部署配置下。您需要測試您的環境是否包含這個變數。
+
+**2. 從 `req.headers.host` 或 `req.get('host')` (僅在 HTTP Function 中可用):**
+
+如果您的 `getPaySelectPageHtml` 這個函數是透過 HTTP request 觸發的 (例如，在您的 API 中被呼叫)，那麼您可以在 request 物件中取得主機 (host) 資訊。
+
+```javascript
+exports.getPaySelectPageHtml = async (req, payment) => { // 注意：這裡多了 req 參數
+    // ... 其他設定 ...
+
+    const host = req.get('host'); // 或 req.headers.host
+
+    let base_param = {
+        ...
+        // 從 request header 中取得網域
+        ReturnURL: `https://${host}/api/pay/ecpay/pay/result/server`,
+        ClientBackURL: `https://${host}/api/pay/ecpay/pay/result/client`,
+    };
+
+    const create = new ecpay_payment(options);
+    const html = create.payment_client.aio_check_out_all(base_param);
+    return html;
+};
+```
+
+**優點：**
+
+* 在 HTTP Function 中可靠性高。
+
+**缺點：**
+
+* **僅適用於 HTTP Function。** 如果您的 `getPaySelectPageHtml` 是被其他類型的 Cloud Function (例如 Background Function) 呼叫，則無法取得 `req` 物件。
+* 需要確保您的 Cloud Function 是透過 HTTPS 提供服務的。Cloud Functions 預設是 HTTPS。
+
+**3. 使用 Firebase Hosting 的 Custom Domain (如果適用):**
+
+如果您有將 Cloud Functions 連接到 Firebase Hosting 的自訂網域，那麼您可以使用這個自訂網域。這個網域是固定的，不會在每次部署後改變。
+
+```javascript
+const CUSTOM_DOMAIN = 'your-custom-domain.com'; // 替換為您的自訂網域
+
+exports.getPaySelectPageHtml = async (payment) => {
+    // ... 其他設定 ...
+
+    let base_param = {
+        ...
+        // 使用自訂網域
+        ReturnURL: `https://${CUSTOM_DOMAIN}/api/pay/ecpay/pay/result/server`,
+        ClientBackURL: `https://${CUSTOM_DOMAIN}/api/pay/ecpay/pay/result/client`,
+    };
+
+    const create = new ecpay_payment(options);
+    const html = create.payment_client.aio_check_out_all(base_param);
+    return html;
+};
+```
+
+**優點：**
+
+* 網域固定，易於管理。
+
+**缺點：**
+
+* 需要設定 Firebase Hosting 的自訂網域。
+* 如果沒有自訂網域，則不適用。
+
+**4. 在部署時注入環境變數:**
+
+您可以在部署 Cloud Function 時，透過 Firebase CLI 或 Cloud Build 等工具，將當前的 Cloud Function 網域設定為一個環境變數。
+
+**Firebase CLI 部署範例:**
+
+```bash
+firebase deploy --set-env-vars FUNCTION_DOMAIN=$(gcloud functions describe YOUR_FUNCTION_NAME --region=YOUR_REGION --format='value(httpsTrigger.url)')
+```
+
+然後在您的 Cloud Function 中讀取這個環境變數：
+
+```javascript
+exports.getPaySelectPageHtml = async (payment) => {
+    // ... 其他設定 ...
+
+    const functionDomain = process.env.FUNCTION_DOMAIN;
+
+    let base_param = {
+        ...
+        ReturnURL: `${functionDomain}/api/pay/ecpay/pay/result/server`,
+        ClientBackURL: `${functionDomain}/api/pay/ecpay/pay/result/client`,
+    };
+
+    const create = new ecpay_payment(options);
+    const html = create.payment_client.aio_check_out_all(base_param);
+    return html;
+};
+```
+
+**優點：**
+
+* 可以確保獲取到當前 Function 的網域。
+
+**缺點：**
+
+* 需要在部署流程中額外處理。
+
+**選擇哪種方式取決於您的具體情況：**
+
+* **如果您的函數是 HTTP Function，且環境支援 `process.env.CLOUD_RUNTIME_URL`，那麼這兩種方式都是不錯的選擇。** 建議優先嘗試 `process.env.CLOUD_RUNTIME_URL`。
+* **如果您有使用 Firebase Hosting 的自訂網域，且希望網域固定，那麼使用自訂網域是最穩定的方式。**
+* **如果需要更精確地控制，並希望在部署時獲取網域，那麼在部署時注入環境變數是一個可靠的方案。**
+
+**建議的實施步驟：**
+
+1.  **首先嘗試使用 `process.env.CLOUD_RUNTIME_URL`。** 部署您的 Cloud Function 並檢查 `process.env` 中是否包含這個變數。如果是，則使用它。
+2.  **如果 `process.env.CLOUD_RUNTIME_URL` 不可用，且您的函數是 HTTP Function，則使用 `req.get('host')`。**
+3.  **如果以上兩種方式都不適用，且您希望網域固定，則設定 Firebase Hosting 的自訂網域並使用它。**
+4.  **作為最後的選擇，考慮在部署時注入環境變數。**
+
+請根據您的專案設定和需求選擇最適合您的方式來動態取得 Cloud Function 的網域。
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+

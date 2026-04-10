@@ -1,0 +1,4 @@
+<h2>{{ (model === 'add') ? "新增" : "編輯" }}教室</h2>
+<input type="text" [(ngModel)]="name" placeholder="教室名稱">
+<button *ngIf="model === 'add'" (click)="clickAddRoom()">新增</button>
+<button *ngIf="model === 'edit'" (click)="clickUpdateRoom()">更新</button>

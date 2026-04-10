@@ -1,0 +1,26 @@
+<button (click)="clickAddRoom()">新增教室</button>
+<button (click)="clickExportRoom()">匯出教室</button>
+<div class="search-bar">
+    <input type="text" placeholder="教室名稱不限" [(ngModel)]="searchRoomName">
+    <br>
+    <button (click)="clickSearchRoom()">搜尋</button>
+</div>
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="roomList.length === 0 && !isDefault && !isLoading ">沒有找到結果</div>
+    <ul *ngIf="roomList.length > 0">
+        <li *ngFor="let room of roomList">
+            <strong>擁有者id:</strong> {{ room.ownerId }} | 
+            <strong>擁有者信箱:</strong> {{ room.email }} | 
+            <strong>教室名稱:</strong> {{ room.name }} | 
+            <br>
+            <button (click)="clickEditRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">編輯</button>
+            <button (click)="clickDeleteRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">刪除</button>
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

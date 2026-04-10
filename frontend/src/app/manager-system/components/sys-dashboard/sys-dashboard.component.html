@@ -1,0 +1,27 @@
+<div class="manager-container">
+    <img
+      class="iconBtn"
+      src="assets/images/icon/icon_next.png"
+      (click)="toggleMenu()"
+      [style.display]="isMenuVisible ? 'none' : 'block'"
+    />
+    <div class="manager-menu" [style.display]="isMenuVisible ? 'flex' : 'none'">
+      <img
+        class="iconBtn"
+        src="assets/images/icon/icon_back.png"
+        (click)="toggleMenu()"
+      />
+        <button routerLink="/manager-sys/all-user" routerLinkActive="active">使用者資訊</button>
+        <button routerLink="/manager-sys/user-role-list" routerLinkActive="active">使用者角色</button>
+        <button routerLink="/manager-sys/user-payment-list" routerLinkActive="active">使用者方案紀錄</button>
+        <button routerLink="/manager-sys/pay-record" routerLinkActive="active">金流系統紀錄</button>
+        <button routerLink="/manager-sys/pay-setting" routerLinkActive="active">金流方案設定</button>
+        <!--
+        <button routerLink="/manager-sys/log-record" routerLinkActive="active">操作紀錄</button>
+        -->
+        <button routerLink="/manager-sys/backup" routerLinkActive="active">系統備份</button>
+    </div>
+    <div class="manager-container">
+        <router-outlet></router-outlet>
+    </div>
+</div>

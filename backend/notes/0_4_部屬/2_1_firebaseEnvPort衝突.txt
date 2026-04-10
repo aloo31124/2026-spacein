@@ -1,0 +1,94 @@
+
+2025/04/28
+=================================================================================
+------------------------------------------------
+
+fix [space in] [上架部屬] 設定 .env 與 firebase hosting 衝突
+
+4/28
+找無修正方法... ="=
+
+=================================================================================
+------------------------------------------------
+
+如下 node.js 專案部屬於 firebase host,
+於 node.js 之 .env 設定 PORT=8082, 
+但下 firebase deploy 出現如下錯誤訊息,
+原因與如何修正?
+
+.env
+    PORT=8082
+
+src\index.js
+    // 啟動伺服器
+    const PORT = process.env.PORT;
+    app.listen(PORT, () => {
+        console.log(`[space in] 空間預約 伺服器啟動 http://localhost:${PORT}`);
+    })
+
+
+firebase deploy 出現如下錯誤訊息:
+PS C:\Users\ASUS\Desktop\space-in-server-v2> firebase deploy
+    === Deploying to 'spaceincopy'...
+
+    i  deploying functions
+    i  functions: preparing codebase default for deployment
+    i  functions: ensuring required API cloudfunctions.googleapis.com is enabled...
+    i  functions: ensuring required API cloudbuild.googleapis.com is enabled...
+    i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled...
+    +  functions: required API cloudbuild.googleapis.com is enabled
+    +  artifactregistry: required API artifactregistry.googleapis.com is enabled
+    +  functions: required API cloudfunctions.googleapis.com is enabled
+    i  functions: Loading and analyzing source code for codebase default to determine what to deploy
+    Serving at port 8600
+
+    node:events:497
+        throw er; // Unhandled 'error' event
+        ^
+
+    Error: listen EADDRINUSE: address already in use :::8600
+        at Server.setupListenHandle [as _listen2] (node:net:1904:16)
+        at listenInCluster (node:net:1961:12)
+        at Server.listen (node:net:2063:7)
+        at Function.listen (C:\Users\ASUS\Desktop\space-in-server-v2\node_modules\express\lib\application.js:635:24)
+        at Object.<anonymous> (C:\Users\ASUS\Desktop\space-in-server-v2\src\index.js:124:5)
+        at Module._compile (node:internal/modules/cjs/loader:1469:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1548:10)
+        at Module.load (node:internal/modules/cjs/loader:1288:32)
+        at Module._load (node:internal/modules/cjs/loader:1104:12)
+        at Module.require (node:internal/modules/cjs/loader:1311:19)
+    Emitted 'error' event on Server instance at:
+        at emitErrorNT (node:net:1940:8)
+        at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+            code: 'EADDRINUSE',
+            errno: -4091,
+            syscall: 'listen',
+            address: '::',
+            port: 8600
+        }
+
+    Node.js v20.18.0
+
+
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

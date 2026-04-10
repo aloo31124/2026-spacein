@@ -1,0 +1,28 @@
+
+
+
+
+
+
+如下程式可取出 RoomToSite 物件:
+[{"id":"4DGXN...","name":"A001","roomId":"4tz0...},
+[{"id":"GJKDN...","name":"A002","roomId":"3Age...},... ]
+roomId 需與 fireStore 之 Room 表 id join, 並顯示 該 room 表之 name 欄位
+
+export const getRoomSiteByDate = onRequest((request, response) => {
+  admin.firestore()
+    .collection('RoomToSite')
+    .get()
+    .then(snapshot => {
+      const siteList = snapshot.docs.map(doc => {
+        return {
+          id: doc.id, // 去該物件 id
+          ...doc.data()
+        };
+      })
+      return response.send(siteList);
+    })
+    .catch(error => {
+        response.status(500).send(error);
+    });
+});

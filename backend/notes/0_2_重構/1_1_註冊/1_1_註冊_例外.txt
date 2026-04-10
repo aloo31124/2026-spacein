@@ -1,0 +1,373 @@
+
+2025/03/16
+=================================================================================
+------------------------------------------------
+refactor [space in server][註冊] 1.例外事件重構, 2. 開始結束印log
+
+=================================================================================
+------------------------------------------------
+
+如下 node.js express controller, 請加上正規常見的 try catch,
+並且在開始與結束時印出 log, 
+並在開始與結束時印出具有該函式可辨識與參考價值好追蹤之函式
+
+src/controllers/auth.api.controller.js
+    const authService = require('../services/auth.service');
+
+    const logger = (message, data) => {
+        console.log(`[${new Date().toISOString()}] ${message}`, data);
+    };
+
+    const errorLogger = (message, error) => {
+        console.error(`[${new Date().toISOString()}] ${message}`, error);
+    };
+
+    /* 寄送驗證碼 */
+    exports.registMail = async (req, res) => {
+        logger("[registMail] 開始", req.body);
+        try {
+            const result = await authService.sendVerifyCode(req.body.mail);
+            logger("[registMail] 成功", result);
+            res.status(200).send(result);
+        } catch (error) {
+            errorLogger("[registMail] 失敗", error);
+            res.status(500).json({ error: "發送驗證碼失敗" });
+        }
+    };
+
+    /* 註冊建立使用者 */
+    exports.registAddUser = async (req, res) => {
+        logger("[registAddUser] 開始", req.body);
+        try {
+            const newUser = await authService.addAccount(req.body.mail);
+            logger("[registAddUser] 成功", newUser);
+            res.status(200).json({ newUser });
+        } catch (error) {
+            errorLogger("[registAddUser] 失敗", error);
+            res.status(500).json({ error: "註冊失敗" });
+        }
+    };
+
+    /* 註冊使用者更新資訊 */
+    exports.registUserUpdateInfot = async (req, res) => {
+        logger("[registUserUpdateInfot] 開始", req.body);
+        try {
+            const newUser = await authService.updateAccount(req.body.newUser);
+            logger("[registUserUpdateInfot] 成功", newUser);
+            res.status(200).json({ newUser });
+        } catch (error) {
+            errorLogger("[registUserUpdateInfot] 失敗", error);
+            res.status(500).json({ error: "更新使用者資訊失敗" });
+        }
+    };
+
+    /* 註冊輸入驗證碼 */
+    exports.registVerityCode = async (req, res) => {
+        logger("[registVerityCode] 開始", req.body);
+        try {
+            const verifyResult = authService.verifyCode(req.body.newUser);
+            logger("[registVerityCode] 成功", verifyResult);
+            res.status(200).json({ verifyResult });
+        } catch (error) {
+            errorLogger("[registVerityCode] 失敗", error);
+            res.status(500).json({ error: "驗證碼錯誤" });
+        }
+    };
+
+    /* 註冊使用者更新密碼 */
+    exports.registUserUpdatePassword = async (req, res) => {
+        logger("[registUserUpdatePassword] 開始", req.body);
+        try {
+            const newUser = await authService.updateAccount(req.body.newUser);
+            logger("[registUserUpdatePassword] 成功", newUser);
+            res.status(200).json({ newUser });
+        } catch (error) {
+            errorLogger("[registUserUpdatePassword] 失敗", error);
+            res.status(500).json({ error: "密碼更新失敗" });
+        }
+    };
+
+    /* 登入 */
+    exports.login = async (req, res) => {
+        logger("[login] 開始", req.body);
+        try {
+            const { account, password } = req.body;
+            const isSuccess = await authService.login(account, password);
+            if (!isSuccess) {
+                logger("[login] 失敗, 帳密錯誤", account);
+                return res.status(401).json({ isSuccess, message: "登入失敗, 帳密錯誤" });
+            }
+            const token = await authService.createJwtToken(req);
+            logger("[login] 成功", { account, token });
+            res.status(200).json({ isSuccess, message: "帳密登入成功", token });
+        } catch (error) {
+            errorLogger("[login] 失敗", error);
+            res.status(500).json({ error: "登入失敗" });
+        }
+    };
+
+    /* 登出, 清除 token */
+    exports.logout = async (req, res) => {
+        logger("[logout] 開始", req.headers.authorization);
+        try {
+            const success = authService.logout(req);
+            logger("[logout] 成功", success);
+            res.status(200).json({ success, message: "已成功登出" });
+        } catch (error) {
+            errorLogger("[logout] 失敗", error);
+            res.status(500).json({ error: "登出失敗" });
+        }
+    };
+
+    /* 驗證 jwt */
+    exports.verifyJwt = async (req, res) => {
+        logger("[verifyJwt] 開始", req.headers.authorization);
+        try {
+            const payload = authService.verifyJwt(req);
+            if (!payload) {
+                logger("[verifyJwt] 失敗, 無效或過期 token", null);
+                return res.status(401).json({ payload, error: '無效或過期之 token' });
+            }
+            logger("[verifyJwt] 成功", payload);
+            res.status(200).json({ payload, message: "成功訪問資源" });
+        } catch (error) {
+            errorLogger("[verifyJwt] 失敗", error);
+            res.status(500).json({ error: "JWT 驗證失敗" });
+        }
+    };
+
+
+=================================================================================
+------------------------------------------------
+
+如下 node.js express auth.service.js, 請加上正規常見的 try catch
+
+src/services/auth.service.js
+    const mailService = require('./mail.service');
+    const userService = require('../services/user.service');
+    const utils = require('../utils/jwt');
+    const User = require('../models/user.model');
+
+    /* 送出驗證碼 */
+    exports.sendVerifyCode = async (mail) => {
+        try {
+            return await mailService.sendMailVerifyCode(mail);
+        } catch (error) {
+            console.error("sendVerifyCode error:", error);
+            return null;
+        }
+    };
+
+    /* 信箱, 建立新的帳號 */
+    exports.addAccount = async (mail) => {
+        try {
+            const userData = new User({
+                account: "",
+                mail,
+                state: "尚未驗證",
+                role: "買家",
+                pay: "無",
+                phone: "",  
+                password: "",
+            });
+            return await userService.addUser(userData.toPlainObject());
+        } catch (error) {
+            console.error("addAccount error:", error);
+            return null;
+        }
+    };
+
+    /* 更新使用者資訊 */
+    exports.updateAccount = async (user) => {
+        try {
+            return await userService.updateUser(user);
+        } catch (error) {
+            console.error("updateAccount error:", error);
+            return null;
+        }
+    };
+
+    /* 比對驗證碼 */
+    exports.verifyCode = (user) => {
+        try {
+            return mailService.verifyCode(user);
+        } catch (error) {
+            console.error("verifyCode error:", error);
+            return null;
+        }
+    };
+
+    /* 登入 */
+    exports.login = async (account, password) => {
+        try {
+            return await userService.login(account, password);
+        } catch (error) {
+            console.error("login error:", error);
+            return null;
+        }
+    };
+
+    /* 登出, 清除 token */
+    exports.logout = (req) => {
+        try {
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) return false;
+            return utils.logoutToken(token);
+        } catch (error) {
+            console.error("logout error:", error);
+            return false;
+        }
+    };
+
+    /* 產生 jwt token */
+    exports.createJwtToken = async (req) => {
+        try {
+            const { account } = req.body;
+            const user = await userService.getUserByAccount(account);
+            if (!user) throw new Error("User not found");
+            const userAgent = req.headers['user-agent'];
+            return utils.createToken({ userId: user.id, account, userAgent }, '5m');
+        } catch (error) {
+            console.error("createJwtToken error:", error);
+            return null;
+        }
+    };
+
+    /* 驗證 jwt token */
+    exports.verifyJwt = (req) => {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+            const token = authHeader.split(' ')[1];
+            return utils.verifyToken(token);
+        } catch (error) {
+            console.error("verifyJwt error:", error);
+            return null;
+        }
+    };
+
+
+=================================================================================
+------------------------------------------------
+
+如下 node.js express user.service.js, 請加上正規常見的 try catch
+src/services/user.service.js
+    const db = require('../firestore');
+
+    const logger = (message, data) => {
+        console.log(`[${new Date().toISOString()}] ${message}`, data);
+    };
+
+    const errorLogger = (message, error) => {
+        console.error(`[${new Date().toISOString()}] ${message}`, error);
+    };
+
+    /* 取得使用者資訊, 依 account */
+    exports.getUserByAccount = async (account) => {
+        logger("[getUserByAccount] 開始", { account });
+        try {
+            const snapshot = await db.collection('User').where('account', '==', account).get();
+            if (snapshot.empty) {
+                logger("[getUserByAccount] 查無此帳號", { account });
+                return null;
+            }
+            const doc = snapshot.docs[0];
+            const user = { id: doc.id, ...doc.data() };
+            logger("[getUserByAccount] 成功", user);
+            return user;
+        } catch (error) {
+            errorLogger("[getUserByAccount] 失敗", error);
+            throw new Error("取得使用者資訊失敗");
+        }
+    };
+
+    /* 新增使用者 */
+    exports.addUser = async (user) => {
+        logger("[addUser] 開始", { mail: user.mail });
+        try {
+            const snapshot = await db.collection('User').where('mail', '==', user.mail).get();
+            if (!snapshot.empty) {
+                logger("[addUser] 該信箱已註冊", { mail: user.mail });
+                return null;
+            }
+            const docRef = await db.collection('User').add(user);
+            const docSnapshot = await docRef.get();
+            const newUser = { id: docRef.id, ...docSnapshot.data() };
+            logger("[addUser] 成功", newUser);
+            return newUser;
+        } catch (error) {
+            errorLogger("[addUser] 失敗", error);
+            throw new Error("新增使用者失敗");
+        }
+    };
+
+    /* 更新使用者資訊 */
+    exports.updateUser = async (user) => {
+        logger("[updateUser] 開始", { mail: user.mail });
+        try {
+            const snapshot = await db.collection('User').where('mail', '==', user.mail).get();
+            if (snapshot.empty) {
+                logger("[updateUser] 查無此信箱使用者", { mail: user.mail });
+                return null;
+            }
+            const doc = snapshot.docs[0];
+            const docRef = doc.ref;
+            const { mail: _, ...fieldsToUpdate } = user;
+            await docRef.update(fieldsToUpdate);
+            const updatedSnapshot = await docRef.get();
+            const updatedUser = { id: docRef.id, ...updatedSnapshot.data() };
+            logger("[updateUser] 成功", updatedUser);
+            return updatedUser;
+        } catch (error) {
+            errorLogger("[updateUser] 失敗", error);
+            throw new Error("更新使用者資訊失敗");
+        }
+    };
+
+    /* 登入 */
+    exports.login = async (account, password) => {
+        logger("[login] 開始", { account });
+        try {
+            const snapshot = await db.collection('User').where("account", "==", account).get();
+            if (snapshot.empty) {
+                logger("[login] 查無此帳號", { account });
+                return false;
+            }
+            const doc = snapshot.docs[0];
+            const docSnapshot = await doc.ref.get();
+            const user = { id: doc.ref.id, ...docSnapshot.data() };
+            
+            if (user.password !== password) {
+                logger("[login] 密碼錯誤", { account });
+                return false;
+            }
+
+            logger("[login] 成功", { account });
+            return true;
+        } catch (error) {
+            errorLogger("[login] 失敗", error);
+            throw new Error("登入失敗");
+        }
+    };
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

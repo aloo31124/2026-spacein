@@ -1,0 +1,55 @@
+
+<div class="calendar-picker">
+    <div class="calendar-header">
+        <img src="assets/images/icon/icon_back.png" (click)="backMonth()">
+        {{ currentYear }} 年 {{ currentMonth }} 月
+        <img src="assets/images/icon/icon_next.png" (click)="nextMonth()">
+    </div>
+    <div class="calendar-content">
+        <div class="grid-row">
+            <div class="grid">日</div>
+            <div class="grid">一</div>
+            <div class="grid">二</div>
+            <div class="grid">三</div>
+            <div class="grid">四</div>
+            <div class="grid">五</div>
+            <div class="grid">六</div>
+        </div>
+        <div class="grid-row">
+            <div class="grid" 
+                *ngFor="let number of [].constructor(displayAllDayGrid); let i = index"  
+                [ngStyle]="{opacity: checkDateValid(changeDateObj(i + 1 - currentMonthFirstDayWeekly))?'1':'0.4'}"
+                (click)="selectDate( i + 1 - currentMonthFirstDayWeekly )">
+
+                    <!-- 顯示該行事曆該日文字 -->
+                    <div class="no-selected"
+                         [ngClass]="{   
+                                        'current-date': checkCurrentDayStyle(changeDateObj(i + 1 - currentMonthFirstDayWeekly)),
+                                        'selected': checkSelectDayStyle(i + 1 - currentMonthFirstDayWeekly)
+                                    }"
+                         *ngIf="i + 1 > currentMonthFirstDayWeekly">
+                            {{ i + 1 - currentMonthFirstDayWeekly }}
+                    </div>
+
+                    <!-- 顯示 booking 紀錄 dot小點 -->
+                    <div class="dot-bar" *ngIf="countDot(i + 1 - currentMonthFirstDayWeekly) <= 3; else moreTemplate;">
+                        <div class="dot" 
+                            *ngFor="let i of [].constructor(countDot(i + 1 - currentMonthFirstDayWeekly))"
+                            [ngStyle]="{background: checkDotColor()}">
+                        </div>
+                    </div>
+                    <ng-template #moreTemplate>
+                        <div class="more-word">
+                            more...
+                        </div>
+                    </ng-template>
+
+                    <!-- 顯示 剩餘率% -->
+                    <div class="rate" *ngIf="rateList.length > 0">
+                        {{ isShowRate(i + 1 - currentMonthFirstDayWeekly) }} 
+                    </div>
+
+            </div>
+        </div>
+    </div>
+</div>

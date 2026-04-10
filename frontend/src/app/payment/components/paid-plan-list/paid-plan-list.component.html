@@ -1,0 +1,19 @@
+
+<div class="main-container">
+
+    <div class="pay-plan-list">
+        
+        <div class="pay-plan-item" *ngFor="let payment of paymentList">
+            <div class="pay-plan-title">
+                <input type="radio" name="paymentId" (click)="checkSelectPaymentId(payment.id)">
+                <label> {{ getPlanTitle(payment.planType) }} </label>
+            </div>
+            <div class="row"> {{ payment.planName }}</div>
+            <div class="row"> {{ payment.siteTotal }}空間</div>
+            <div class="row"> {{ payment.cost }} NTD / {{ payment.planTimeType }}</div>
+        </div>
+
+        <img src="/assets/images/icon/icon_next.png" (click)="routeToECPayForm()">
+
+    </div>    
+</div>

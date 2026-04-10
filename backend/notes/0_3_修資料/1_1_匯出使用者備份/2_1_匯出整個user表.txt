@@ -1,0 +1,128 @@
+
+
+2025/04/03
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+如下 User 表內所有使用者, 轉為 UserList json 陣列:
+
+const db = require('../firestore');
+const Fuse = require('fuse.js');
+const COLLECTION_NAME = 'User';
+
+class UserModel {
+    // 取得所有 使用者資訊
+    static async getAllUserList() {
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+    }
+}
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+你的 `getAllUserList` 目前只取得了 Firestore `snapshot`，但并没有转换为 JSON 数组。  
+你可以修改它，使其返回 **包含 Firestore 文档 ID 的 JSON 数组**，如下所示：  
+
+---
+
+### **修正后代码**
+```javascript
+const db = require('../firestore');
+const COLLECTION_NAME = 'User';
+
+class UserModel {
+    // 取得所有使用者資訊
+    static async getAllUserList() {
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+        
+        if (snapshot.empty) {
+            return []; // 若無資料則回傳空陣列
+        }
+
+        // 轉換 Firestore Document 為 JSON 陣列
+        const userList = snapshot.docs.map(doc => ({
+            id: doc.id, // Firestore 自動生成的 document ID
+            ...doc.data() // 展開 Firestore 內的其他欄位
+        }));
+
+        return userList;
+    }
+}
+
+module.exports = UserModel;
+```
+
+---
+
+### **📌 重点解析**
+1. `snapshot.docs.map(...)`
+   - 遍历 Firestore 返回的 `docs` 列表，将每个文档转换为 JSON 格式。
+   - `doc.id`：包含 Firestore 生成的 `document ID`。
+   - `doc.data()`：包含文档中的所有字段数据。
+
+2. `return []`
+   - 如果 Firestore 数据为空，返回空数组，避免 `undefined` 错误。
+
+---
+
+### **🔥 调用示例**
+如果你在 `controller` 里想获取所有用户并返回给前端：
+```javascript
+const UserModel = require('../models/user.model');
+
+exports.getUserList = async (req, res) => {
+    try {
+        const userList = await UserModel.getAllUserList();
+        res.status(200).json({ result: '200', userList });
+    } catch (error) {
+        console.error("[getUserList] error:", error);
+        res.status(500).json({ result: '500', error: error.message });
+    }
+};
+```
+
+前端调用 `/api/user/list`，返回：
+```json
+{
+    "result": "200",
+    "userList": [
+        {
+            "id": "abc123",
+            "name": "张三",
+            "email": "zhangsan@example.com"
+        },
+        {
+            "id": "xyz789",
+            "name": "李四",
+            "email": "lisi@example.com"
+        }
+    ]
+}
+```
+
+---
+
+这样，你的 **UserModel** 已经正确实现了 **获取 Firestore 数据并转换为 JSON** 的功能 ✅
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

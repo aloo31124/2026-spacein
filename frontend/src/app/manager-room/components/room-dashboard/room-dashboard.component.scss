@@ -1,0 +1,44 @@
+
+
+/* 後台管理樣式 */
+.manager-container {
+    width: 90vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 40px;
+    .iconBtn {
+        width: 30px;
+        margin: 10px;
+    }
+
+    .manager-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 20px;
+        min-width: 220px;
+        background: #661983;
+        border-radius: 20px;
+    }
+    .manager-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 20px 40px;
+
+        .search-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+        }
+    }
+}
+
+
+

@@ -1,0 +1,75 @@
+
+2025/04/01
+=================================================================================
+------------------------------------------------
+來源: notes\2_1_空間管理\4_1_座位to教室.txt -------- > 
+    - space in : selectSiteJoinRoomList 函數
+
+=================================================================================
+小g寫法:
+------------------------------------------------
+
+兩陣列 join 片段:
+
+        const roomList = await Room.getAllRoomList();
+
+        // 建立 roomId 映射表 (Map)
+        const roomMap = new Map(roomList.map(room => [room.id, room]));
+
+        // Join 数据
+        const joinedList = roomToSiteList.map(site => {
+            const room = roomMap.get(site.roomId) || {}; // 若找不到，则返回空对象
+            return {
+                ...site,
+                roomName: room.name || "未知教室",
+                roomOwner: room.ownerId || "未知擁有者",
+            };
+        });
+
+
+
+=================================================================================
+精要 gemini
+------------------------------------------------
+/* 將 座位資訊 join 教室 */
+
+    const roomList = await Room.getAllRoomList();
+
+    return roomToSiteList.map(roomToSite => {
+        const room = roomList.find(room => room.id === roomToSite.roomId);
+        return {
+            ...roomToSite,
+            roomName: room ? room.name : '未知教室',
+            roomOwnerId: room ? room.ownerId : '未知擁有者',
+        };
+    });
+
+
+=================================================================================
+gpt 精要
+------------------------------------------------
+static async joinRoomByRoomId(roomToSiteList) {
+    const roomMap = new Map((await Room.getAllRoomList()).map(room => [room.id, room]));
+
+    return roomToSiteList.map(site => ({
+        ...site,
+        roomName: roomMap.get(site.roomId)?.name || "未知教室",
+        roomOwner: roomMap.get(site.roomId)?.ownerId || "未知擁有者",
+    }));
+}
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

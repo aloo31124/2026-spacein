@@ -1,0 +1,82 @@
+
+
+
+
+
+
+export const getFireStoreOneUser = onRequest((request, response) => {
+  //UsersTest/0jClXGd6SrNl9ao8JwAX
+  //1vYQm3KTvgkk5rsN67v3
+  admin.firestore()
+      .doc("UsersTest/1vYQm3KTvgkk5rsN67v3")
+      .get()
+      .then(snapshot => {
+          const data = snapshot.data();
+          response.send(data);
+      })
+      .catch(error => {
+          console.log(error);
+          response.status(500).send(error);
+      });
+});
+
+
+
+export const getRoomSiteByDate = onRequest((request, response) => {
+  handleCorsByHead(response);
+  admin.firestore().collection('RoomToSite')
+    .get()
+    .then(snapshot => {
+      const siteList = snapshot.docs.map(doc => {
+        return doc.data();
+      })
+      return response.send(siteList);
+    })
+    .catch(error => {
+        response.status(500).send(error);
+    });
+});
+
+
+
+
+==============================================================================
+
+請補充如下程式, 取 fireStore 之 Booking表資料,
+Booking表資料欄位: startDate, endDate, startTime, endTime
+並且 request 內取已預約日期 bookingDate: {startDate, endDate, startTime, endTime}
+請使用 cloud function 使用如下方式從 fireStore 篩選 bookingDate 不與 Booking表內 不重疊 之 資料後回傳
+
+import {onRequest} from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+admin.initializeApp();
+
+export const filterRoomSiteByBookingDate = onRequest((request, response) => {
+    ...
+  response.send(...); 
+});
+
+------------------------------------------------
+
+import { onRequest } from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+admin.initializeApp();
+const db = admin.firestore();
+
+        // 從 Firestore 中查詢所有潛在重疊的預約
+        const bookingRef = db.collection('Booking');
+        const snapshot = await bookingRef
+            .where('startDate', '<=', endDate)  // 查詢開始日期在範圍內
+            .where('endDate', '>=', startDate)  // 查詢結束日期在範圍內
+            .get();
+
+==============================================================================
+
+
+承上程式, 將名稱改為 filterRoomSiteByBookingDate = onRequest(...)
+且 日期篩選完後, 與 Room, 表 join 只回傳符合之 Room 資料
+
+Booking表資料欄位: startDate, endDate, startTime, endTime, roomId, siteId
+
+
+

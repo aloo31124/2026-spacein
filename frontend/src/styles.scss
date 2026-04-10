@@ -1,0 +1,67 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 99%;
+}
+h1, h2, h3 {
+    color: #661983
+}
+p {
+    color: #661983;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    font-size: 20px;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+input {
+    font-size: 20px;
+    padding: 10px 20px;
+    border: 2px solid #661983;
+    border-radius: 40px;
+}
+
+span {
+    padding: 10px;
+    font-size: 20px;
+    white-space: nowrap; // 確保不換行
+}
+
+button {
+    cursor: pointer;
+    color: white;
+    background: #661983;
+    font-size: 20px;
+    border-radius: 40px;
+    padding: 10px 20px;
+    border: none;
+    margin: 10px;
+    border: 2px solid #661983;
+}
+button:hover {
+    background: #FBE0FF;
+    color: #661983;
+    font-weight: bold;
+}
+.manager-menu button.active {
+    background: #FBE0FF;
+    color: #661983;
+    font-weight: bold;
+}
+
+.iconBtn {
+    cursor: pointer;
+}

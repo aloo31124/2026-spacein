@@ -1,0 +1,34 @@
+<button (click)="clickExportBooking()">匯出預約紀錄</button>
+<div class="search-bar">
+    <input type="text" placeholder="預約教室名稱不限" [(ngModel)]="roomName">
+    <span>並且</span>
+    <input type="text" placeholder="預約座位名稱不限" [(ngModel)]="siteName">
+    <br>
+    <br>
+    <span>並且 預約日期 範圍:</span>
+    <input type="text" placeholder="範圍開始日不限" [(ngModel)]="startDateMin">
+    <span>~</span>
+    <input type="text" placeholder="範圍結束日不限" [(ngModel)]="startDateMax">
+    <br>
+    <button (click)="clickSearchBooking()">搜尋</button>
+</div>
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="bookingList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul  *ngIf="bookingList.length > 0">
+        <li *ngFor="let booking of bookingList">
+            <strong>預約者信箱:</strong> {{ booking.mail }} |
+            <strong>教室名稱:</strong> {{ booking.roomName }} |
+            <strong>座位名稱:</strong> {{ booking.siteName }} | 
+            <br>
+            <strong>預約日期:</strong> {{ booking.startDate }} | 
+            <strong>預約時間:</strong> {{ booking.startTime }} ~ {{ booking.endTime }} | 
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>
+

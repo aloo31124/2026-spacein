@@ -1,0 +1,32 @@
+<div class="search-bar">
+    <button (click)="export()">匯出使用者方案</button>
+    <br>
+    <input type="text" placeholder="使用者信箱不限" [(ngModel)]="searchMail">
+    <span>並且</span>
+    <input type="text" placeholder="方案名稱不限" [(ngModel)]="searchPayment">
+    <br>
+    <button (click)="search()">搜尋</button>
+</div>
+
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="userPaymentList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul *ngIf="userPaymentList.length > 0">
+        <li *ngFor="let userPayment of userPaymentList">
+            <strong>使用者id:</strong> {{ userPayment.userId }} |
+            <strong>使用者信箱:</strong> {{ userPayment.email }} |
+            <br>
+            <strong>方案名稱:</strong> {{ userPayment.planName }} |
+            <strong>空間數量:</strong> {{ userPayment.siteTotal }} |
+            <strong>方案期間:</strong> {{ userPayment.planTimeType }} |
+            <br>
+            <strong>購買日期:</strong> {{ userPayment.purchaseDate }} |
+            <strong>到期日期:</strong> {{ userPayment.expiryDate }} 
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

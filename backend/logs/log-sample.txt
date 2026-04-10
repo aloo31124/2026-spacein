@@ -1,0 +1,5 @@
+[2025-02-16T07:40:14.609Z] LOG: 新商城伺服器啟動 http://localhost:8081
+[2025-02-16T07:40:17.791Z] ERROR: [product.api.controller.js] - postProduct :TypeError: Cannot read properties of null (reading 'userId')
+[2025-02-16T07:41:02.244Z] LOG: 新商城伺服器啟動 http://localhost:8081
+[2025-02-16T07:41:23.054Z] ERROR: [product.api.controller.js] - postProduct :TypeError: Cannot read properties of null (reading 'userId')
+[2025-02-16T07:42:10.221Z] LOG: 取得商品 :  {"id":"5uQHW8AQ8nhVn0fyxuTb","userId":"2cl3EBuelHq33lIQNoev","name":"postman測試書本","price":50,"type":"書籍","errorType":"錯誤欄位"}

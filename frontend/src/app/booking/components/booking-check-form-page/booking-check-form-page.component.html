@@ -1,0 +1,79 @@
+
+<div class="form-container">
+
+    <div class="form">
+        <div class="row">
+            <div class="row-txt">申請人</div>
+            <div class="select-item" (click)="isHiddenDialogUserInfo=false"> {{ currentUser.email | wordShroten:8 }} </div>
+        </div>
+    
+        <div class="row">
+            <div class="row-txt">起迄日</div>      
+        </div>
+        <div class="row-time">
+            <div>
+                {{ getSelectDate() }}  {{ getSelectDate() | dateToDayOfWeek:"tw" }} {{ getStartTime() }}
+            </div>
+            <div>
+                {{ getSelectDate() }}  {{ getSelectDate() | dateToDayOfWeek:"tw" }}  {{ getEndTime() }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="row-txt">教室</div>
+            <div class="select-item" (click)="isHiddenDialogRoom=false" >{{ selectRoom ? (selectRoom.name ? selectRoom.name : "請選擇教室") : "請選擇教室" }}</div>
+            <!-- <img src="assets/images/icon/icon_map_position.png" (click)="selectMap()"> -->
+        </div>
+        
+        <div class="row" *ngIf="bookingType === 'site'">
+            <div class="row-txt">座位</div>
+            <div class="select-item" (click)="clickSiteShowDialog()">{{ selectSite ? (selectSite.name ? selectSite.name : "請選擇座位"): "請選擇座位" }}</div>
+        </div>
+    
+    </div>
+
+        
+    <img src="assets/images/icon/icon_submit.png" (click)="submitBooking()">
+
+    <!-- dialog 選擇教室 -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'選擇教室'"
+            (selectedItem)="selectedRoom($event)"
+            [isHiddenDialog]="isHiddenDialogRoom"
+            (hideDialog)="isHiddenDialogRoom=true"
+            [itemList]="dialogRoomList">
+        </app-dialog>
+    </div>
+
+
+    <!-- dialog 選擇座位 -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'選擇座位'"
+            (selectedItem)="selectedSite($event)"
+            [isHiddenDialog]="isHiddenDialogSite"
+            (hideDialog)="isHiddenDialogSite=true"
+            [itemList]="dialogSiteList">
+        </app-dialog>
+    </div>
+
+
+    <!-- dialog 使用者資訊 -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'使用者資訊'"
+            [isHiddenDialog]="isHiddenDialogUserInfo"
+            (hideDialog)="isHiddenDialogUserInfo=true"
+            [itemList]="dialogUserInfo">
+        </app-dialog>
+    </div>
+
+    <!-- 畫面 loading 中 -->
+    <div class="loading-container">
+        <app-loading-basic [isLoading]="isLoading">
+        </app-loading-basic>
+    </div>
+
+</div>
+

@@ -1,0 +1,12 @@
+<h2>{{ model === 'add' ? "新增" : "編輯"}}方案</h2>
+<button (click)="clickAddPayment()" *ngIf="model === 'add'">新增</button>
+<button (click)="clickUpdatePayment()" *ngIf="model === 'edit'">更新</button>
+<div class="container">
+    <input type="text" [(ngModel)]="planName" placeholder="名稱">
+    <input type="text" [(ngModel)]="planTimeType" placeholder="方案期間, 輸入 day, month, year">
+    <input type="text" [(ngModel)]="planType" placeholder="方案種類, 輸入 studio, group">
+    <input type="text" [(ngModel)]="planDesc" placeholder="方案說明">
+    <input type="text" [(ngModel)]="cost" placeholder="費用">
+    <input type="text" [(ngModel)]="siteTotal" placeholder="座位數量">
+</div>
+

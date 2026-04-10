@@ -1,0 +1,20 @@
+
+<h2>個別表匯出</h2>
+<br>
+<button (click)="exportAllUser()">匯出所有使用者</button>
+<button (click)="exportAllRoom()">匯出所有教室</button>
+<button (click)="exportAllSite()">匯出所有座位</button>
+<button (click)="exportAllBooking()">匯出所有預約紀錄</button>
+
+<h2>全表匯出匯入</h2>
+<br>
+<button (click)="exportAllDataTable()">匯出所有表</button>
+<input
+  type="file"
+  (change)="handleFiles($event)"
+  multiple
+  accept=".csv"
+  style="display: none"
+  #csvFileInput
+/>
+<button (click)="csvFileInput.click()">匯入備份資料表</button>

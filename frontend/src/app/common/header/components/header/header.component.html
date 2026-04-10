@@ -1,0 +1,13 @@
+<header #header>
+    <img class="img-header-main" *ngIf="isMainHeader; else notMainHeader">
+    <ng-template #notMainHeader>
+        <img class="img-header" >
+    </ng-template>
+    <div class="header-title">{{ headerTitle }}</div>
+    <!-- 上一頁 按鈕需放最下面, 避免被覆蓋 -->
+    <div *ngIf="isShowIcon" class="icon-bar">
+        <img class="iconBtn" src="assets/images/icon/icon_back.png" (click)="backPage()" />
+        <img class="iconBtn" src="assets/images/icon/icon_user.png" (click)="nextPage('/account')" />
+    </div>
+</header>
+<div [ngStyle]="{height: headerPeddingHeigh}"></div>

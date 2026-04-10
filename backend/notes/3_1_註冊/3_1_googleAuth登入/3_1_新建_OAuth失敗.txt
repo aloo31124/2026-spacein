@@ -1,0 +1,74 @@
+
+2025/04/25
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下 angular 專案, 使用 GCP 提供之 OAuth 網頁應用程式 驗證,
+按下 google 驗證按鈕會跳出 google 驗證視窗, 選擇帳號後,
+正常情況下會 request 如下 url , 便驗證成功。
+    https://accounts.google.com/o/oauth2/iframerpc?action=issueToken&response_type=token%20id_token&login_hint=...
+
+但設定了新的 GCP 用戶端 ID 設定: 587558372608-*
+但選擇帳號後卻無反應, 也不會  request url 請求,
+請問原因為何? 缺少和設定?
+
+GCP, 網頁應用程式 的用戶端 ID 設定:
+    Additional information
+        用戶端編號 587558372608-rindb3vos2vo4p21ourdh9qtf98ofkun.apps.googleusercontent.com
+        建立日期 2025年4月25日 上午9:45:20 [GMT+8]
+        用戶端密鑰 如果您正在變更用戶端密鑰，不必停機就能手動輪換。 瞭解詳情 
+        用戶端密碼 GOCSPX-RwmruP...
+        建立日期  2025年4月25日 上午9:45:20 [GMT+8]
+        狀態 已啟用
+
+    已授權的 JavaScript 來源
+        http://localhost
+        http://localhost:4200
+
+    已授權的重新導向 URI
+        http://localhost
+        http://localhost:4200
+
+
+angular 程式碼:
+    src\app\auth-route\services\google-auth.service.ts
+        import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+        import { GoogleAuthUser } from '../models/google-auth-user.model';
+
+        export class GoogleAuthService {
+
+            private isLoginIn = false;
+            private currentUser!: GoogleAuthUser;
+
+            constructor(...
+            ) { 
+                GoogleAuth.initialize({
+                    clientId: '587558372608-rindb3vos2vo4p21ourdh9qtf98ofkun.apps.googleusercontent.com',
+                    scopes: ['profile', 'email'],
+                    grantOfflineAccess: true,
+                });
+                this.checkToken();
+            }
+            async loginByGoogle() {
+                // 登入判斷
+                const googleUser = await GoogleAuth.signIn();
+                ...
+            }
+        }
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

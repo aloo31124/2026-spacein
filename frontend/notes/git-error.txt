@@ -1,0 +1,39 @@
+
+
+如下問題, 為程式衝突, 如新切的 branch 與當前 merge 不一致？
+
+步驟：
+  從 A 切一個 B branch ,
+  B再 apply A 的 stashe 衝突？ ="=
+
+==========================================================================================
+
+git --no-optional-locks -c color.branch=false -c color.diff=false -c color.status=false -c diff.mnemonicprefix=false -c core.quotepath=false -c credential.helper=sourcetree stash apply stash@{0} 
+Auto-merging src/app/booking/components/booking-check-form-page/booking-check-form-page.component.ts
+CONFLICT (content): Merge conflict in src/app/booking/components/booking-check-form-page/booking-check-form-page.component.ts
+On branch fix_v2
+Your branch is up to date with 'origin/fix_v2'.
+
+Last command done (1 command done):
+   edit 92f9ed4 feat [空間總覽] 今日剩餘空間進度條
+No commands remaining.
+You are currently rebasing branch 'cap-android' on '157d413'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+	both modified:   src/app/booking/components/booking-check-form-page/booking-check-form-page.component.ts
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	issue/git-error.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Completed with errors, see above
+
+
+
+

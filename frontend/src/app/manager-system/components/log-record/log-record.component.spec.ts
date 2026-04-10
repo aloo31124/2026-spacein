@@ -1,0 +1,21 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { LogRecordComponent } from './log-record.component';
+
+describe('LogRecordComponent', () => {
+  let component: LogRecordComponent;
+  let fixture: ComponentFixture<LogRecordComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [LogRecordComponent]
+    });
+    fixture = TestBed.createComponent(LogRecordComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

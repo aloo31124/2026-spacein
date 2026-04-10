@@ -1,0 +1,310 @@
+
+2025/03/16
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+匯入教室功能, 
+若為新的id或id不存在 , 檢查欄位後, 新增資料, 
+若為已存在id , 則檢查該欄位是否有修改, 若有修改則更新db 該筆資料,
+檢查欄位若缺少 id, name, ownerId 則不給匯入資料,
+上述 新增, 更新, 或檢查欄位不通過 等等所有情況,
+需印在 log 中, 以 json 格式印出, 
+更新需說明更新哪些欄位, 更新前後的值,
+欄位檢查不通過, 有哪些欄位錯誤,
+上述每筆資料紀錄需附上 教室之 id, name, 
+以上 log 資訊轉 json 格式回傳 response 每筆資料上述資訊
+
+src/index.js
+    app.patch('/api/manager/backup/import/room', backApiController.patchImportBookingList);
+
+src/controllers/manager/backup.api.controller.js
+    exports.patchImportBookingList = async (req, res) => {};
+
+src/services/backup.service.js
+    exports.patchImportRoomList = async (req, res) => {};
+
+src/services/room.service.js
+    const Room = require('../models/room.model');
+    exports.getAllRoomList = async () => {
+        try {
+            const rooms = await Room.exportAllRoomList();
+            return rooms
+                .map(room => ({
+                    id: room.id,
+                    name: room.name,
+                    ownerId: room.ownerId,
+                    isBookingAllSite: room.isBookingAllSite
+                }))
+                .sort((a, b) => a.id.localeCompare(b.id)); // 依 `id` 進行排序
+        } catch (error) {
+            throw new Error(`[getAllRooms]: ${error.message}`);
+        }
+    };
+    exports.batchInsertRoomList = async (roomList) => {}
+
+src/models/room.model.js
+    const db = require('../firestore');
+    const COLLECTION_NAME = 'Room';
+    class Room {
+        constructor(id, name, ownerId, isBookingAllSite = false) {
+            this.id = id;
+            this.name = name;
+            this.ownerId = ownerId;
+            this.isBookingAllSite = isBookingAllSite ?? false; // 確保 Boolean 值
+        }
+        // 取得所有房間資訊
+        static async exportAllRoomList() {
+            const snapshot = await db.collection(COLLECTION_NAME).get();
+            return snapshot.docs.map(doc => {
+                const data = doc.data();
+                return new Room(
+                    doc.id, 
+                    data.name || "未命名", 
+                    data.ownerId || "未知", 
+                    data.isBookingAllSite ?? false // 確保 Boolean 值
+                );
+            });
+        }
+        // 匯入
+        static async importRooms() {
+
+        }
+    }
+    module.exports = Room;
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+你的需求主要分為幾個步驟：
+1. **檢查資料完整性**（確保 `id`, `name`, `ownerId` 存在）
+2. **檢查 Firestore 中是否已有該 `id`**
+   - **不存在** → 新增
+   - **已存在** → 比對欄位，僅更新有變更的欄位
+3. **記錄 Log**（包含新增、更新、欄位錯誤等資訊）
+4. **回傳 JSON 格式的 Log 結果**
+
+---
+
+### **更新後的 `room.model.js`**
+```javascript
+const db = require('../firestore');
+const COLLECTION_NAME = 'Room';
+
+class Room {
+    constructor(id, name, ownerId, isBookingAllSite = false) {
+        this.id = id;
+        this.name = name;
+        this.ownerId = ownerId;
+        this.isBookingAllSite = isBookingAllSite ?? false;
+    }
+
+    // 取得所有房間資訊
+    static async exportAllRoomList() {
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+        return snapshot.docs.map(doc => {
+            const data = doc.data();
+            return new Room(
+                doc.id,
+                data.name || "未命名",
+                data.ownerId || "未知",
+                data.isBookingAllSite ?? false
+            );
+        });
+    }
+
+    // 匯入房間資料
+    static async importRooms(roomList) {
+        const batch = db.batch();
+        const logResults = [];
+
+        for (const roomData of roomList) {
+            const { id, name, ownerId, isBookingAllSite } = roomData;
+
+            // **1. 檢查必要欄位**
+            const missingFields = [];
+            if (!id) missingFields.push("id");
+            if (!name) missingFields.push("name");
+            if (!ownerId) missingFields.push("ownerId");
+
+            if (missingFields.length > 0) {
+                logResults.push({
+                    id: id || "N/A",
+                    name: name || "N/A",
+                    status: "欄位檢查未通過",
+                    missingFields,
+                });
+                continue;
+            }
+
+            const roomRef = db.collection(COLLECTION_NAME).doc(id);
+            const existingDoc = await roomRef.get();
+
+            if (!existingDoc.exists) {
+                // **2. 新增新房間**
+                batch.set(roomRef, { id, name, ownerId, isBookingAllSite });
+
+                logResults.push({
+                    id,
+                    name,
+                    status: "新增成功",
+                    newData: { id, name, ownerId, isBookingAllSite },
+                });
+            } else {
+                // **3. 檢查變更並更新**
+                const existingData = existingDoc.data();
+                const updatedFields = {};
+
+                if (existingData.name !== name) updatedFields.name = { before: existingData.name, after: name };
+                if (existingData.ownerId !== ownerId) updatedFields.ownerId = { before: existingData.ownerId, after: ownerId };
+                if (existingData.isBookingAllSite !== isBookingAllSite) updatedFields.isBookingAllSite = { before: existingData.isBookingAllSite, after: isBookingAllSite };
+
+                if (Object.keys(updatedFields).length > 0) {
+                    batch.update(roomRef, { name, ownerId, isBookingAllSite });
+
+                    logResults.push({
+                        id,
+                        name,
+                        status: "更新成功",
+                        updatedFields,
+                    });
+                } else {
+                    logResults.push({
+                        id,
+                        name,
+                        status: "無變更",
+                    });
+                }
+            }
+        }
+
+        await batch.commit();
+        return logResults;
+    }
+}
+
+module.exports = Room;
+```
+
+---
+
+### **更新後的 `backup.service.js`**
+```javascript
+const Room = require('../models/room.model');
+
+exports.patchImportRoomList = async (roomList) => {
+    console.log(`[${new Date().toISOString()}] 開始匯入房間資料`);
+    const logResults = await Room.importRooms(roomList);
+    console.log(`[匯入結果]`, JSON.stringify(logResults, null, 2));
+    return logResults;
+};
+```
+
+---
+
+### **更新後的 `backup.api.controller.js`**
+```javascript
+const backupService = require('../../services/backup.service');
+
+exports.patchImportBookingList = async (req, res) => {
+    try {
+        const roomList = req.body;
+        if (!Array.isArray(roomList) || roomList.length === 0) {
+            return res.status(400).json({ result: '400', error: "請提供有效的房間資料陣列" });
+        }
+
+        const logResults = await backupService.patchImportRoomList(roomList);
+        res.status(200).json({ result: '200', data: logResults });
+    } catch (error) {
+        console.error("[patchImportBookingList] Error:", error);
+        res.status(500).json({ result: '500', error: error.message });
+    }
+};
+```
+
+---
+
+### **設計說明**
+1. **檢查必要欄位**
+   - 缺少 `id`, `name`, `ownerId` 則記錄錯誤，不匯入。
+   
+2. **處理新增與更新**
+   - 若 `id` **不存在**，則 **新增房間**。
+   - 若 `id` **已存在**，則檢查 **哪些欄位變更**，僅更新變更的欄位。
+
+3. **紀錄 Log**
+   - **新增成功** 記錄 `newData`。
+   - **更新成功** 記錄 `updatedFields`（包含變更前後的值）。
+   - **無變更** 則回傳 `無變更`。
+   - **欄位錯誤** 回傳 `missingFields`。
+
+4. **批次處理**
+   - 使用 Firestore `batch.commit()` **提升效能**，減少 I/O 次數。
+
+---
+
+### **範例 Response**
+當有新資料、更新資料、錯誤時，API 回應：
+```json
+{
+  "result": "200",
+  "data": [
+    {
+      "id": "room001",
+      "name": "會議室A",
+      "status": "新增成功",
+      "newData": {
+        "id": "room001",
+        "name": "會議室A",
+        "ownerId": "user123",
+        "isBookingAllSite": true
+      }
+    },
+    {
+      "id": "room002",
+      "name": "會議室B",
+      "status": "更新成功",
+      "updatedFields": {
+        "ownerId": {
+          "before": "user456",
+          "after": "user789"
+        }
+      }
+    },
+    {
+      "id": "room003",
+      "name": "會議室C",
+      "status": "無變更"
+    },
+    {
+      "id": "N/A",
+      "name": "N/A",
+      "status": "欄位檢查未通過",
+      "missingFields": ["id"]
+    }
+  ]
+}
+```
+
+這樣，你的 `匯入教室功能` **可以確保數據正確性**，並且 **記錄所有變更與錯誤**，
+方便 **查閱 Log**，適合 **中小型商城或教室預約系統** 的備份與移機需求 🚀
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

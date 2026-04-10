@@ -1,0 +1,127 @@
+
+2025/05/14, 5/15
+=================================================================================
+------------------------------------------------
+
+
+
+=================================================================================
+------------------------------------------------
+
+js 使用 new Date() 後, 轉為 2025-04-17T17:23:00 格式
+
+    const formattedDate = new Date().toISOString()
+    const date = new Date();
+    const formatted = date.toISOString().slice(0, 19);
+
+
+js 將 2025-04-17T17:23:00 轉回 Date() 物件處理
+
+    onst isoString = "2025-04-17T17:23:00";
+    const dateObj = new Date(isoString); // 直接傳入建構函式
+
+
+=================================================================================
+------------------------------------------------
+
+js 處理 userToPaymentList 陣列, 
+expiryDate 欄位[到期日期]值為 2025-04-17T17:23:00 格式,
+請從陣列中找出 [到期日期] 值為最大的。
+(deepseek, chatgpt)
+
+    方法 1：使用 reduce() 直接比較日期
+        const latestPayment = userToPaymentList.reduce((max, payment) => {
+            const currentDate = new Date(payment.expiryDate);
+            const maxDate = new Date(max.expiryDate);
+            return currentDate > maxDate ? payment : max;
+        });
+        ------------------------------------------------
+        簡化:
+        const latest = userToPaymentList.reduce((max, item) => {
+            return new Date(item.expiryDate) > new Date(max.expiryDate) ? item : max;
+        });
+
+
+    方法 2：先排序再取最後一項
+        const sortedPayments = [...userToPaymentList]
+                .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+        const latestPayment = sortedPayments[sortedPayments.length - 1];
+
+
+    方法 3：使用 Math.max 配合 map（只取日期值）
+            const latestDate = 
+                new Date(Math.max(...userToPaymentList.map(p => new Date(p.expiryDate).getTime())));
+
+            const latestPayment = 
+                userToPaymentList.find(p => new Date(p.expiryDate).getTime() === latestDate.getTime());
+
+
+
+=================================================================================
+------------------------------------------------
+
+2025-04-17T17:23:00 格式, 
+收到參數資訊 planTimeType, 分別為上述日期增加時間, 如:
+1day : 加1天,
+2day : 加2天,
+7day : 加7天,
+month : 加1個月,
+season : 加1季,
+year : 加1年
+
+------------------------------------------------
+
+src\services\pay-ecpay.service.js
+    /** 更新(新增) 使用者 購買方案 */
+    exports.addUserToPayment = async (userId, paymentId) => {
+        try {
+            const payment = await Payment.find(paymentId);
+            const purchaseDate = new Date().toISOString();
+            const createAt = new Date().toISOString();
+            let _expiryDate = new Date();
+            switch (payment.planTimeType) {
+                case '1day':
+                    _expiryDate.setDate(_expiryDate.getDate() + 1);
+                    break;
+                case '2day':
+                    _expiryDate.setDate(_expiryDate.getDate() + 2);
+                    break;
+                case '7day':
+                    _expiryDate.setDate(_expiryDate.getDate() + 7);
+                    break;
+                case 'month':
+                    _expiryDate.setMonth(_expiryDate.getMonth() + 1);
+                    break;
+                case 'season':
+                    _expiryDate.setMonth(_expiryDate.getMonth() + 3);
+                    break;
+                case 'year':
+                    _expiryDate.setFullYear(_expiryDate.getFullYear() + 1);
+                    break;
+                default:
+                    throw new Error('無效的 planTimeType');
+            }
+            const expiryDate = _expiryDate.toISOString();
+            return await UserToPayment.add({userId, paymentId, expiryDate, purchaseDate, createAt});
+        } catch (error) {
+            console.error(`[addUserToPayment] 異常 : ${error}`);
+        }
+    }
+
+
+=================================================================================
+------------------------------------------------
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+
+

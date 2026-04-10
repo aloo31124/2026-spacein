@@ -1,0 +1,29 @@
+<div class="search-bar">
+    <button (click)="exportUserList()">匯出預約者</button>
+    <br>
+    <input type="text" placeholder="預約者帳號不限" [(ngModel)]="searchName">
+    <span>並且</span>
+    <input type="text" placeholder="預約者信箱不限" [(ngModel)]="searchMail">
+    <br>
+    <button (click)="searchUser()">搜尋</button>
+</div>
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul *ngIf="users.length > 0">
+        <li *ngFor="let user of users">
+            <strong>擁有者id:</strong> {{ user.ownerId }} |
+            <strong>擁有者姓名:</strong> {{ user.ownerName }} | 
+            <strong>擁有者信箱:</strong> {{ user.ownerEmail }}
+            <br>
+            <strong>預約者id:</strong> {{ user.id }} |
+            <strong>姓名:</strong> {{ user.name }} | 
+            <strong>信箱:</strong> {{ user.email }}
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>

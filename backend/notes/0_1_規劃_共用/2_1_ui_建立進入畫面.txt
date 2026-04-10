@@ -1,0 +1,101 @@
+
+2025/03/19, 25
+=================================================================================
+------------------------------------------------
+
+2025/05/16
+
+ng g c manager-system/components/user-role-list
+ng g c manager-system/components/user-payment-list
+
+refactor [space in] [共用功能開發] [系統管理] 路由: 1.[使用者角色], 2.[使用者方案紀錄]。
+
+=================================================================================
+2025/04/05
+------------------------------------------------
+
+註冊畫面:
+
+ng g c auth-route/components/register-select
+ng g c auth-route/components/register-info
+ng g c auth-route/components/register-mail-verify
+ng g c auth-route/components/password-change
+
+ng g s auth-route/services/register
+
+
+=================================================================================
+------------------------------------------------
+
+系統管理畫面
+
+ng g c manager-system/components/all-user
+ng g c manager-system/components/pay-record
+ng g c manager-system/components/pay-setting
+ng g c manager-system/components/log-record
+ng g c manager-system/components/backup
+
+ng g s manager-system/services/system
+
+
+
+ng g c manager-system/components/pay-setting-content
+
+
+
+=================================================================================
+------------------------------------------------
+2025/3月初
+(棄用)
+ng g c manager/components/backup
+ng g s manager/services/backup
+ng g c manager/components/search-info
+ng g s manager/services/search-info
+
+=================================================================================
+------------------------------------------------
+2025/03/25
+空間管理
+------------------------------------------------
+ng g c manager-room/components/room-dashboard
+ng g s manager-room/services/room-dashboard
+------------------------------------------------
+ng g c manager-room/components/content/search-booking-user
+
+ng g c manager-room/components/content/search-room
+ng g c manager-room/components/content/search-room-content
+
+ng g c manager-room/components/content/search-site
+ng g c manager-room/components/content/search-site-content
+
+
+ng g c manager-room/components/content/search-booking
+
+
+ng g c manager-room/components/content/room-site-import
+
+
+系統管理
+------------------------------------------------
+ng g c manager-system/components/sys-dashboard
+ng g s manager-system/services/sys-dashboard
+------------------------------------------------
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+

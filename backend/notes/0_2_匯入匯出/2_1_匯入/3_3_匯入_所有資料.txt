@@ -1,0 +1,191 @@
+
+2025/03/24
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+如下前端 angular 可一起選擇 8個檔案:
+    user_all.csv,
+    usertopayment_all.csv,
+    usertoowner_all.csv,
+    usertopermission_all.csv,
+    room_all.csv,
+    site_all.csv,
+    booking_all.csv,
+    payment_all.csv,
+於 importAllDataTable(), importAllDB() 
+將上述 8個csv檔轉為 json,
+整理成一個 request, 
+post 給後端 node.js express 後,
+可從 request body 取出 json:
+
+前端 angular:
+    src\app\manager-system\components\backup\backup.component.ts
+        /* 匯入備份資料表 建置環境 */
+        importAllDataTable() { }
+
+    src\app\manager-system\services\sys-dashboard.service.ts
+        importAllDB(): Observable<any>  {
+            return this.http.get<any>(`${this.BASE_URL}/manager/backup/import/all/db`);
+        }
+
+後端 node.js express :
+    src\index.js
+        app.post('/api/manager/backup/import/all/db', backApiController.importAllDataBaseTable);
+
+    src\controllers\manager\backup.api.controller.js
+        exports.importAllDataBaseTable =  async (req, res) => {
+            try {
+                // 取 req.body
+                const user_all = req.body.user_all;
+                const usertopayment_all = req.body.usertopayment_all;
+                const usertoowner_all = req.body.usertoowner_all;
+                const usertopermission_all = req.body.usertopermission_all;
+                const room_all = req.body.room_all;
+                const site_all = req.body.site_all;
+                const booking_all = req.body.booking_all;
+                const payment_all = req.body.payment_all;
+            } catch (error) {
+                console.error("[importAllDataBaseTable] Error:", error);
+                res.status(500).json({ result: '500', error: error.message });
+            }
+        };
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+你可以這樣設計 Angular 前端的 `importAllDataTable()`，讓使用者一次選擇 8 個 CSV 檔案，然後統一上傳給後端：
+
+### ✅ HTML - 新增檔案選擇 input（備註：hidden）
+```html
+<input
+  type="file"
+  (change)="handleFiles($event)"
+  multiple
+  accept=".csv"
+  style="display: none"
+  #csvFileInput
+/>
+<button (click)="csvFileInput.click()">匯入備份資料表</button>
+```
+
+---
+
+### ✅ TypeScript - `backup.component.ts`
+```ts
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { SysDashboardService } from '../../services/sys-dashboard.service';
+
+@Component({
+  selector: 'app-backup',
+  templateUrl: './backup.component.html',
+  styleUrls: ['./backup.component.scss']
+})
+export class BackupComponent {
+  @ViewChild('csvFileInput') fileInput!: ElementRef;
+
+  constructor(private sysDashboardService: SysDashboardService) {}
+
+  // 使用者選取檔案後
+  handleFiles(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+
+    const files = Array.from(input.files);
+    const fileReadPromises = files.map(file => this.readCsvToJson(file));
+
+    Promise.all(fileReadPromises).then(fileContents => {
+      const payload: any = {};
+      for (let i = 0; i < files.length; i++) {
+        const name = files[i].name.replace('.csv', '');
+        payload[name] = fileContents[i];
+      }
+      this.importAllDataTable(payload);
+    });
+  }
+
+  // 將 CSV 檔案讀取並轉為 JSON 陣列
+  private readCsvToJson(file: File): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result as string;
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',');
+
+        const result = lines.slice(1).map(line => {
+          const values = line.split(',');
+          const obj: any = {};
+          headers.forEach((header, idx) => {
+            obj[header.trim()] = values[idx]?.trim() ?? '';
+          });
+          return obj;
+        });
+
+        resolve(result);
+      };
+      reader.onerror = reject;
+      reader.readAsText(file, 'utf-8');
+    });
+  }
+
+  // 呼叫 API 傳送 JSON 給後端
+  importAllDataTable(payload: any): void {
+    this.sysDashboardService.importAllDB(payload).subscribe({
+      next: res => alert('匯入成功！'),
+      error: err => alert('匯入失敗：' + err.message)
+    });
+  }
+}
+```
+
+---
+
+### ✅ 服務 - `sys-dashboard.service.ts`
+```ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class SysDashboardService {
+  private BASE_URL = 'http://localhost:8082/api';
+
+  constructor(private http: HttpClient) {}
+
+  importAllDB(data: any): Observable<any> {
+    return this.http.post(`${this.BASE_URL}/manager/backup/import/all/db`, data);
+  }
+}
+```
+
+---
+
+這樣就能讓使用者：
+1. 一次選擇多個 `.csv`。
+2. 自動轉為 JSON。
+3. 匯總為一個 `POST` 傳送給後端。
+
+若你還需要自動比對檔名與表名，或是要檢查缺少檔案，我也可以幫你補上對應邏輯。要加嗎？
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+

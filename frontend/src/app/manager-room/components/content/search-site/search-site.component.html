@@ -1,0 +1,38 @@
+<button (click)="clickAddSite()">新增座位</button>
+<button (click)="clickExportSite()">匯出座位</button>
+<div class="search-bar">
+    <input type="text" placeholder="所屬教室名稱不限" [(ngModel)]="searchRoomName">
+    <span>並且</span>
+    <input type="text" placeholder="座位名稱不限" [(ngModel)]="searchSiteName">
+    <br>
+    <!--
+    <span>並且 建立日期 搜尋範圍:</span>
+    <input type="text" placeholder="範圍開始日不限">
+    ~
+    <input type="text" placeholder="範圍結束日不限">
+    <br>
+    -->
+    <button (click)="searchSite()">搜尋</button>
+</div>
+
+<!-- 搜尋結果列表 -->
+<div class="search-result">
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="siteList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <ul *ngIf="siteList.length > 0">
+        <li *ngFor="let roomToSite of siteList">
+            <strong>擁有者id:</strong> {{ roomToSite.ownerId }} | 
+            <strong>擁有者信箱:</strong> {{ roomToSite.email }} | 
+            <br>
+            <strong>教室名稱:</strong> {{ roomToSite.roomName }} |
+            <strong>座位名稱:</strong> {{ roomToSite.name }} | 
+            <br>
+            <button (click)="clickEditSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">編輯</button>
+            <button (click)="clickDeleteSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">刪除</button>
+        </li>
+    </ul>
+    <div class="loading-gif" *ngIf="isLoading">
+        <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
+    </div>
+</div>
+

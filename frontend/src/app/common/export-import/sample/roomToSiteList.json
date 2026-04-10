@@ -1,0 +1,16 @@
+{
+    "roomToSiteList": [
+         {
+             "roomName": "教室名稱_測試1",
+             "siteName": "座位名稱_測試1_1"
+         },
+         {
+             "roomName": "教室名稱_測試1",
+             "siteName": "座位名稱_測試1_2"
+         },
+         {
+             "roomName": "教室名稱_測試2",
+             "siteName": "座位名稱_測試2_1"
+         }
+    ]
+ }

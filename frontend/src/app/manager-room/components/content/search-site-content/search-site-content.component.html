@@ -1,0 +1,25 @@
+
+<div class="form-container">
+    <h2>{{ (model === 'add') ? "新增" : "編輯" }}教室座位</h2>
+    <input type="text" [(ngModel)]="roomName" placeholder="所屬教室" readonly (click)="isHiddenDialogRoom=false">
+    <br>
+    <input type="text" [(ngModel)]="name" placeholder="座位名稱">
+    <br>
+    <button *ngIf="model === 'add'" (click)="clickAddSite()">新增</button>
+    <button *ngIf="model === 'edit'" (click)="clickEditSite()">更新</button>
+
+    
+    <!-- dialog 選擇教室 -->
+    <div class="dialog-container">
+        <app-dialog 
+            [dialogTitle]="'選擇教室'"
+            (selectedItem)="selectedRoom($event)"
+            [isHiddenDialog]="isHiddenDialogRoom"
+            (hideDialog)="isHiddenDialogRoom=true"
+            [itemList]="dialogRoomList">
+        </app-dialog>
+    </div>
+
+</div>
+
+

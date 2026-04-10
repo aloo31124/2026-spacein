@@ -1,0 +1,72 @@
+
+2025/03/19
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+抽立建立新的 共用服務
+
+
+ng g s common/export-import/services/export
+ng g s common/export-import/services/import
+
+
+
+=================================================================================
+------------------------------------------------
+
+
+如下 舊的 匯出程式  ---- > 後續進行抽離
+
+src\app\manager-room\services\room-dashboard.service.ts
+
+    // 轉換 JSON 為 CSV（跳過巢狀欄位）
+    convertToCSV(jsonArray: any[]): string {
+        if (!jsonArray || jsonArray.length === 0) return '';
+
+        const headers = Object.keys(jsonArray[0]).filter(key => typeof jsonArray[0][key] !== 'object');
+        const csvRows = jsonArray.map(row =>
+            headers.map(field => `"${String(row[field] || '').replace(/"/g, '""')}"`).join(',')
+        );
+
+        return [headers.join(','), ...csvRows].join('\n');
+    }
+
+    // 下載 CSV 檔案（UTF-8）
+    downloadCSV(data: string, filename: string = 'export.csv') {
+        const BOM = '\uFEFF'; // UTF-8 BOM 避免中文亂碼
+        const blob = new Blob([BOM + data], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+
+
+
+
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+=================================================================================
+------------------------------------------------
+
+
+
+
+

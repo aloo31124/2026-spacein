@@ -1,0 +1,32 @@
+
+<div class="container">
+    <app-calendar-picker
+        *ngIf="bookingList.length > 0 else noBookingList" 
+        (selectDatInfo)="updateSelectDay($event)"
+        [isEmitInitDate]="false"
+        [bookingList]="bookingList"> 
+    </app-calendar-picker>
+    <ng-template #noBookingList>
+        <h2>無任何預約紀錄</h2>
+    </ng-template>
+    
+
+    <!-- dialog 該日之 已預約時段 -->
+    <div class="dialog-container">
+        <app-dialog 
+            style="white-space: pre-line;"
+            [dialogTitle]="dialogTitle"
+            (selectedItem)="selectBookingToCancle($event)"
+            [isHiddenDialog]="isHiddenDialogBookingRecord"
+            (hideDialog)="isHiddenDialogBookingRecord=true"
+            [itemList]="dialogBookingRecordItemList">
+        </app-dialog>
+    </div>
+
+    <!-- 畫面 loading 中 -->
+    <div class="loading-container">
+        <app-loading-basic [isLoading]="isLoading">
+        </app-loading-basic>
+    </div>
+    
+</div>

@@ -1,0 +1,104 @@
+
+const mailService = require('./mail.service');
+const userService = require('../services/user.service');
+const utils = require('../utils/jwt');
+const User = require('../models/user.model');
+
+/* 送出驗證碼 */
+exports.sendVerifyCode = async (email) => {
+    try {
+        return await mailService.sendMailVerifyCode(email);
+    } catch (error) {
+        console.error("[sendVerifyCode] error:", error);
+        return null;
+    }
+};
+
+/* 信箱, 建立新的帳號 */
+exports.addAccount = async (email) => {
+    try {
+        const userData = new User({
+            account: "",
+            email,
+            state: "尚未驗證",
+            role: "買家",
+            pay: "無",
+            phone: "",  
+            password: "",
+        });
+        const user = userData.toPlainObject(); // firestore 無法解析 js 實力, 進行序列化轉換
+        return await userService.addUser(user);
+    } catch (error) {
+        console.error("[addAccount] error:", error);
+        return null;
+    }
+};
+
+/* 更新使用者資訊 */
+exports.updateAccount = async (user) => {
+    try {
+        return await userService.updateUser(user);
+    } catch (error) {
+        console.error("[updateAccount] error:", error);
+        return null;
+    }
+};
+
+/* 比對驗證碼 */
+exports.verifyCode = (user) => {
+    try {
+        return mailService.verifyCode(user);
+    } catch (error) {
+        console.error("[verifyCode] error:", error);
+        return null;
+    }
+};
+
+/* 登入 */
+exports.login = async (email, password) => {
+    try {
+        return await userService.login(email, password);
+    } catch (error) {
+        console.error("[login] error:", error);
+        return null;
+    }
+};
+
+/* 登出, 清除 token */
+exports.logout = (req) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return false;
+        return utils.logoutToken(token);
+    } catch (error) {
+        console.error("[logout] error:", error);
+        return false;
+    }
+};
+
+/* 產生 jwt token */
+exports.createJwtToken = async (req) => {
+    try {
+        const { account } = req.body;
+        const user = await userService.getUserByAccount(account);
+        if (!user) throw new Error("User not found");
+        const userAgent = req.headers['user-agent'];
+        return utils.createToken({ userId: user.id, account, userAgent }, '5m');
+    } catch (error) {
+        console.error("[createJwtToken] error:", error);
+        return null;
+    }
+};
+
+/* 驗證 jwt token */
+exports.verifyJwt = (req) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+        const token = authHeader.split(' ')[1];
+        return utils.verifyToken(token);
+    } catch (error) {
+        console.error("[verifyJwt] error:", error);
+        return null;
+    }
+};
