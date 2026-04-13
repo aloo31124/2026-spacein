@@ -60,6 +60,7 @@ import { RoomSiteImportComponent } from './manager-room/components/content/room-
 import { SearchSiteContentComponent } from './manager-room/components/content/search-site-content/search-site-content.component';
 import { UserRoleListComponent } from './manager-system/components/user-role-list/user-role-list.component';
 import { UserPaymentListComponent } from './manager-system/components/user-payment-list/user-payment-list.component';
+import { AppVersionComponent } from './common/version/components/app-version/app-version.component';
 
 // 調整會損壞... ="=
 const  firebase = {
@@ -135,7 +136,8 @@ const firebase = {
     RoomSiteImportComponent,
     SearchSiteContentComponent,
     UserRoleListComponent,
-    UserPaymentListComponent
+    UserPaymentListComponent,
+    AppVersionComponent,
   ],
   imports: [
     BrowserModule,
