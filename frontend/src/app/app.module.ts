@@ -144,13 +144,11 @@ const firebase = {
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-
-       
-    provideFirebaseApp(() => initializeApp(firebase)),
-    provideFirestore(() => getFirestore()), 
-    
   ],
-  providers: [],
+  providers: [
+    provideFirebaseApp(() => initializeApp(firebase)),
+    provideFirestore(() => getFirestore()),
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
