@@ -1,0 +1,43 @@
+# Skills 索引
+
+本專案的 Skills 文檔位於 `.github/skills/` 目錄。
+進行相關功能開發時，請優先閱讀對應的 SKILL.md。
+
+## 可用 Skills
+
+### skills 文件創建6原則
+- **文檔**: `.github/skills/skill-design-6-principles/SKILL.md`
+- **補充參考**: `.github/skills/skill-design-6-principles/eval-loop-test.md`
+- **適用情境**: 
+    * 創建 skills 文件時，必須閱讀此文件，包含:
+    * 已經存在之功能需另外創建新 skills 文件說明。
+    * 或使用 speckit、openspec 等工具開發之新功能完成後，也必須創建新的 skills 文件說明。
+    * 關鍵字: skills、產生skills、speckit.implement、開發完成。
+
+
+### Formio 自訂義表單
+- **文檔**: `.github/skills/formio-spec/SKILL.md`
+- **補充參考**: `.github/skills/formio-spec/formio-ui-reference.md`
+- **適用情境**: 
+    * 修改 formio 相關前後端所有功能時，都必需要參考此檔案中的規範與說明。
+    * formio 相關 表單設計、表單渲染、表單提交、FormioBuilder 整合、FormioForm 組件 與 開發調整所有功能皆需參考此檔案。
+
+### Vue 3 組件撰寫風格
+- **文檔**: `.github/skills/vue-coding-style/SKILL.md`
+- **適用情境**: 
+    * 修改前端相關 vue 時候，都必須參考此檔案中的規範與說明。
+    * Vue 3 組件開發、Composition API、`<script setup>` 撰寫規範，只要修改到前端 vue 組件相關的程式碼，請優先參考此檔案。
+
+### iframe 嵌入整合
+- **文檔**: `.github/skills/iframe-integration/SKILL.md`
+- **適用情境**:
+    * 修改或新增任何 iframe 嵌入功能、postMessage 通訊、iframe 路由頁面時，必須參考此檔案。
+    * 涵蓋 iframe 包裝元件、expand/shrink 動態尺寸機制、iframe HTML 生成與剪貼簿複製、API 認證旁路、IFRAME 模組功能開關等規範。
+    * 關鍵字：iframe、postMessage、expandIframe、shrinkIframe、FlowEditIframe、SignIframe、ExternalPage、嵌入外部系統。
+
+### Web Component 打包
+- **文檔**: `.github/skills/web-component-build/SKILL.md`
+- **適用情境**:
+    * 修改或新增 Web Component 打包設定、自訂元素標籤、FlowEditElement 包裝層、mock 模組、假資料時，必須參考此檔案。
+    * 涵蓋 defineCustomElement 註冊流程、Vite library 模式建置（ES/UMD/IIFE）、Shadow DOM 停用策略、mock-router / mock-api-service 替換架構、假資料系統（mockData）、Props HTML 屬性對應。
+    * 關鍵字：web component、custom element、defineCustomElement、flow-edit-element、build:wc、IIFE、UMD、mockData、vite.config.webcomponent、dist-webcomponent。
