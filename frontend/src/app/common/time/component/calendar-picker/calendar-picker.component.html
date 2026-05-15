@@ -17,7 +17,7 @@
         </div>
         <div class="grid-row">
             <div class="grid" 
-                *ngFor="let number of [].constructor(displayAllDayGrid); let i = index"  
+                *ngFor="let number of Array.from({length: displayAllDayGrid}); let i = index"  
                 [ngStyle]="{opacity: checkDateValid(changeDateObj(i + 1 - currentMonthFirstDayWeekly))?'1':'0.4'}"
                 (click)="selectDate( i + 1 - currentMonthFirstDayWeekly )">
 

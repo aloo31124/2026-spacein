@@ -26,6 +26,7 @@ export class LoginPageComponent implements OnInit {
     alert("請先登入");
     // 使用 Capacitor 判斷是否運行在原生平台
     this.isNativeApp = Capacitor.isNativePlatform();
+    console.log(" isNativeApp: ", this.isNativeApp);
   }
 
   async clickSignIn() {
