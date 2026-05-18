@@ -1,0 +1,40 @@
+# 排除不需要上傳至 Cloud Build 的檔案
+# 大幅減少上傳量
+
+# Node modules (最大元兇)
+**/node_modules/
+
+# Build 產出物 (Cloud Build 內會重新 build)
+frontend/dist/
+frontend/build/
+frontend/.angular/
+frontend/.firebase/
+backend/.firebase/
+backend/logs/
+
+# Mobile 平台原生專案 (Cloud Run 不需要)
+frontend/android/
+frontend/ios/
+
+# Git / 編輯器
+.git/
+.github/
+.vscode/
+.idea/
+.prompt/
+
+# 文件 / 筆記
+docs/
+backend/notes/
+frontend/notes/
+backend/oldServer/
+backend/functions/
+
+# 其他大型/不需要的目錄
+.claude/
+.specify/
+
+# 雜項
+*.log
+*.tgz
+*.zip
