@@ -24,19 +24,7 @@ RUN echo "前端建置使用後端 URL: ${BACKEND_URL}" && \
       > src/environments/environment.prod.ts && \
     cat src/environments/environment.prod.ts
 
-# ---- 放寬 Angular AOT 嚴格模板檢查 ----
-# 原始碼存在 generic 元件 (DialogComponent<T extends DialogItemModel>) 與
-# 多處模板 binding 型別不一致的問題；本機 ng serve (JIT) 不會檢查，
-# 但 Cloud Build 上的 prod AOT 會 fail。
-# 此處在 build 階段暫時關閉 strict 檢查，不修改 repo 原始碼。
-RUN sed -i \
-    -e 's/"strictTemplates"[[:space:]]*:[[:space:]]*true/"strictTemplates": false/g' \
-    -e 's/"strictInjectionParameters"[[:space:]]*:[[:space:]]*true/"strictInjectionParameters": false/g' \
-    -e 's/"strictInputAccessModifiers"[[:space:]]*:[[:space:]]*true/"strictInputAccessModifiers": false/g' \
-    tsconfig.json && \
-    cat tsconfig.json
-
-# 同步放寬 budgets，避免 production build 因檔案過大而 error
+# 放寬 angular.json budgets，避免 main bundle 超過預設 500KB 限制而報 error
 RUN node -e "const fs=require('fs'); const p='angular.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); const prod=j.projects['space-in'].architect.build.configurations.production; if(prod && prod.budgets){prod.budgets=prod.budgets.map(b=>({...b,maximumWarning:'10mb',maximumError:'20mb'}));} fs.writeFileSync(p, JSON.stringify(j,null,2));"
 
 RUN npm run build:prod
