@@ -47,24 +47,20 @@ exports.getPaySelectPageHtml = async (payment, userId) => {
   // SDK 提供的範例，參數設定
   // https://github.com/ECPay/ECPayAIO_Node.js/blob/master/ECPAY_Payment_node_js/conf/config-example.js
   let TradeNo;
-  const MerchantTradeDate = new Date().toLocaleString('zh-TW', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-      timeZone: 'UTC',
-  });
+  // ECPay 要求 MerchantTradeDate 必須為「yyyy/MM/dd HH:mm:ss」格式，且使用台北時區 (UTC+8)
+  const pad = (n) => String(n).padStart(2, '0');
+  const nowTaipei = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const MerchantTradeDate =
+      `${nowTaipei.getUTCFullYear()}/${pad(nowTaipei.getUTCMonth() + 1)}/${pad(nowTaipei.getUTCDate())} ` +
+      `${pad(nowTaipei.getUTCHours())}:${pad(nowTaipei.getUTCMinutes())}:${pad(nowTaipei.getUTCSeconds())}`;
   TradeNo = 'test' + new Date().getTime();
   // 取得 雲函式 url
   //const cloud_return_url = process.env.CLOUD_RUNTIME_URL || "http:localhost:8082";
   //const cloud_return_url = `https://${process.env.FUNCTION_REGION}-${process.env.GCLOUD_PROJECT}.cloudfunctions.net/${process.env.FUNCTION_NAME}`;
   //const cloud_return_url = "http://localhost:8082";
   //const cloud_return_url = "https://api-usmvmcr5xa-uc.a.run.app"; // aloo.copy0
-  //const cloud_return_url = "https://api-2qiy7ro3ea-uc.a.run.app"; // spacein3 openloulou
-  const cloud_return_url = "https://api-udx6hqtnmq-uc.a.run.app"; // speceincopy2 openloulou
+  const cloud_return_url = "https://api-2qiy7ro3ea-uc.a.run.app"; // spacein3 openloulou
+  //const cloud_return_url = "https://api-udx6hqtnmq-uc.a.run.app"; // speceincopy2 openloulou
 
   let base_param = {
       MerchantTradeNo: TradeNo,
