@@ -1,0 +1,13 @@
+node_modules
+.angular
+dist
+build
+.firebase
+.git
+.gitignore
+android
+ios
+*.log
+logs
+notes
+README.md
