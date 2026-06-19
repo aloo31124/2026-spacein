@@ -16,4 +16,10 @@
         <button (click)="clickRegister()">註冊</button>
     </div>
     <app-version></app-version>
+
+    <!-- 畫面 loading 中 -->
+    <div class="loading-container">
+        <app-loading-basic [isLoading]="isLoading">
+        </app-loading-basic>
+    </div>
 </div>
