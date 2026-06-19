@@ -1,12 +1,13 @@
 header {
-    width: 110%; //背景填滿
+    width: 100%; //背景填滿（避免超出視窗造成左右可拖曳）
     position: fixed;
-    top: -4px;
-    left: -1px;
+    top: 0;
+    left: 0;
     z-index: 10;
 
     .img-header {
-        width: 105%; //背景填滿 
+        width: 100%; //背景填滿，與 header 同寬不溢出
+        display: block; //消除 inline 圖片底部空隙
     }
     
     .icon-bar {
@@ -29,7 +30,7 @@ header {
         color: #FBE0FF;
         position: fixed;
         top: 20px;
-        left: 10px;
+        left: 0;
         text-align: center;
     }
 }
