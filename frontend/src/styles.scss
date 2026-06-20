@@ -1,13 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* 防止手機 / Capacitor (Android、iOS) 畫面可左右拖曳：
-   重置預設 margin，並鎖定寬度與隱藏水平溢出。 */
+   重置預設 margin、鎖定寬度、隱藏水平溢出，並關閉水平彈跳。 */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
+    overscroll-behavior-x: none; //關閉 iOS/Android WebView 水平回彈
+    position: relative;
 }
 
 body {

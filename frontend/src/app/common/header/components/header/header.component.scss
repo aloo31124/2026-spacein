@@ -1,13 +1,17 @@
 header {
-    width: 100%; //背景填滿（避免超出視窗造成左右可拖曳）
+    width: 100%; //header 本體不超出視窗（避免整頁可左右拖曳）
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     z-index: 10;
+    overflow: hidden; //關鍵：圖片即使略大於 header 也被裁掉，溢出被關在 header 內，整頁不會可拖曳
 
     .img-header {
-        width: 100%; //背景填滿，與 header 同寬不溢出
+        width: 102%; //略大於 header 以確保滿版（背景填滿），超出部分由上方 overflow: hidden 裁切
+        max-width: none; //避免被全域 max-width 限制而留邊
         display: block; //消除 inline 圖片底部空隙
+        margin-left: -1%; //置中讓左右均勻滿版
     }
     
     .icon-bar {
