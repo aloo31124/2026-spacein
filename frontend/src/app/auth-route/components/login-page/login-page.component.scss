@@ -26,5 +26,45 @@
     .logo-img {
         width: 100px;
     }
+
+    // 密碼欄位 + 顯示/隱藏切換 icon
+    .password-field {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+
+        input {
+            // 預留右側空間給眼睛 icon, 避免文字被蓋住
+            padding-right: 48px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            // 覆蓋 .container button 的紫底圓角樣式
+            background: transparent;
+            color: #999;
+            border: none;
+            border-radius: 0;
+            padding: 8px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            svg {
+                width: 24px;
+                height: 24px;
+                display: block;
+            }
+
+            &:hover {
+                color: #661983;
+            }
+        }
+    }
 }
 

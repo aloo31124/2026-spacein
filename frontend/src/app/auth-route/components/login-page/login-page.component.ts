@@ -3,7 +3,11 @@ import { GoogleAuthService } from '../../services/google-auth.service';
 import { RegisterService } from '../../services/register.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { Subscription } from 'rxjs';
+
+/** 記憶登入信箱的儲存鍵 (web 走 localStorage、手機 android/ios 走原生儲存) */
+const REMEMBERED_EMAIL_KEY = 'rememberedEmail';
 
 @Component({
   selector: 'app-login-page',
@@ -14,6 +18,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
   email = "";
   password = "";
+  showPassword = false; // 密碼是否以明文顯示
   isNativeApp = false;  // 是否為原生App
   isLoading = false;    // 登入等待中, 顯示 loading 畫面
 
@@ -34,10 +39,29 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.loadingSub = this.googleAuthService.loading$.subscribe(value => {
       this.isLoading = value;
     });
+    // 載入上次記憶的登入信箱 (web / android / ios 皆適用)
+    this.loadRememberedEmail();
   }
 
   ngOnDestroy(): void {
     this.loadingSub?.unsubscribe();
+  }
+
+  /** 切換密碼明文/隱藏顯示 */
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  /** 讀取先前記憶的登入信箱並自動帶入欄位 */
+  private async loadRememberedEmail(): Promise<void> {
+    try {
+      const { value } = await Preferences.get({ key: REMEMBERED_EMAIL_KEY });
+      if (value) {
+        this.email = value;
+      }
+    } catch (err) {
+      console.warn("讀取記憶信箱失敗", err);
+    }
   }
 
   async clickSignIn() {
@@ -69,7 +93,9 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         next: res => {
           console.log(res);
           if(res.isSuccess) {
-            // 驗證通過, 設定使用者
+            // 驗證通過, 記憶本次登入信箱 (web / android / ios)
+            Preferences.set({ key: REMEMBERED_EMAIL_KEY, value: email });
+            // 設定使用者
             this.registerService
               .findUser(email)
               .subscribe({
