@@ -82,13 +82,15 @@ export class GoogleAuthService {
    * google 第三方登入, 使用 Cap
    */
   async loginByGoogleCap() {
+    // 點擊後立即顯示 loading, 涵蓋「帳號選擇 + 取得 token + 後端驗證」整個流程,
+    // 避免選完帳號到後端驗證之間出現「無 loading」的空窗期
+    this.setLoading(true);
     try {
-      // 登入判斷
+      // 登入判斷 (彈出 Google 帳號選擇視窗)
       const googleUser = await GoogleAuth.signIn();
       const {id:_, ...rest} = googleUser;
       const user = {...rest, googleUserId: googleUser.id};
       if(googleUser["email"]) {
-        this.setLoading(true); // 開始後端驗證, 顯示 loading
         this.registerService
           .findUser(user["email"])
           .subscribe({
@@ -106,11 +108,30 @@ export class GoogleAuthService {
               alert("Google 登入失敗: " + (err?.error?.message || err.message || '未知錯誤'));
             }
           });
+      } else {
+        // signIn() 成功卻取不到 email, 過去此情況會「無 loading、無錯誤」靜默結束,
+        // 現在明確關閉 loading 並提示, 避免使用者卡在無回應畫面
+        this.setLoading(false);
+        alert("Google 登入失敗: 無法取得 Google 帳號信箱資訊, 請重試或改用其他帳號");
       }
     } catch (err: any) {
       // 使用者取消或 Google 授權失敗
       this.setLoading(false);
       console.error('Google 登入失敗:', err);
+
+      // 取出 Capacitor 外掛回傳的狀態碼與訊息
+      // (GoogleAuth.java 失敗時以 call.reject(message, statusCode) 回傳, statusCode 會進到 err.code)
+      const code = err?.code ?? err?.errorCode ?? '';
+      const message = err?.message || err?.error?.message || '未知錯誤';
+
+      // 使用者自行取消 (Android 狀態碼 12501) 不需跳出錯誤警告
+      if (String(code) === '12501' || /cancel/i.test(message)) {
+        return;
+      }
+
+      // 其餘錯誤一律以 alert 顯示, 讓實機 (Android/iOS) 也能看到錯誤碼與原因
+      // 常見: code 10 (DEVELOPER_ERROR) → SHA-1 憑證指紋或 OAuth Client 設定不符
+      alert("Google 登入失敗 (code: " + code + "): " + message);
     }
   }
 
