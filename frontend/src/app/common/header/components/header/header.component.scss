@@ -22,9 +22,28 @@ header {
         align-items: center;
         top: 30px;
         left: 10px;
-        img {
-            width: 40px;
-            margin: 10px;
+
+        // 圖示鈕：覆蓋全域 button 的紫底圓角樣式，做成透明 SVG 圖示鈕
+        .iconBtn {
+            background: transparent;
+            border: none;
+            padding: 2px;
+            margin: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+            color: #FBE0FF; // 沿用 header 標題色系，於底圖上清晰可見
+
+            svg {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        .iconBtn:hover {
+            background: transparent;
+            color: #ffffff;
+            font-weight: normal;
         }
     }
 

@@ -6,8 +6,21 @@
     <div class="header-title">{{ headerTitle }}</div>
     <!-- 上一頁 按鈕需放最下面, 避免被覆蓋 -->
     <div *ngIf="isShowIcon" class="icon-bar">
-        <img class="iconBtn" src="assets/images/icon/icon_back.png" (click)="backPage()" />
-        <img class="iconBtn" src="assets/images/icon/icon_user.png" (click)="nextPage('/account')" />
+        <!-- 上一頁：改用 inline SVG 預設元件（取代 icon_back.png，跨平台渲染一致） -->
+        <button type="button" class="iconBtn" (click)="backPage()" aria-label="上一頁" title="上一頁">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 5l-7 7 7 7" />
+            </svg>
+        </button>
+        <!-- 會員中心：改用 inline SVG 預設元件（取代 icon_user.png） -->
+        <button type="button" class="iconBtn" (click)="nextPage('/account')" aria-label="會員中心" title="會員中心">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" />
+            </svg>
+        </button>
     </div>
 </header>
 <div [ngStyle]="{height: headerPeddingHeigh}"></div>
