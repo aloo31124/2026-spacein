@@ -1,12 +1,17 @@
 header {
-    width: 110%; //背景填滿
+    width: 100%; //header 本體不超出視窗（避免整頁可左右拖曳）
     position: fixed;
-    top: -4px;
-    left: -1px;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
+    overflow: hidden; //關鍵：圖片即使略大於 header 也被裁掉，溢出被關在 header 內，整頁不會可拖曳
 
     .img-header {
-        width: 105%; //背景填滿 
+        width: 102%; //略大於 header 以確保滿版（背景填滿），超出部分由上方 overflow: hidden 裁切
+        max-width: none; //避免被全域 max-width 限制而留邊
+        display: block; //消除 inline 圖片底部空隙
+        margin-left: -1%; //置中讓左右均勻滿版
     }
     
     .icon-bar {
@@ -17,9 +22,28 @@ header {
         align-items: center;
         top: 30px;
         left: 10px;
-        img {
-            width: 40px;
-            margin: 10px;
+
+        // 圖示鈕：覆蓋全域 button 的紫底圓角樣式，做成透明 SVG 圖示鈕
+        .iconBtn {
+            background: transparent;
+            border: none;
+            padding: 2px;
+            margin: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+            color: #FBE0FF; // 沿用 header 標題色系，於底圖上清晰可見
+
+            svg {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        .iconBtn:hover {
+            background: transparent;
+            color: #ffffff;
+            font-weight: normal;
         }
     }
 
@@ -29,7 +53,7 @@ header {
         color: #FBE0FF;
         position: fixed;
         top: 20px;
-        left: 10px;
+        left: 0;
         text-align: center;
     }
 }

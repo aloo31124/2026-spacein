@@ -8,6 +8,7 @@ import { RegisterService } from './register.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { Preferences } from '@capacitor/preferences';
 import { jwtDecode } from 'jwt-decode';  // 需要安裝 jwt-decode 套件
+import { BehaviorSubject } from 'rxjs';
 
 declare const google: any; // <- 補這行，因為是外部的 global 變數
 
@@ -18,6 +19,14 @@ export class GoogleAuthService {
 
   private isLoginIn = false;
   private currentUser!: GoogleAuthUser;
+
+  // Google 登入流程的 loading 狀態, 供登入頁訂閱顯示等待畫面
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  loading$ = this.loadingSubject.asObservable();
+
+  private setLoading(value: boolean) {
+    this.loadingSubject.next(value);
+  }
 
   constructor(
     private routeUrlRecordService: RouteUrlRecordService<{}>,
@@ -83,22 +92,56 @@ export class GoogleAuthService {
    * google 第三方登入, 使用 Cap
    */
   async loginByGoogleCap() {
-    // 登入判斷
-    const googleUser = await GoogleAuth.signIn();
-    const {id:_, ...rest} = googleUser;
-    const user = {...rest, googleUserId: googleUser.id};
-    if(googleUser["email"]) {
-      this.registerService
-        .findUser(user["email"])
-        .subscribe(res => {
-          if(!res.result.user) {
-            this.registerUserForFirstLogin(user);
-          } else {
-            this.setCurrentUser({...user, id: res.result.user.id}); // 把 google user id 替換
-            this.setToken();
-            this.checkLogin(user);
-          }
-        });
+    // 點擊後立即顯示 loading, 涵蓋「帳號選擇 + 取得 token + 後端驗證」整個流程,
+    // 避免選完帳號到後端驗證之間出現「無 loading」的空窗期
+    this.setLoading(true);
+    try {
+      // 登入判斷 (彈出 Google 帳號選擇視窗)
+      const googleUser = await GoogleAuth.signIn();
+      const {id:_, ...rest} = googleUser;
+      const user = {...rest, googleUserId: googleUser.id};
+      if(googleUser["email"]) {
+        this.registerService
+          .findUser(user["email"])
+          .subscribe({
+            next: res => {
+              if(!res.result.user) {
+                this.registerUserForFirstLogin(user);
+              } else {
+                this.setCurrentUser({...user, id: res.result.user.id}); // 把 google user id 替換
+                this.setToken();
+                this.checkLogin(user);
+              }
+            },
+            error: err => {
+              this.setLoading(false);
+              alert("Google 登入失敗: " + (err?.error?.message || err.message || '未知錯誤'));
+            }
+          });
+      } else {
+        // signIn() 成功卻取不到 email, 過去此情況會「無 loading、無錯誤」靜默結束,
+        // 現在明確關閉 loading 並提示, 避免使用者卡在無回應畫面
+        this.setLoading(false);
+        alert("Google 登入失敗: 無法取得 Google 帳號信箱資訊, 請重試或改用其他帳號");
+      }
+    } catch (err: any) {
+      // 使用者取消或 Google 授權失敗
+      this.setLoading(false);
+      console.error('Google 登入失敗:', err);
+
+      // 取出 Capacitor 外掛回傳的狀態碼與訊息
+      // (GoogleAuth.java 失敗時以 call.reject(message, statusCode) 回傳, statusCode 會進到 err.code)
+      const code = err?.code ?? err?.errorCode ?? '';
+      const message = err?.message || err?.error?.message || '未知錯誤';
+
+      // 使用者自行取消 (Android 狀態碼 12501) 不需跳出錯誤警告
+      if (String(code) === '12501' || /cancel/i.test(message)) {
+        return;
+      }
+
+      // 其餘錯誤一律以 alert 顯示, 讓實機 (Android/iOS) 也能看到錯誤碼與原因
+      // 常見: code 10 (DEVELOPER_ERROR) → SHA-1 憑證指紋或 OAuth Client 設定不符
+      alert("Google 登入失敗 (code: " + code + "): " + message);
     }
   }
 
@@ -129,15 +172,22 @@ export class GoogleAuthService {
               accessToken: '' // One Tap 不提供 access token
             }
           }
+          this.setLoading(true); // 取得憑證後, 開始後端驗證, 顯示 loading
           this.registerService
             .findUser(user["email"])
-            .subscribe(res => {
-              if(!res.result.user) {
-                this.registerUserForFirstLogin(user);
-              } else {
-                this.setCurrentUser({...user, id: res.result.user.id}); // 把 google user id 替換
-                this.setToken();
-                this.checkLogin(user);
+            .subscribe({
+              next: findRes => {
+                if(!findRes.result.user) {
+                  this.registerUserForFirstLogin(user);
+                } else {
+                  this.setCurrentUser({...user, id: findRes.result.user.id}); // 把 google user id 替換
+                  this.setToken();
+                  this.checkLogin(user);
+                }
+              },
+              error: err => {
+                this.setLoading(false);
+                alert("Google 登入失敗: " + (err?.error?.message || err.message || '未知錯誤'));
               }
             });
         },
@@ -173,22 +223,36 @@ export class GoogleAuthService {
   registerUserForFirstLogin(user: any) {
     this.registerService
       .addUser(user.email)
-      .subscribe(res => {
-        if(!res.newUser) {
-          alert("首次 google 授權, 註冊失敗, 使用者新增失敗");
-        } else {
-          this.registerService
-            .updateUser(user)
-            .subscribe(res => {
-              if(!res.newUser) {
-                alert("首次 google 授權, 註冊失敗, 使用者更新失敗");
-              } else {
-                alert("首次 google 授權, 註冊成功, 請再次登入");
-              }
-            })
+      .subscribe({
+        next: res => {
+          if(!res.newUser) {
+            this.setLoading(false);
+            alert("首次 google 授權, 註冊失敗, 使用者新增失敗");
+          } else {
+            this.registerService
+              .updateUser(user)
+              .subscribe({
+                next: res => {
+                  this.setLoading(false);
+                  if(!res.newUser) {
+                    alert("首次 google 授權, 註冊失敗, 使用者更新失敗");
+                  } else {
+                    alert("首次 google 授權, 註冊成功, 請再次登入");
+                  }
+                },
+                error: err => {
+                  this.setLoading(false);
+                  alert("首次 google 授權失敗: " + (err?.error?.message || err.message || '未知錯誤'));
+                }
+              })
+          }
+        },
+        error: err => {
+          this.setLoading(false);
+          alert("首次 google 授權失敗: " + (err?.error?.message || err.message || '未知錯誤'));
         }
       })
-      
+
   }
 
   /*
@@ -242,6 +306,7 @@ export class GoogleAuthService {
    * 檢查是否成功登入 
    */
   checkLogin(user: any) {
+    this.setLoading(false); // 流程結束, 關閉 loading
     if (this.currentUser) {
       alert(user.email + " 成功登入!");
       this.isLoginIn = true;
