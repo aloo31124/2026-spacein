@@ -99,6 +99,13 @@ export class HeaderComponent implements OnInit {
    * 上一頁 
    */
   backPage() {
+    const currentUrl = this.routeUrlRecordService.getCurrentUrl();
+
+    if(currentUrl === "/home" || currentUrl === "/" || !currentUrl) {
+      this.routeUrlRecordService.backPage();
+      return;
+    }
+
     this.setHeaderImg(this.routeUrlRecordService.getPreviousUrl());
     this.setHeaderTitle(this.routeUrlRecordService.getPreviousUrl());
     this.routeUrlRecordService.backPage();

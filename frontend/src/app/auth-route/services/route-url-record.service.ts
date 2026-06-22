@@ -2,6 +2,8 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subscription, Subject, timer } from 'rxjs';
+import { Capacitor, PluginListenerHandle } from '@capacitor/core';
+import { App } from '@capacitor/app';
 
 
 @Injectable({
@@ -10,6 +12,7 @@ import { Subscription, Subject, timer } from 'rxjs';
 export class RouteUrlRecordService<T> implements OnDestroy{
 
   private timeSubscription: Subscription = new Subscription();
+  private backButtonListener?: PluginListenerHandle;
   private routeUrlChangeSubject = new Subject<string>();
   routerUrlChangeEmit = this.routeUrlChangeSubject.asObservable();
 
@@ -21,6 +24,14 @@ export class RouteUrlRecordService<T> implements OnDestroy{
     private location: Location,
     private router: Router,
   ) { 
+    if(Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('App')) {
+      App.addListener('backButton', () => {
+        this.backPage();
+      }).then(listener => {
+        this.backButtonListener = listener;
+      });
+    }
+
     // 每次初始時, 存取新的 路由路徑
     this.router.events.subscribe((event)=> {
       if (event instanceof NavigationEnd) {   
@@ -81,26 +92,21 @@ export class RouteUrlRecordService<T> implements OnDestroy{
    * 上一頁 
    */
   backPage() {
+    const currentUrl = this.getCurrentUrl();
+
     // 最初始畫面, 離開 app
-    if(this.getCurrentUrl() === "/" || !this.getCurrentUrl()) {
-      alert("確定離開app?");
-      window.close(); // 無效
+    if(currentUrl === "/home" || currentUrl === "/" || !currentUrl) {
+      this.confirmExitApp();
       return;
     }
 
     // 管理畫面, 直接退回首頁
-    if(this.getCurrentUrl().includes("manager")) {
+    if(currentUrl.includes("manager")) {
       this.router.navigate(["/home"]);
       return;
     }
 
-    if(this.getCurrentUrl() === "/home") {
-      //alert("確定登出?");
-      //this.router.navigate(["/"]);
-      return;
-    }
-
-    const previousUrl = this.getPreviousUrl();
+    const previousUrl = this.getPreviousUrl() || "/home";
     // 問號參數的攜帶需處理
     if(previousUrl.includes("?")) {
       this.location.back();
@@ -108,6 +114,24 @@ export class RouteUrlRecordService<T> implements OnDestroy{
     this.routeUrlRecord.pop();
     this.routeUrlRecord.pop();
     this.router.navigate([previousUrl]);
+  }
+
+  /*
+   * 確認離開 App
+   */
+  private confirmExitApp() {
+    const isConfirmExitApp = window.confirm("確定離開 App?");
+
+    if(!isConfirmExitApp) {
+      return;
+    }
+
+    if(Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('App')) {
+      App.exitApp().catch(() => window.close());
+      return;
+    }
+
+    window.close();
   }
 
   /*
@@ -130,6 +154,7 @@ export class RouteUrlRecordService<T> implements OnDestroy{
    */
   ngOnDestroy() {
     this.timeSubscription.unsubscribe();
+    this.backButtonListener?.remove();
   }
 
 }
