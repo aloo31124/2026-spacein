@@ -1,11 +1,13 @@
 
 .container {
     display: flex;
-    height: 450px;
+    // 移除固定高度，改為依內容自然撐高並由上往下排列，
+    // 避免「固定高度 + space-between」造成內容溢出、下方按鈕被推出視窗外需拖曳才能點選
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding: 20px 0;
+    padding: 10px 0;
+    gap: 10px;
 
     .btn-bar {
         display: flex;
@@ -13,12 +15,27 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        padding: 20px 0;
+        padding: 10px 0;
     }
 }
 
-img {
-    width: 40px;
+// 下一步 SVG 按鈕：覆蓋全域 button 的紫底圓角樣式，做成透明圖示鈕
+.next-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    cursor: pointer;
+
+    svg {
+        width: 40px;
+        height: 40px;
+        display: block;
+    }
+}
+.next-btn:hover {
+    background: transparent;
 }
 
 .loading-container {
