@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { GoogleAuthUser } from '../models/google-auth-user.model';
 //import { UserService } from 'src/app/common/user/services/user-service.service';
@@ -33,20 +34,29 @@ export class GoogleAuthService {
     //private userService: UserService, // 2025/04/23 棄用
     private registerService: RegisterService,
   ) { 
-    // 於此取得初始資料
-    GoogleAuth.initialize({
-      clientId: '587558372608-jnei0k5eh8japakn4hs4kok2mld4m0qj.apps.googleusercontent.com',
-      scopes: ['profile', 'email'],
-      grantOfflineAccess: true,
-    });
+    // 於此取得初始資料，並捕捉 iOS 26 可能拋出的初始化錯誤
+    // 注意：GoogleAuth.initialize() 型別定義回傳 void，因此使用 try/catch 而非 .catch()
+    try {
+      GoogleAuth.initialize({
+        clientId: '587558372608-jnei0k5eh8japakn4hs4kok2mld4m0qj.apps.googleusercontent.com',
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      });
+    } catch (err) {
+      console.warn('GoogleAuth initialize 失敗:', err);
+    }
     this.checkToken();
     this.loadGoogleOneTapSDK();
   }
 
   /*
-   * 載入 Google OneTap SDK
+   * 載入 Google OneTap SDK（僅限網頁端）
+   * index.html 無 id，此處補 id 避免重複載入；原生 App 不需要 OneTap SDK
    */
   private loadGoogleOneTapSDK() {
+    if (Capacitor.isNativePlatform()) {
+      return;
+    }
     const existingScript = document.getElementById('google-one-tap');
     if (!existingScript) {
       const script = document.createElement('script');
@@ -141,7 +151,8 @@ export class GoogleAuthService {
   async loginByGoogleWebFedCM(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       google.accounts.id.initialize({
-        client_id: '830518362912-qhmt6tgd8djdv57qrdivu877u6ng5j0j.apps.googleusercontent.com',
+        //client_id: '830518362912-qhmt6tgd8djdv57qrdivu877u6ng5j0j.apps.googleusercontent.com', // specein0?
+        client_id: '557566849446-g95ha2t5d8k6e5f7gb59j7kigup8i7vf.apps.googleusercontent.com', // specein2
         callback: (res: any) => {
           console.log(" OAuth FedCM res : ", res);
           // 解析 res JWT 獲取用戶資訊, 並存入 CurrentUser

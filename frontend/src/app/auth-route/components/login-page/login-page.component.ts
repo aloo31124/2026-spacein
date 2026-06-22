@@ -35,6 +35,8 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     alert("請先登入");
     // 使用 Capacitor 判斷是否運行在原生平台
     this.isNativeApp = Capacitor.isNativePlatform();
+    console.log(" isNativeApp: ", this.isNativeApp);
+
     // 訂閱 Google 登入流程的 loading 狀態
     this.loadingSub = this.googleAuthService.loading$.subscribe(value => {
       this.isLoading = value;

@@ -9,6 +9,9 @@ import { RateModel } from 'src/app/review-room/models/rate.model';
 })
 export class CalendarPickerComponent {
 
+  // 供 template 使用 Array.from
+  readonly Array = Array;
+
 
   // 該日期元件選擇年月日
   @Output() selectDatInfo = new EventEmitter<string>();
