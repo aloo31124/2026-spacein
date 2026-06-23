@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { SysDashboardService } from '../../services/sys-dashboard.service';
 import { ExportService } from 'src/app/common/export-import/services/export.service';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-pay-setting',
@@ -21,6 +22,7 @@ export class PaySettingComponent {
     private sysDashboardService: SysDashboardService,
     private router: Router,
     private exportService: ExportService,
+    private dialogService: DialogService,
   ) {}
 
   exportAllPayment() {
@@ -50,12 +52,12 @@ export class PaySettingComponent {
     };
     this.router.navigate(["manager-sys/pay-setting-content"], navigationExtras);
   }
-  clickDeletePayment (payment:any) {
+  async clickDeletePayment (payment:any) {
     if(payment.haveBuy) {
       alert("該方案已被購買,無法刪除。");
       return;
     }
-    if(!confirm("確定刪除方案嗎?")) {
+    if(!await this.dialogService.confirm("確定刪除方案嗎?")) {
       return;
     }
     this.sysDashboardService

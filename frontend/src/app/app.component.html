@@ -2,3 +2,34 @@
 
 <router-outlet></router-outlet>
 
+<div class="app-dialog-container" *ngIf="dialogState.isVisible">
+    <div class="app-dialog-mask"></div>
+    <div class="app-dialog" [ngClass]="{'app-dialog-flash': dialogState.isFlash}">
+        <div class="app-dialog-icon">
+            {{ dialogState.type === 'confirm' ? '?' : '!' }}
+        </div>
+        <div class="app-dialog-message">
+            {{ dialogState.message }}
+        </div>
+        <div class="app-dialog-actions" *ngIf="!dialogState.isFlash">
+            <button
+                class="app-dialog-btn app-dialog-btn-cancel"
+                *ngIf="dialogState.type === 'confirm'"
+                (click)="dialogService.confirmNo()">
+                取消
+            </button>
+            <button
+                class="app-dialog-btn"
+                *ngIf="dialogState.type === 'confirm'"
+                (click)="dialogService.confirmYes()">
+                確定
+            </button>
+            <button
+                class="app-dialog-btn"
+                *ngIf="dialogState.type === 'alert'"
+                (click)="dialogService.close()">
+                確定
+            </button>
+        </div>
+    </div>
+</div>

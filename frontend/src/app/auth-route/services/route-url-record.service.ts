@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { Subscription, Subject, timer } from 'rxjs';
 import { Capacitor, PluginListenerHandle } from '@capacitor/core';
 import { App } from '@capacitor/app';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 
 @Injectable({
@@ -23,6 +24,7 @@ export class RouteUrlRecordService<T> implements OnDestroy{
   constructor(
     private location: Location,
     private router: Router,
+    private dialogService: DialogService,
   ) { 
     if(Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('App')) {
       App.addListener('backButton', () => {
@@ -91,7 +93,7 @@ export class RouteUrlRecordService<T> implements OnDestroy{
   /*
    * 上一頁 
    */
-  backPage() {
+  async backPage() {
     const currentUrl = this.getCurrentUrl();
 
     // 最初始畫面, 離開 app
@@ -119,8 +121,8 @@ export class RouteUrlRecordService<T> implements OnDestroy{
   /*
    * 確認離開 App
    */
-  private confirmExitApp() {
-    const isConfirmExitApp = window.confirm("確定離開 App?");
+  private async confirmExitApp() {
+    const isConfirmExitApp = await this.dialogService.confirm("確定離開 App?");
 
     if(!isConfirmExitApp) {
       return;

@@ -3,6 +3,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 import { RoomDashboardService } from '../../../services/room-dashboard.service';
 import { ExportService } from 'src/app/common/export-import/services/export.service';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-search-site',
@@ -21,6 +22,7 @@ export class SearchSiteComponent {
     private roomDashboardService: RoomDashboardService,
     private googleAuthService: GoogleAuthService,
     private exportService: ExportService,
+    private dialogService: DialogService,
   ) {}
 
   clickExportSite() {
@@ -62,12 +64,12 @@ export class SearchSiteComponent {
     this.roomDashboardService.setSite(roomToSite);
     this.router.navigate(["manager-room/site-content"], navigationExtras);
   }
-  clickDeleteSite(roomToSite: any) {
+  async clickDeleteSite(roomToSite: any) {
     if(roomToSite.haveBooking) {
       alert("此座位已被預約，無法刪除");
       return;
     }
-    if(!confirm("是否刪除座位?")) {
+    if(!await this.dialogService.confirm("是否刪除座位?")) {
       return;
     }
     const ownerId = this.googleAuthService.getCurrentUser().id;

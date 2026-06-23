@@ -9,6 +9,7 @@ import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-rec
 import { Preferences } from '@capacitor/preferences';
 import { jwtDecode } from 'jwt-decode';  // 需要安裝 jwt-decode 套件
 import { BehaviorSubject } from 'rxjs';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 declare const google: any; // <- 補這行，因為是外部的 global 變數
 
@@ -33,6 +34,7 @@ export class GoogleAuthService {
     private router: Router,
     //private userService: UserService, // 2025/04/23 棄用
     private registerService: RegisterService,
+    private dialogService: DialogService,
   ) { 
     // 於此取得初始資料，並捕捉 iOS 26 可能拋出的初始化錯誤
     // 注意：GoogleAuth.initialize() 型別定義回傳 void，因此使用 try/catch 而非 .catch()
@@ -348,8 +350,8 @@ export class GoogleAuthService {
    * 刪除使用者帳號
    * 配合 ios 上架規範
    */
-  deleteUserById(id: string) {
-    if(!confirm("再次確認刪除帳號? 刪除後該帳號所有預約記錄將不會保留!")) {
+  async deleteUserById(id: string) {
+    if(!await this.dialogService.confirm("再次確認刪除帳號? 刪除後該帳號所有預約記錄將不會保留!")) {
       return;
     }
     if(!id) {
