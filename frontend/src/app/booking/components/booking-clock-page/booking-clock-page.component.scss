@@ -86,7 +86,7 @@
   }
 
   
-  .clock {    
+  .clock {
     background: #F0EDF1;
     border-radius: 50%;
     width: 300px;
@@ -94,6 +94,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    // 可拖曳指針：滑鼠顯示抓取游標
+    cursor: grab;
+    // 觸控拖曳指針時不觸發頁面捲動/縮放（Android / iOS）
+    touch-action: none;
+    // 避免拖曳過程選取文字
+    user-select: none;
+    -webkit-user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
     
     ul {
       height: 38%;
@@ -190,6 +202,8 @@
     width: 15px;
     display: flex;
     justify-content: center;
+    // 指針本身不攔截指標事件，讓拖曳一律由時鐘面接手
+    pointer-events: none;
   }
 
     
