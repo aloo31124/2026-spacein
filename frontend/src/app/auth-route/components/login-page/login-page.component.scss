@@ -8,6 +8,9 @@
     font-size: 20px;
 
     input {
+        // 統一帳號、密碼欄位寬度, 並用 border-box 讓邊框/內距不影響實際寬度
+        box-sizing: border-box;
+        width: 260px;
         border: 2px solid #cfcfcf;
         font-size: 20px;
         padding: 10px;
@@ -15,6 +18,11 @@
     }
     input::placeholder {
         color: #cfcfcf;
+    }
+    // 欄位被點選 (focus) 時, 外框顯示紫色
+    input:focus {
+        outline: none;
+        border-color: #661983;
     }
     button {
         background: #661983;
@@ -32,8 +40,12 @@
         position: relative;
         display: inline-flex;
         align-items: center;
+        // 與帳號欄位等寬
+        width: 260px;
 
         input {
+            // 寬度與帳號欄位一致 (繼承 .container input 的 260px)
+            width: 100%;
             // 預留右側空間給眼睛 icon, 避免文字被蓋住
             padding-right: 48px;
         }
