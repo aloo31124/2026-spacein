@@ -154,7 +154,8 @@ export class GoogleAuthService {
     return new Promise<void>((resolve, reject) => {
       google.accounts.id.initialize({
         //client_id: '830518362912-qhmt6tgd8djdv57qrdivu877u6ng5j0j.apps.googleusercontent.com', // specein0?
-        client_id: '557566849446-g95ha2t5d8k6e5f7gb59j7kigup8i7vf.apps.googleusercontent.com', // specein2
+        // client_id: '557566849446-g95ha2t5d8k6e5f7gb59j7kigup8i7vf.apps.googleusercontent.com', // specein2
+        client_id: '328066296243-5opekodfa93rria1e8utcql4rkrbvktq.apps.googleusercontent.com', // specein
         callback: (res: any) => {
           console.log(" OAuth FedCM res : ", res);
           // 解析 res JWT 獲取用戶資訊, 並存入 CurrentUser
