@@ -29,7 +29,15 @@
         </div>
                 
         <div class="clock-container">
-            <section class="clock" #clockFace (pointerdown)="onPointerDown($event)">
+            <section class="clock" #clockFace
+                     (pointerdown)="onPointerDown($event)"
+                     (pointermove)="onPointerMove($event)"
+                     (pointerup)="onPointerUp()"
+                     (pointercancel)="onPointerUp()"
+                     (touchstart)="onTouchStart($event)"
+                     (touchmove)="onTouchMove($event)"
+                     (touchend)="onTouchEnd()"
+                     (touchcancel)="onTouchEnd()">
                 <ul *ngIf="isSelectHour">
                     <li><i (click)="selectTime(12)" [ngClass]="{'selected':_selectHour === 12 }">12</i></li>
                     <li><i (click)="selectTime(1)" [ngClass]="{'selected':_selectHour === 1 }">1</i></li>

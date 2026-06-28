@@ -7,6 +7,8 @@ PODS:
     - AppAuth/Core
   - Capacitor (5.7.8):
     - CapacitorCordova
+  - CapacitorApp (5.0.8):
+    - Capacitor
   - CapacitorCommunityAppleSignIn (5.0.0):
     - Capacitor
   - CapacitorCordova (5.7.8)
@@ -26,6 +28,7 @@ PODS:
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCommunityAppleSignIn (from `../../node_modules/@capacitor-community/apple-sign-in`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
@@ -41,6 +44,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
   CapacitorCommunityAppleSignIn:
     :path: "../../node_modules/@capacitor-community/apple-sign-in"
   CapacitorCordova:
@@ -53,6 +58,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: a13994980c1ec792f7e2e665acd4d4aa6be43240
   Capacitor: 9686e5711b48a1aa84671ede795d0175848abcba
+  CapacitorApp: 8026f7ce1ac72780258d05a90c07deb5c724c0fa
   CapacitorCommunityAppleSignIn: 72676596c6ff57fce8f687365dfc5d8395bb45ac
   CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
   CapacitorPreferences: 5331d7a33044d252dcb2f7fee712f0322c04bae7
@@ -61,6 +67,6 @@ SPEC CHECKSUMS:
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
 
-PODFILE CHECKSUM: aa145d6d49c35e525b10430c44e08ead5a4160a9
+PODFILE CHECKSUM: 83adbdd0fc428f9b6152081224a885f9afebe812
 
 COCOAPODS: 1.16.2

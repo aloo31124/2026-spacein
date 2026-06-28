@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { BookingService } from '../../services/booking.service';
 
@@ -14,6 +14,12 @@ export class BookingClockPageComponent {
 
   // 是否正在拖曳指針
   private isDragging = false;
+
+  // 此 WebView 是否支援 Pointer Events。
+  // - 支援（多數現代 Android WebView / iOS 13+ WKWebView）：僅用 Pointer Events 同時涵蓋滑鼠與觸控。
+  // - 不支援（部分舊版 iOS WKWebView）：改用 Touch Events 後備，確保手指仍能拖曳。
+  private readonly supportsPointer =
+    typeof window !== 'undefined' && 'PointerEvent' in window;
 
   timeIntervalMinType = {
     _5min : 5,
@@ -133,35 +139,62 @@ export class BookingClockPageComponent {
    */
   onPointerDown(event: PointerEvent) {
     this.isDragging = true;
-    // 鎖定指標，讓後續 move 事件即使移出時鐘範圍仍持續派送
-    const target = event.target as HTMLElement;
-    target.setPointerCapture?.(event.pointerId);
-    this.updateTimeFromPointer(event);
+    // 鎖定指標於時鐘面（穩定元素）：捕獲後所有 move/up 皆直接派送到此元素，
+    // 不依賴冒泡到 document，避免部分 WebView 捕獲後 document 收不到事件。
+    this.clockFaceRef?.nativeElement?.setPointerCapture?.(event.pointerId);
+    this.updateTimeFromClientPoint(event.clientX, event.clientY);
     // 避免拖曳時選取文字或觸發瀏覽器預設手勢
     event.preventDefault();
   }
 
-  @HostListener('document:pointermove', ['$event'])
   onPointerMove(event: PointerEvent) {
     if (!this.isDragging) {
       return;
     }
-    this.updateTimeFromPointer(event);
+    this.updateTimeFromClientPoint(event.clientX, event.clientY);
     event.preventDefault();
   }
 
-  @HostListener('document:pointerup')
-  @HostListener('document:pointercancel')
   onPointerUp() {
     this.isDragging = false;
   }
 
   /*
-   * 依指標位置計算相對時鐘中心的角度，吸附到最近的刻度後更新選取時間。
+   * Touch Events 後備：僅在不支援 Pointer Events 的 WebView 啟用，
+   * 避免與 Pointer Events 重複觸發。確保舊版 iOS WKWebView 手指也能拖曳。
+   * 註：時鐘面 CSS 已設 touch-action:none，touchmove 不會捲動頁面，故無需 preventDefault。
+   */
+  onTouchStart(event: TouchEvent) {
+    if (this.supportsPointer) {
+      return;
+    }
+    this.isDragging = true;
+    const touch = event.touches[0];
+    this.updateTimeFromClientPoint(touch.clientX, touch.clientY);
+    event.preventDefault();
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (this.supportsPointer || !this.isDragging) {
+      return;
+    }
+    const touch = event.touches[0];
+    this.updateTimeFromClientPoint(touch.clientX, touch.clientY);
+  }
+
+  onTouchEnd() {
+    if (this.supportsPointer) {
+      return;
+    }
+    this.isDragging = false;
+  }
+
+  /*
+   * 依指標 / 觸點位置計算相對時鐘中心的角度，吸附到最近的刻度後更新選取時間。
    *  - 選小時：每 30 度為一個小時刻度（12 個小時）
    *  - 選分鐘：每 30 度為一個 5 分鐘刻度（12 個刻度）
    */
-  private updateTimeFromPointer(event: PointerEvent) {
+  private updateTimeFromClientPoint(clientX: number, clientY: number) {
     const el = this.clockFaceRef?.nativeElement;
     if (!el) {
       return;
@@ -169,8 +202,8 @@ export class BookingClockPageComponent {
     const rect = el.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const dx = event.clientX - centerX;
-    const dy = event.clientY - centerY;
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
 
     // 以 12 點鐘方向為 0 度、順時針為正方向
     let angle = Math.atan2(dx, -dy) * 180 / Math.PI;
