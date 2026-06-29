@@ -19,6 +19,7 @@ import { BookingCheckFormPageComponent } from './booking/components/booking-chec
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from 'src/environments/environment';
 import { PaidPlanListComponent } from './payment/components/paid-plan-list/paid-plan-list.component';
 import { EcpayFormComponent } from './payment/components/ecpay-form/ecpay-form.component';
 import { ReviewRoomTrendComponent } from './review-room/components/review-room-trend/review-room-trend.component';
@@ -62,27 +63,8 @@ import { UserRoleListComponent } from './manager-system/components/user-role-lis
 import { UserPaymentListComponent } from './manager-system/components/user-payment-list/user-payment-list.component';
 import { AppVersionComponent } from './common/version/components/app-version/app-version.component';
 
-// 調整會損壞... ="=
-const  firebase = {
-  projectId: 'spacein-ec8ab',
-  appId: '1:328066296243:web:b1897c1201a0f9b55843c6',
-  storageBucket: 'spacein-ec8ab.appspot.com',
-  apiKey: '***REMOVED***',
-  authDomain: 'spacein-ec8ab.firebaseapp.com',
-  messagingSenderId: '328066296243',
-  measurementId: 'G-54HYGJ7ZDQ',
-}
-/* 
-const firebase = {
-  apiKey: "***REMOVED***",
-  authDomain: "spaceincopy.firebaseapp.com",
-  projectId: "spaceincopy",
-  storageBucket: "spaceincopy.firebasestorage.app",
-  messagingSenderId: "587558372608",
-  appId: "1:587558372608:web:920076cdfee160be449fe5",
-  measurementId: "G-5QB00RTHRM"
-};
-*/
+// Firebase 設定統一集中於 environment（src/environments/environment.ts）
+const firebase = environment.firebase;
 
 
 @NgModule({

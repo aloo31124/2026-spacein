@@ -10,6 +10,7 @@ import { Preferences } from '@capacitor/preferences';
 import { jwtDecode } from 'jwt-decode';  // 需要安裝 jwt-decode 套件
 import { BehaviorSubject } from 'rxjs';
 import { DialogService } from 'src/app/common/dialog/services/dialog.service';
+import { environment } from 'src/environments/environment';
 
 declare const google: any; // <- 補這行，因為是外部的 global 變數
 
@@ -40,7 +41,7 @@ export class GoogleAuthService {
     // 注意：GoogleAuth.initialize() 型別定義回傳 void，因此使用 try/catch 而非 .catch()
     try {
       GoogleAuth.initialize({
-        clientId: '587558372608-jnei0k5eh8japakn4hs4kok2mld4m0qj.apps.googleusercontent.com',
+        clientId: environment.googleOAuth.initClientId,
         scopes: ['profile', 'email'],
         grantOfflineAccess: true,
       });
@@ -153,9 +154,8 @@ export class GoogleAuthService {
   async loginByGoogleWebFedCM(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       google.accounts.id.initialize({
-        //client_id: '830518362912-qhmt6tgd8djdv57qrdivu877u6ng5j0j.apps.googleusercontent.com', // specein0?
-        // client_id: '557566849446-g95ha2t5d8k6e5f7gb59j7kigup8i7vf.apps.googleusercontent.com', // specein2
-        client_id: '328066296243-5opekodfa93rria1e8utcql4rkrbvktq.apps.googleusercontent.com', // specein
+        // client_id 統一集中於 environment（src/environments/environment.ts）
+        client_id: environment.googleOAuth.webClientId, // specein
         callback: (res: any) => {
           console.log(" OAuth FedCM res : ", res);
           // 解析 res JWT 獲取用戶資訊, 並存入 CurrentUser

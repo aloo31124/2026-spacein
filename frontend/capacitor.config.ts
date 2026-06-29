@@ -1,4 +1,6 @@
 import { CapacitorConfig } from '@capacitor/cli';
+// OAuth client id 統一集中於 environment（src/environments/environment.ts）
+import { environment } from './src/environments/environment';
 
 const config: CapacitorConfig = {
   appId: 'com.spacein',
@@ -7,7 +9,7 @@ const config: CapacitorConfig = {
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: '328066296243-5opekodfa93rria1e8utcql4rkrbvktq.apps.googleusercontent.com',
+      serverClientId: environment.googleOAuth.webClientId,
       forceCodeForRefreshToken: true,
     },
     SplashScreen: {
