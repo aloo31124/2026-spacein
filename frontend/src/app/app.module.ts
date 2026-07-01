@@ -50,7 +50,6 @@ import { PayRecordComponent } from './manager-system/components/pay-record/pay-r
 import { PaySettingComponent } from './manager-system/components/pay-setting/pay-setting.component';
 import { LogRecordComponent } from './manager-system/components/log-record/log-record.component';
 import { BackupComponent } from './manager-system/components/backup/backup.component';
-import { RoleSelectComponent } from './account/components/role-select/role-select.component';
 import { BookerSelectOwnerComponent } from './account/components/booker-select-owner/booker-select-owner.component';
 import { CheckPaymentComponent } from './payment/components/check-payment/check-payment.component';
 import { ForgetPasswordMailComponent } from './auth-route/components/forget-password-mail/forget-password-mail.component';
@@ -108,7 +107,6 @@ const firebase = environment.firebase;
     PaySettingComponent,
     LogRecordComponent,
     BackupComponent,
-    RoleSelectComponent,
     BookerSelectOwnerComponent,
     CheckPaymentComponent,
     ForgetPasswordMailComponent,

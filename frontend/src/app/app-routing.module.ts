@@ -1,21 +1,39 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomePageComponent } from './home/components/home-page/home-page.component';
+
+import { AuthGuardService } from './auth-route/services/auth-guard.service';
+
+// 登入 / 認證
 import { LoginPageComponent } from './auth-route/components/login-page/login-page.component';
 import { AccountPageComponent } from './auth-route/components/account-page/account-page.component';
-import { AuthGuardService } from './auth-route/services/auth-guard.service';
+
+// 忘記密碼
+import { ForgetPasswordMailComponent } from './auth-route/components/forget-password-mail/forget-password-mail.component';
+import { ForgetPasswordVerityComponent } from './auth-route/components/forget-password-verity/forget-password-verity.component';
+
+// 註冊
+import { RegisterSelectComponent } from './auth-route/components/register-select/register-select.component';
+import { RegisterInfoComponent } from './auth-route/components/register-info/register-info.component';
+import { RegisterMailVerifyComponent } from './auth-route/components/register-mail-verify/register-mail-verify.component';
+import { PasswordChangeComponent } from './auth-route/components/password-change/password-change.component';
+
+// 帳號（購買 / 升級）
+import { BookerSelectOwnerComponent } from './account/components/booker-select-owner/booker-select-owner.component';
+
+// 首頁
+import { HomePageComponent } from './home/components/home-page/home-page.component';
+
+// 預約空間
 import { BookingDatePageComponent } from './booking/components/booking-date-page/booking-date-page.component';
 import { BookingClockPageComponent } from './booking/components/booking-clock-page/booking-clock-page.component';
 import { BookingSelectTypePageComponent } from './booking/components/booking-select-type-page/booking-select-type-page.component';
 import { BookingCheckFormPageComponent } from './booking/components/booking-check-form-page/booking-check-form-page.component';
-import { PaidPlanListComponent } from './payment/components/paid-plan-list/paid-plan-list.component';
-import { EcpayFormComponent } from './payment/components/ecpay-form/ecpay-form.component';
-import { CheckPaymentComponent } from './payment/components/check-payment/check-payment.component';
-import { ReviewRoomTrendComponent } from './review-room/components/review-room-trend/review-room-trend.component';
-import { ReviewRoomRemanetRateComponent } from './review-room/components/review-room-remanet-rate/review-room-remanet-rate.component';
 
+// 預約審視
 import { ReviewBookingCalendarComponent } from './review-booking/components/review-booking-calendar/review-booking-calendar.component';
 import { ReviewBookingFormComponent } from './review-booking/components/review-booking-form/review-booking-form.component';
+
+// 空間審視
 import { ReviewRoomOverviewComponent } from './review-room/components/review-room-overview/review-room-overview.component';
 
 // 空間管理
@@ -39,88 +57,46 @@ import { PaySettingComponent } from './manager-system/components/pay-setting/pay
 import { PaySettingContentComponent } from './manager-system/components/pay-setting-content/pay-setting-content.component';
 import { BackupComponent } from './manager-system/components/backup/backup.component';
 
-// 註冊
-import { RegisterInfoComponent } from './auth-route/components/register-info/register-info.component';
-import { RegisterMailVerifyComponent } from './auth-route/components/register-mail-verify/register-mail-verify.component';
-import { RegisterSelectComponent } from './auth-route/components/register-select/register-select.component';
-import { PasswordChangeComponent } from './auth-route/components/password-change/password-change.component';
-
-// 註冊 後 帳號 購買,升級
-import { BookerSelectOwnerComponent } from './account/components/booker-select-owner/booker-select-owner.component';
-import { RoleSelectComponent } from './account/components/role-select/role-select.component';
-
-// 忘記密碼
-import { ForgetPasswordMailComponent } from './auth-route/components/forget-password-mail/forget-password-mail.component';
-import { ForgetPasswordVerityComponent } from './auth-route/components/forget-password-verity/forget-password-verity.component';
+// 付款
+import { PaidPlanListComponent } from './payment/components/paid-plan-list/paid-plan-list.component';
+import { EcpayFormComponent } from './payment/components/ecpay-form/ecpay-form.component';
+import { CheckPaymentComponent } from './payment/components/check-payment/check-payment.component';
 
 
 const routes: Routes = [
-  {path:'', component: LoginPageComponent},
-  {
-    path: 'forget-password-mail',
-    component: ForgetPasswordMailComponent,
-  },
-  {
-    path: 'forget-password-verity',
-    component: ForgetPasswordVerityComponent,
-  },
-  {
-    path: 'booker-select-owner',
-    component: BookerSelectOwnerComponent,
-  },
-  {
-    path: 'register-select',
-    component: RegisterSelectComponent,
-  },
-  {
-    path: 'register-info',
-    component: RegisterInfoComponent,
-  },
-  {
-    path: 'register-mail-verify',
-    component: RegisterMailVerifyComponent,
-  },
-  {
-    path: 'password-change',
-    component: PasswordChangeComponent,
-  },
-  {
-    path: 'account',
-    component: AccountPageComponent,
-  },
-  {
-    path:'home', 
-    canActivate: [AuthGuardService],    // 檢查 父路由。
-    component: HomePageComponent,
-  },
-  {
-    path: 'booking-date',
-    component: BookingDatePageComponent,
-  },
-  {
-    path: 'booking-clock',
-    component: BookingClockPageComponent,
-  },
-  {
-    path: 'booking-select-type',
-    component: BookingSelectTypePageComponent,
-  },
-  {
-    path: 'booking-check-form',
-    component: BookingCheckFormPageComponent,
-  },
-  {
-    path: 'review-booking-calendar',
-    component: ReviewBookingCalendarComponent,
-  },
-  {
-    path: 'review-booking-form',
-    component: ReviewBookingFormComponent,
-  },
-  {
-    path: 'review-room-overview',
-    component: ReviewRoomOverviewComponent,
-  },
+  // 登入 / 認證
+  { path: '', component: LoginPageComponent },
+  { path: 'account', component: AccountPageComponent },
+
+  // 忘記密碼
+  { path: 'forget-password-mail', component: ForgetPasswordMailComponent },
+  { path: 'forget-password-verity', component: ForgetPasswordVerityComponent },
+
+  // 註冊
+  { path: 'register-select', component: RegisterSelectComponent },
+  { path: 'register-info', component: RegisterInfoComponent },
+  { path: 'register-mail-verify', component: RegisterMailVerifyComponent },
+  { path: 'password-change', component: PasswordChangeComponent },
+
+  // 帳號（購買 / 升級）
+  { path: 'booker-select-owner', component: BookerSelectOwnerComponent },
+
+  // 首頁
+  { path: 'home', canActivate: [AuthGuardService], component: HomePageComponent },
+
+  // 預約空間
+  { path: 'booking-date', component: BookingDatePageComponent },
+  { path: 'booking-clock', component: BookingClockPageComponent },
+  { path: 'booking-select-type', component: BookingSelectTypePageComponent },
+  { path: 'booking-check-form', component: BookingCheckFormPageComponent },
+
+  // 預約審視
+  { path: 'review-booking-calendar', component: ReviewBookingCalendarComponent },
+  { path: 'review-booking-form', component: ReviewBookingFormComponent },
+
+  // 空間審視
+  { path: 'review-room-overview', component: ReviewRoomOverviewComponent },
+
   // 空間管理
   {
     path: 'manager-room',
@@ -132,9 +108,11 @@ const routes: Routes = [
       { path: 'room-content', component: SearchRoomContentComponent },
       { path: 'site', component: SearchSiteComponent },
       { path: 'site-content', component: SearchSiteContentComponent },
-      { path: 'booking', component: SearchBookingComponent }
-    ]
+      { path: 'booking', component: SearchBookingComponent },
+    ],
   },
+
+  // 系統管理
   {
     path: 'manager-sys',
     component: SysDashboardComponent,
@@ -146,27 +124,17 @@ const routes: Routes = [
       { path: 'pay-record', component: PayRecordComponent },
       { path: 'pay-setting', component: PaySettingComponent },
       { path: 'pay-setting-content', component: PaySettingContentComponent },
-      { path: 'backup', component: BackupComponent }
-    ]
+      { path: 'backup', component: BackupComponent },
+    ],
   },
-/* 
-  {
-    path: 'review-room-detail',
-    component: ReviewRoomRemanetRateComponent,
-  },
-   */
-  {
-    path: 'pay-plan-list',
-    component: PaidPlanListComponent,
-  },
-  {
-    path: 'chekc-payment',
-    component: CheckPaymentComponent,
-  },
-  {
-    path: 'ecpay-form',
-    component: EcpayFormComponent,
-  },
+
+  // 付款
+  { path: 'pay-plan-list', component: PaidPlanListComponent },
+  { path: 'chekc-payment', component: CheckPaymentComponent },
+  { path: 'ecpay-form', component: EcpayFormComponent },
+
+  // 萬用 fallback：未知路徑導回登入頁
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
