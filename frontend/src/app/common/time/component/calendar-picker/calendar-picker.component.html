@@ -31,11 +31,10 @@
                             {{ i + 1 - currentMonthFirstDayWeekly }}
                     </div>
 
-                    <!-- 顯示 booking 紀錄 dot小點 -->
+                    <!-- 顯示 booking 紀錄 dot小點（已預約一律深紫色，樣式定義於 scss .dot） -->
                     <div class="dot-bar" *ngIf="countDot(i + 1 - currentMonthFirstDayWeekly) <= 3; else moreTemplate;">
-                        <div class="dot" 
-                            *ngFor="let i of [].constructor(countDot(i + 1 - currentMonthFirstDayWeekly))"
-                            [ngStyle]="{background: checkDotColor()}">
+                        <div class="dot"
+                            *ngFor="let i of [].constructor(countDot(i + 1 - currentMonthFirstDayWeekly))">
                         </div>
                     </div>
                     <ng-template #moreTemplate>
