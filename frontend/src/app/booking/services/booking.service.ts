@@ -88,7 +88,6 @@ export class BookingService {
    * 取得所有 booking 資料
    */
   getAllBooking(): Observable<Booking[]> {
-    //return this.fireStoreService.getAll(this.bookingTable);
     return this.http.get<any>(`${this.BASE_URL}/all`);
   }
 
@@ -110,14 +109,12 @@ export class BookingService {
    * 新增一筆 booking 資料
    */
   post(booking: Booking): Observable<ArrayBuffer> {
-    //return this.fireStoreService.post(this.bookingTable, booking);
     return this.http.post<any>(`${this.BASE_URL}/add`, {booking});
   }
 
 
   /*
   * 回傳所有 教室,座位 資訊, 並有 booking 時段判斷, 若已被預約, 則註記 isbooking: true
-  *  firestore 操作 待抽離至 RoomToSite model
   */
   getRoomSiteByDate(startDate:string, startTime:string, endTime:string) : Observable<RoomSiteIsBooking[]> {
     return this.http.get<any>(`${this.BASE_URL}/roomtosite/${startDate}/${startTime}/${endTime}`);

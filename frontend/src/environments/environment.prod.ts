@@ -2,16 +2,7 @@ export const environment = {
   production: true,
   domain: 'https://api-2qiy7ro3ea-uc.a.run.app',
 
-  // Firebase / Firestore 設定（spacein-ec8ab 專案）
-  firebase: {
-    projectId: 'spacein-ec8ab',
-    appId: '1:328066296243:web:b1897c1201a0f9b55843c6',
-    storageBucket: 'spacein-ec8ab.appspot.com',
-    apiKey: '***REMOVED***',
-    authDomain: 'spacein-ec8ab.firebaseapp.com',
-    messagingSenderId: '328066296243',
-    measurementId: 'G-54HYGJ7ZDQ',
-  },
+  // Firebase / Firestore 一律由後端存取, 設定集中於 backend/src/firestore.js
 
   // Google OAuth 2.0 Client ID 設定
   googleOAuth: {

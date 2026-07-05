@@ -17,9 +17,6 @@ import { BookingClockPageComponent } from './booking/components/booking-clock-pa
 import { BookingSelectTypePageComponent } from './booking/components/booking-select-type-page/booking-select-type-page.component';
 import { BookingCheckFormPageComponent } from './booking/components/booking-check-form-page/booking-check-form-page.component';
 
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { environment } from 'src/environments/environment';
 import { PaidPlanListComponent } from './payment/components/paid-plan-list/paid-plan-list.component';
 import { EcpayFormComponent } from './payment/components/ecpay-form/ecpay-form.component';
 import { ReviewRoomTrendComponent } from './review-room/components/review-room-trend/review-room-trend.component';
@@ -61,10 +58,6 @@ import { SearchSiteContentComponent } from './manager-room/components/content/se
 import { UserRoleListComponent } from './manager-system/components/user-role-list/user-role-list.component';
 import { UserPaymentListComponent } from './manager-system/components/user-payment-list/user-payment-list.component';
 import { AppVersionComponent } from './common/version/components/app-version/app-version.component';
-
-// Firebase 設定統一集中於 environment（src/environments/environment.ts）
-const firebase = environment.firebase;
-
 
 @NgModule({
   declarations: [
@@ -125,10 +118,7 @@ const firebase = environment.firebase;
     HttpClientModule,
     FormsModule,
   ],
-  providers: [
-    provideFirebaseApp(() => initializeApp(firebase)),
-    provideFirestore(() => getFirestore()),
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

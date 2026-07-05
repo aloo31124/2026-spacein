@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { GoogleAuthUser } from '../models/google-auth-user.model';
-//import { UserService } from 'src/app/common/user/services/user-service.service';
 import { RegisterService } from './register.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { Preferences } from '@capacitor/preferences';
@@ -33,7 +32,6 @@ export class GoogleAuthService {
   constructor(
     private routeUrlRecordService: RouteUrlRecordService<{}>,
     private router: Router,
-    //private userService: UserService, // 2025/04/23 棄用
     private registerService: RegisterService,
     private dialogService: DialogService,
   ) { 
@@ -359,7 +357,7 @@ export class GoogleAuthService {
       alert("測試帳號無法刪除 : " + this.currentUser.email);
       return;
     }
-    //this.userService.deleteUserById(id);
+    // TODO: 原 Firestore 直刪已於 2025/04/23 棄用, 待後端提供刪除帳號 API 後於此串接
     //this.routeUrlRecordService.nextPage("/", {}); //登出, 進入登入頁
   }
 
