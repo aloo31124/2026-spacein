@@ -19,9 +19,9 @@ COPY . .
 ARG BACKEND_URL=http://localhost:8082
 ENV BACKEND_URL=${BACKEND_URL}
 
+# 僅替換 domain 欄位，保留 googleOAuth 等其餘設定，避免整份覆寫造成編譯錯誤
 RUN echo "前端建置使用後端 URL: ${BACKEND_URL}" && \
-    printf "export const environment = {\n  production: true,\n  domain: '%s'\n};\n" "${BACKEND_URL}" \
-      > src/environments/environment.prod.ts && \
+    sed -i "s|domain: '[^']*'|domain: '${BACKEND_URL}'|" src/environments/environment.prod.ts && \
     cat src/environments/environment.prod.ts
 
 # 放寬 angular.json budgets，避免 main bundle 超過預設 500KB 限制而報 error
