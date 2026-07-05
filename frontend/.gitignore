@@ -2,3 +2,7 @@
 /node_modules
 /.angular
 
+# Cypress 執行產物
+/cypress/videos
+/cypress/screenshots
+/cypress/downloads
