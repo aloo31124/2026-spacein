@@ -23,6 +23,7 @@ input[type="radio"] {
         .pay-plan-item {
             width: 90%;
             padding: 20px;
+            border-radius: 10px;
             .pay-plan-title {
                 display: flex;
                 flex-direction: row;
@@ -39,6 +40,25 @@ input[type="radio"] {
                 align-items: center;
                 padding: 10px;
             }
+
+            &.origin-plan {
+                border: 2px solid #661983;
+                background-color: rgba(102, 25, 131, 0.08);
+            }
+
+            .origin-plan-tag {
+                font-size: 14px;
+                color: #fff;
+                background-color: #661983;
+                border-radius: 6px;
+                padding: 2px 8px;
+            }
+        }
+
+        .origin-plan-hint {
+            width: 90%;
+            font-size: 16px;
+            color: #661983;
         }
 
         .row {

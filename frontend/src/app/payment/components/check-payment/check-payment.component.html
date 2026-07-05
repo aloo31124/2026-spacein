@@ -9,5 +9,5 @@
     <p>方案座位數: {{ payment.siteTotal || 0 }} </p>
     <p>購買日期: {{ userToPayment.purchaseDate }}</p>
     <p>方案期限: {{ userToPayment.expiryDate }}</p>
-    <button *ngIf="isExpired" (click)="routeToECPayForm()">續約</button>
+    <button *ngIf="isExpired" (click)="routeToRenewPlanList()">續約</button>
 </div>
