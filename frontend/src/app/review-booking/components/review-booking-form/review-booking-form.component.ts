@@ -4,6 +4,7 @@ import { ReviewBookingService } from '../../services/review-booking.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 import { GoogleAuthUser } from 'src/app/auth-route/models/google-auth-user.model';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-review-booking-form',
@@ -27,6 +28,7 @@ export class ReviewBookingFormComponent {
     private activatedRoute: ActivatedRoute,
     private reviewBookingService: ReviewBookingService,
     private googleAuthService: GoogleAuthService,
+    private dialogService: DialogService,
   ) { }
 
   ngOnInit(): void {
@@ -50,8 +52,8 @@ export class ReviewBookingFormComponent {
     });
   }
 
-  deleteBooking() {
-    if(!confirm("確定取消借用?")) {
+  async deleteBooking() {
+    if(!await this.dialogService.confirm("確定取消借用?")) {
       return;
     }
     this.reviewBookingService

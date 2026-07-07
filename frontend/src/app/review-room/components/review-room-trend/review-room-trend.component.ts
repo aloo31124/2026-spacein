@@ -5,11 +5,6 @@ import { ChartTimeType } from '../../models/chartTimeType.model';
 import { ChartTimeWord } from '../../models/chartTimeWord.model';
 import { DialogItemModel } from 'src/app/common/dialog/models/item.model';
 
-
-import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
-import { FireStoreService } from 'src/app/firebase-api/services/fire-store.service';
-import { Room } from 'src/app/common/room-site/models/room.model';
-
 @Component({
   selector: 'app-review-room-trend',
   templateUrl: './review-room-trend.component.html',
@@ -36,8 +31,6 @@ export class ReviewRoomTrendComponent {
   
   constructor(
     private reviewRoomService: ReviewRoomService,
-    private googleAuthService: GoogleAuthService,
-    private fireStoreService: FireStoreService,
   ) {}
 
   ngOnInit(): void {

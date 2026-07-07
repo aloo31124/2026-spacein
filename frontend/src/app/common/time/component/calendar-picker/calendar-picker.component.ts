@@ -9,6 +9,9 @@ import { RateModel } from 'src/app/review-room/models/rate.model';
 })
 export class CalendarPickerComponent {
 
+  // 供 template 使用 Array.from
+  readonly Array = Array;
+
 
   // 該日期元件選擇年月日
   @Output() selectDatInfo = new EventEmitter<string>();
@@ -40,11 +43,6 @@ export class CalendarPickerComponent {
   currentMonthFirstDayWeekly = 0;
   displayAllDayGrid = 0
 
-  
-  //該天 booking 幾次
-  thisDayBookingList = new Array<Booking>();
-  
-  
   constructor() { }
 
   ngOnInit(): void {
@@ -109,22 +107,7 @@ export class CalendarPickerComponent {
         const [year, month, day] = booking.startDate.split("-").map(Number);
         return (new Date(year, month - 1, day).getTime() === checkDate.getTime());
       });
-    this.thisDayBookingList = filterBooking;
     return filterBooking.length;
-  }
-
-  /*
-   * 確認當天 借用 dot 的顏色 (教室/座位預約) 
-   */
-  checkDotColor() {
-    const booking = this.thisDayBookingList.pop();
-    if(booking?.bookingType === "room") {
-      return "#661983";
-    } 
-    else if (booking?.bookingType === "site") { 
-      return "#FBE0FF";
-    }
-    return "yellow";
   }
 
 

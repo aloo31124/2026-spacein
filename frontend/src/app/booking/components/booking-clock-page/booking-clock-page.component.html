@@ -29,7 +29,15 @@
         </div>
                 
         <div class="clock-container">
-            <section class="clock">
+            <section class="clock" #clockFace
+                     (pointerdown)="onPointerDown($event)"
+                     (pointermove)="onPointerMove($event)"
+                     (pointerup)="onPointerUp()"
+                     (pointercancel)="onPointerUp()"
+                     (touchstart)="onTouchStart($event)"
+                     (touchmove)="onTouchMove($event)"
+                     (touchend)="onTouchEnd()"
+                     (touchcancel)="onTouchEnd()">
                 <ul *ngIf="isSelectHour">
                     <li><i (click)="selectTime(12)" [ngClass]="{'selected':_selectHour === 12 }">12</i></li>
                     <li><i (click)="selectTime(1)" [ngClass]="{'selected':_selectHour === 1 }">1</i></li>
@@ -72,7 +80,14 @@
     </div>
 
     <div class="btn-bar">
-        <img src="assets/images/icon/icon_next.png" (click)="nextStep()">
+        <!-- 下一步：改用 inline SVG（取代 icon_next.png），跨平台渲染一致 -->
+        <button type="button" class="next-btn" (click)="nextStep()" aria-label="下一步" title="下一步">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+                <circle cx="24" cy="24" r="22" fill="#661983" />
+                <path d="M20 16l8 8-8 8" fill="none" stroke="#ffffff" stroke-width="3"
+                      stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
     </div>
     
 </div>

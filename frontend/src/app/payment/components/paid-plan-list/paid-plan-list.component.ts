@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlanTypeModel } from '../../models/plan-type.model';
 import { PlanTimeTypeModel } from '../../models/plan-time-type.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EcpayService } from '../../services/ecpay.service';
 import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 
@@ -19,6 +19,9 @@ export class PaidPlanListComponent {
   // 選擇購買方案 id
   selectPaymentId: string = "";
 
+  // 續約時, 原本購買的方案 id (由 check-payment 頁面帶入, 供預選與提示)
+  originPaymentId: string = "";
+
   // 選擇方案 models
   palnTypeModel = new PlanTypeModel();
   // 選擇時段 models
@@ -29,9 +32,17 @@ export class PaidPlanListComponent {
 
   constructor(
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private ecpayService: EcpayService,
     private googleAuthService: GoogleAuthService,
-  ) { 
+  ) {
+    // 續約流程會帶入原本購買的方案 id, 預選並提示該方案
+    const originPaymentId = this.activatedRoute.snapshot.queryParamMap.get("originPaymentId");
+    if (originPaymentId) {
+      this.originPaymentId = originPaymentId;
+      this.selectPaymentId = originPaymentId;
+    }
+
     // 取得所有方案
     this.ecpayService.getPaymentList()
       .subscribe({

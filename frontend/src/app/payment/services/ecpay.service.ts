@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CloudFunService } from 'src/app/firebase-api/services/cloud-fun.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -12,7 +11,6 @@ export class EcpayService {
   private BASE_URL = this.DOMAIN + this.CONTEXT;
 
   constructor(
-    private cloudFunService: CloudFunService,
     private httpClient: HttpClient,
   ) { }
 
@@ -25,7 +23,6 @@ export class EcpayService {
 
   openECPayWindow(paymentId: string, userId: string) {
     //導向綠界付款
-    //window.open(this.cloudFunService.cloudFunApiList.ECPAY_SELECT_PAY_PAGE + "?planType=" + planType + "&planTimeType=" + planTimeType);
     window.open(`${this.BASE_URL}/select/${paymentId}/${userId}`);
   }
 

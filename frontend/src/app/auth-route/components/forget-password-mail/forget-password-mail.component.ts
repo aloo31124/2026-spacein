@@ -36,9 +36,18 @@ export class ForgetPasswordMailComponent {
             throw new Error('該信箱不存在');
           }
         }),
-        
+
         // 2. 信箱存在，寄送驗證碼
         switchMap(() => this.registerService.sendMail(this.mail)),
+
+        // 錯誤處理: 關閉 loading 並顯示錯誤訊息
+        catchError(err => {
+          console.error(err);
+          this.isLoading = false;
+          const errorMessage = err?.error?.message || err.message || '未知錯誤';
+          alert(`處理失敗: ${errorMessage}`);
+          return of(null); // 結束流程
+        })
       )
       .subscribe({
         next: (result) => {

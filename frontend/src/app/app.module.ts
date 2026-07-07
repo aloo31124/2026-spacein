@@ -17,8 +17,6 @@ import { BookingClockPageComponent } from './booking/components/booking-clock-pa
 import { BookingSelectTypePageComponent } from './booking/components/booking-select-type-page/booking-select-type-page.component';
 import { BookingCheckFormPageComponent } from './booking/components/booking-check-form-page/booking-check-form-page.component';
 
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { PaidPlanListComponent } from './payment/components/paid-plan-list/paid-plan-list.component';
 import { EcpayFormComponent } from './payment/components/ecpay-form/ecpay-form.component';
 import { ReviewRoomTrendComponent } from './review-room/components/review-room-trend/review-room-trend.component';
@@ -49,7 +47,6 @@ import { PayRecordComponent } from './manager-system/components/pay-record/pay-r
 import { PaySettingComponent } from './manager-system/components/pay-setting/pay-setting.component';
 import { LogRecordComponent } from './manager-system/components/log-record/log-record.component';
 import { BackupComponent } from './manager-system/components/backup/backup.component';
-import { RoleSelectComponent } from './account/components/role-select/role-select.component';
 import { BookerSelectOwnerComponent } from './account/components/booker-select-owner/booker-select-owner.component';
 import { CheckPaymentComponent } from './payment/components/check-payment/check-payment.component';
 import { ForgetPasswordMailComponent } from './auth-route/components/forget-password-mail/forget-password-mail.component';
@@ -61,29 +58,6 @@ import { SearchSiteContentComponent } from './manager-room/components/content/se
 import { UserRoleListComponent } from './manager-system/components/user-role-list/user-role-list.component';
 import { UserPaymentListComponent } from './manager-system/components/user-payment-list/user-payment-list.component';
 import { AppVersionComponent } from './common/version/components/app-version/app-version.component';
-
-// 調整會損壞... ="=
-const  firebase = {
-  projectId: 'spacein-ec8ab',
-  appId: '1:328066296243:web:b1897c1201a0f9b55843c6',
-  storageBucket: 'spacein-ec8ab.appspot.com',
-  apiKey: '***REMOVED***',
-  authDomain: 'spacein-ec8ab.firebaseapp.com',
-  messagingSenderId: '328066296243',
-  measurementId: 'G-54HYGJ7ZDQ',
-}
-/* 
-const firebase = {
-  apiKey: "***REMOVED***",
-  authDomain: "spaceincopy.firebaseapp.com",
-  projectId: "spaceincopy",
-  storageBucket: "spaceincopy.firebasestorage.app",
-  messagingSenderId: "587558372608",
-  appId: "1:587558372608:web:920076cdfee160be449fe5",
-  measurementId: "G-5QB00RTHRM"
-};
-*/
-
 
 @NgModule({
   declarations: [
@@ -126,7 +100,6 @@ const firebase = {
     PaySettingComponent,
     LogRecordComponent,
     BackupComponent,
-    RoleSelectComponent,
     BookerSelectOwnerComponent,
     CheckPaymentComponent,
     ForgetPasswordMailComponent,
@@ -145,10 +118,7 @@ const firebase = {
     HttpClientModule,
     FormsModule,
   ],
-  providers: [
-    provideFirebaseApp(() => initializeApp(firebase)),
-    provideFirestore(() => getFirestore()),
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

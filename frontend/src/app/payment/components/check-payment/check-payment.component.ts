@@ -3,7 +3,6 @@ import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.servi
 import { EcpayService } from '../../services/ecpay.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { switchMap, tap, catchError, of } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-check-payment',
@@ -25,7 +24,6 @@ export class CheckPaymentComponent {
   @Input() isFromAccountPage = false;
 
   constructor(
-    private router: Router,
     private ecpayService: EcpayService,
     private googleAuthService: GoogleAuthService,
     private routeUrlRecordService: RouteUrlRecordService<{}>,
@@ -79,26 +77,11 @@ export class CheckPaymentComponent {
     return "尚未設定"
   }
 
-  /* 
-  *  下一步, 送給 伺服器 (google cloud function),由 伺服器 與 綠界金流 取付款介面
+  /*
+  *  方案過期續約, 導向原本的方案選擇頁面, 並帶入原本選擇方案 id 供預選與提示
   */
-  routeToECPayForm() {
-
-      //檢查是否已勾選 購買方案
-      if(this.payment.planType === "") {
-        alert("請選擇購買方案");
-        return;
-      }
-      //檢查是否已勾選 購買方案
-      if(this.payment.planTimeType === "") {
-        alert("請選擇購買方案時段");
-        return;
-      }
-  
-      //導向綠界付款
-      const userId  = this.googleAuthService.getCurrentUser().id;
-      this.ecpayService.openECPayWindow(this.payment.id, userId);
-      this.router.navigate(["/home"]);
+  routeToRenewPlanList() {
+      this.routeUrlRecordService.nextPage("pay-plan-list", { originPaymentId: this.payment.id });
   }
 
 }

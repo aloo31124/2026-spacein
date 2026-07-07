@@ -2,11 +2,14 @@
 <div class="main-container">
 
     <div class="pay-plan-list">
-        
-        <div class="pay-plan-item" *ngFor="let payment of paymentList">
+
+        <p *ngIf="originPaymentId" class="origin-plan-hint">已為您預選原本購買的方案，如需續約請確認或重新選擇方案</p>
+
+        <div class="pay-plan-item" [class.origin-plan]="payment.id === originPaymentId" *ngFor="let payment of paymentList">
             <div class="pay-plan-title">
-                <input type="radio" name="paymentId" (click)="checkSelectPaymentId(payment.id)">
+                <input type="radio" name="paymentId" [checked]="payment.id === selectPaymentId" (click)="checkSelectPaymentId(payment.id)">
                 <label> {{ getPlanTitle(payment.planType) }} </label>
+                <span *ngIf="payment.id === originPaymentId" class="origin-plan-tag">原方案</span>
             </div>
             <div class="row"> {{ payment.planName }}</div>
             <div class="row"> {{ payment.siteTotal }}空間</div>

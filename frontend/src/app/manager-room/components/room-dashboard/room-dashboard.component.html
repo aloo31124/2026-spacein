@@ -1,16 +1,35 @@
 <div class="manager-container">
-    <img
-      class="iconBtn"
-      src="assets/images/icon/icon_next.png"
+    <!-- 展開選單：改用 inline SVG 漢堡圖示預設元件（取代 icon_next.png） -->
+    <button
+      type="button"
+      class="iconBtn menu-open-btn"
       (click)="toggleMenu()"
-      [style.display]="isMenuVisible ? 'none' : 'block'"
-    />
+      [style.display]="isMenuVisible ? 'none' : 'inline-flex'"
+      aria-label="展開選單"
+      title="展開選單"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" y1="7" x2="20" y2="7" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="17" x2="20" y2="17" />
+      </svg>
+    </button>
     <div class="manager-menu" [style.display]="isMenuVisible ? 'flex' : 'none'">
-      <img
-        class="iconBtn"
-        src="assets/images/icon/icon_back.png"
+      <!-- 收合選單：改用 inline SVG 關閉圖示預設元件（取代 icon_back.png） -->
+      <button
+        type="button"
+        class="iconBtn menu-close-btn"
         (click)="toggleMenu()"
-      />
+        aria-label="收合選單"
+        title="收合選單"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
         <button routerLink="/manager-room/room-site-import" routerLinkActive="active">教室座位匯入</button>
         <button routerLink="/manager-room/room" routerLinkActive="active">教室管理</button>
         <button routerLink="/manager-room/site" routerLinkActive="active">座位管理</button>

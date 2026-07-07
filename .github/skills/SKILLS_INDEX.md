@@ -41,3 +41,19 @@
     * 修改或新增 Web Component 打包設定、自訂元素標籤、FlowEditElement 包裝層、mock 模組、假資料時，必須參考此檔案。
     * 涵蓋 defineCustomElement 註冊流程、Vite library 模式建置（ES/UMD/IIFE）、Shadow DOM 停用策略、mock-router / mock-api-service 替換架構、假資料系統（mockData）、Props HTML 屬性對應。
     * 關鍵字：web component、custom element、defineCustomElement、flow-edit-element、build:wc、IIFE、UMD、mockData、vite.config.webcomponent、dist-webcomponent。
+
+### ECPay 綠界金流整合
+- **文檔**: `.github/skills/ecpay-payment/SKILL.md`
+- **適用情境**:
+    * 修改或新增後端 ECPay 付款流程、付款參數產生、付款結果回呼（ReturnURL/ClientBackURL）、付款歷史紀錄寫入、使用者方案升級等任何金流相關邏輯時，必須參考此檔案。
+    * 涵蓋 ECPay SDK 參數格式硬性規範（`MerchantTradeDate` 須為 `yyyy/MM/dd HH:mm:ss` 台北時區、`MerchantTradeNo` 長度限制、`TotalAmount` 整數要求）、`CheckMacValue` 驗證、`planTimeType` 到期日計算、環境變數設定等。
+    * 關鍵字：ECPay、綠界、ecpay_aio_nodejs、aio_check_out_all、MerchantTradeDate、MerchantTradeNo、CheckMacValue、付款、金流、訂單、儲值、方案、pay-ecpay.service.js。
+
+### Cypress 前端 E2E 測試
+- **文檔**: `.github/skills/cypress-e2e/SKILL.md`
+- **補充參考**: `frontend/cypress/README.md`
+- **適用情境**:
+    * 新增或修改任何 Cypress E2E 測試（登入、Google 驗證、預約流程、取消預約）時，必須參考此檔案。
+    * 涵蓋 cy.intercept 後端攔截規範、自訂彈窗（.app-dialog）操作、快閃訊息遮罩與 force 點擊、Google 登入模擬（onBeforeLoad 注入假 window.google + 假 JWT）、時鐘時段卡控、行事曆日期選取等硬性眉角。
+    * 疑難排解：`bad option: --no-sandbox`（`ELECTRON_RUN_AS_NODE` 導致 Electron 被當 Node 執行）。
+    * 關鍵字：Cypress、E2E、cy.intercept、loginByEmail、loginByGoogle、acceptDialog、app-dialog、ELECTRON_RUN_AS_NODE、預約測試、取消預約測試、Google 登入模擬。

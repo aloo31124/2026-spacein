@@ -2,9 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ReviewType } from '../../models/review-type.model';
 import { ReviewRoomService } from '../../services/review-room.service';
 import { TodayRemanent } from '../../models/today-remanent.model';
-import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
-import { FireStoreService } from 'src/app/firebase-api/services/fire-store.service';
-import { Room } from 'src/app/common/room-site/models/room.model';
 
 @Component({
   selector: 'app-review-room-overview',
@@ -24,73 +21,16 @@ export class ReviewRoomOverviewComponent implements OnInit {
 
   constructor(
     private reviewRoomService: ReviewRoomService,
-    private googleAuthService: GoogleAuthService,
-    private fireStoreService: FireStoreService,
   ) {}
 
   ngOnInit(): void {
-    // 取得 今日剩餘比率]
+    // 取得 今日剩餘比率, 統一由後端 API 計算
     this.reviewRoomService
       .getTodayRemanent()
         .subscribe((todayRemanent: any) => {
           this.todayRemanent = todayRemanent;
         });
-      this.getTodayRemanet();
   }
-
-
-  /*
-   *  (temp) 取得 [今日剩餘]
-   */
-  getTodayRemanet() {    
-    //const userId = this.googleAuthService.getCurrentUser().userFirestoreId; // google User 舊 id
-    let ownerId = this.googleAuthService.getCurrentUser().id;
-    let ownerRoomList: Room[] = [];
-
-    // 取得 Room教室
-    this.fireStoreService
-      .getAll("Room")
-      .subscribe((roomList: any) => {
-        roomList.forEach((room: any) => {
-          // 取得 該 擁有者 之 空間(教室)
-          if(room["ownerId"] === ownerId) {
-            ownerRoomList.push(new Room(room));
-          }
-        });
-
-        // 取得 該 擁有者 其 空間(教室)所有被預約紀錄
-        const today = new Date();
-        this.fireStoreService
-          .getAll("Booking")
-          .subscribe((bookingList: any) => {
-            bookingList.forEach((booking: any) => {
-              ownerRoomList.forEach(room => {
-                if(booking["roomId"] === room.id
-                  && new Date(booking["startDate"]).getDate() === today.getDate()) {
-                  room.bookingCount = 1;
-                }
-              })
-            });
-
-            // 計算 [今日剩餘]
-            let bookingCount = 0;
-            ownerRoomList.forEach(ownerRoom => {
-              if(ownerRoom.bookingCount === 1) {
-                bookingCount ++;
-              }
-            });
-
-            if(bookingCount === 0) {
-              this.todayRemanent = {remanent: 0, totalRoom: 0};
-            } else {
-              this.todayRemanent = {remanent: ownerRoomList.length - bookingCount, totalRoom: ownerRoomList.length};
-            }
-
-          });
-      });
-  }
-
-
 
   /*
    * 點選 總攬種類 

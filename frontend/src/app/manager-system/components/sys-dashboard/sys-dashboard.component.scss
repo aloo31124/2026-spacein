@@ -1,15 +1,37 @@
 
-/* 後台管理樣式 */
+
+/* 後台管理樣式（RWD 作法與空間管理 room-dashboard 一致） */
 .manager-container {
     width: 90vw;
+    box-sizing: border-box; // padding 計入寬度，避免 90vw+padding 溢出視窗（手機可左右拖曳主因）
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
     padding: 40px;
+    gap: 20px;
+
+    // 圖示鈕：覆蓋全域 button 的紫底圓角樣式，做成透明 SVG 圖示鈕
     .iconBtn {
-        width: 30px;
-        margin: 10px;
+        background: transparent;
+        border: none;
+        padding: 4px;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 0;
+        color: #661983; // 展開鈕位於白底頁面 → 用主色
+
+        svg {
+            width: 30px;
+            height: 30px;
+        }
+    }
+    .iconBtn:hover {
+        background: transparent;
+        color: #8a2bad;
+        font-weight: normal;
     }
 
     .manager-menu {
@@ -19,10 +41,21 @@
         align-items: flex-start;
         padding: 20px;
         min-width: 220px;
+        box-sizing: border-box;
         background: #661983;
         border-radius: 20px;
+
+        // 收合鈕位於紫底選單內 → 用淺色
+        .iconBtn {
+            color: #FBE0FF;
+        }
+        .iconBtn:hover {
+            color: #ffffff;
+        }
     }
     .manager-container {
+        flex: 1; // 內容區佔滿剩餘空間
+        min-width: 0; // 允許收縮，避免子內容撐破版面
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -39,4 +72,39 @@
     }
 }
 
+/* 手機板 RWD：避免水平溢出、選單改為上方堆疊並等寬，操作區更易點擊 */
+@media (max-width: 600px) {
+    .manager-container {
+        width: 100%;
+        padding: 12px;
+        flex-direction: column;
+        gap: 12px;
 
+        .manager-menu {
+            width: 100%;
+            min-width: 0;
+            padding: 16px;
+
+            // 選單按鈕在手機改為等寬，避免左對齊參差與右側留白
+            button:not(.iconBtn) {
+                width: 100%;
+                box-sizing: border-box;
+                margin: 6px 0;
+                text-align: center;
+            }
+        }
+
+        .manager-container {
+            width: 100%;
+            padding: 8px 0;
+
+            // 搜尋列改為垂直堆疊，輸入框與按鈕在窄螢幕不再被擠壓
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                width: 100%;
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GoogleAuthService } from '../../services/google-auth.service';
 import { GoogleAuthUser } from '../../models/google-auth-user.model';
-import { DialogComponent } from 'src/app/common/dialog/components/dialog/dialog.component';
+import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-account-page',
@@ -15,6 +15,7 @@ export class AccountPageComponent {
 
   constructor(
     private googleAuthService: GoogleAuthService,
+    private dialogService: DialogService,
   ) {
     this.currentUser = this.googleAuthService.getCurrentUser();
   }
@@ -22,7 +23,10 @@ export class AccountPageComponent {
   /* 
    * 登出
    */
-  loginOut() {
+  async loginOut() {
+    if(!await this.dialogService.confirm("是否登出?")) {
+      return;
+    }
     this.googleAuthService.logout();
   }
 

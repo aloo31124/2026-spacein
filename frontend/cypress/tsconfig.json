@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "types": ["cypress", "node"],
+    "outDir": "../out-tsc/cypress",
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
