@@ -49,6 +49,13 @@
     * 涵蓋 ECPay SDK 參數格式硬性規範（`MerchantTradeDate` 須為 `yyyy/MM/dd HH:mm:ss` 台北時區、`MerchantTradeNo` 長度限制、`TotalAmount` 整數要求）、`CheckMacValue` 驗證、`planTimeType` 到期日計算、環境變數設定等。
     * 關鍵字：ECPay、綠界、ecpay_aio_nodejs、aio_check_out_all、MerchantTradeDate、MerchantTradeNo、CheckMacValue、付款、金流、訂單、儲值、方案、pay-ecpay.service.js。
 
+### 擁有者預設資料與教室開放時段卡控
+- **文檔**: `.github/skills/owner-default-room-open-rule/SKILL.md`
+- **適用情境**:
+    * 修改或新增「擁有者預設資料（預設地址/電話/每周不開放星期/每天開放時段）」、「教室開放資訊欄位」、「空間預約之教室不開放時段卡控」相關前後端功能時，必須參考此檔案。
+    * 涵蓋 Owner 表結構（以 ownerId 為文件 id 的 upsert）、前後端共用欄位命名、共用表單元件 app-owner-default-form、預約存檔前卡控規則（日期手動解析避免時區誤差、HH:mm 補零比較）、卡控失敗 400 錯誤訊息格式。
+    * 關鍵字：擁有者預設、Owner表、closedWeekdays、openStartTime、openEndTime、每周不開放、每天開放時段、預約卡控、checkRoomOpenRule、owner-default-form、帶入擁有者預設。
+
 ### Cypress 前端 E2E 測試
 - **文檔**: `.github/skills/cypress-e2e/SKILL.md`
 - **補充參考**: `frontend/cypress/README.md`

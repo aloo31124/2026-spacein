@@ -66,6 +66,9 @@ app.post('/api/auth/regist/user/update', authApiController.registUserUpdate);
 app.post('/api/auth/regist/user/password', authApiController.registUserUpdatePassword);
 app.post('/api/auth/regist/verify/code', authApiController.registVerityCode);
 app.get('/api/auth/user/:email', authApiController.getUserByEmail);
+// [帳號] 擁有者預設資料 (地址/電話/每周不開放星期/每天開放時段)
+app.get('/api/account/owner/default/:ownerId', accountApiController.getOwnerDefault);
+app.post('/api/account/owner/default/:ownerId', accountApiController.postOwnerDefault);
 // [帳號] 升級, 付款
 app.get('/api/account/owner/:email', accountApiController.getOwnerByEmail);
 app.post('/api/account/owner/add', accountApiController.postUserToOwner);

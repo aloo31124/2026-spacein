@@ -250,7 +250,10 @@ export class BookingCheckFormPageComponent {
               this.routeUrlRecordService.nextPage("/home", {});
             },
             error => {
-              alert("資料送出失敗,請重新輸入, 錯誤訊息 " + JSON.stringify(error));
+              // 後端卡控失敗 (如教室不開放時段) 訊息放在 error.error.error, 直接顯示原因
+              const message = error?.error?.error ?? JSON.stringify(error);
+              alert("資料送出失敗, " + message);
+              this.isLoading = false;
             });
           alert("資料傳輸中");
         }

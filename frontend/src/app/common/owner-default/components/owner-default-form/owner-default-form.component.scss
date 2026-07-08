@@ -1,0 +1,54 @@
+.owner-default-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .field-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        label {
+            min-width: 110px;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 150px;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    }
+
+    .weekday-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+
+        .weekday-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            min-width: unset;
+        }
+    }
+
+    .time-range {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+
+        input[type="time"] {
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    }
+}

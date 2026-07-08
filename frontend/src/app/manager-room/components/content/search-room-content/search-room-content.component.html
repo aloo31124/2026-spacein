@@ -1,4 +1,9 @@
 <h2>{{ (model === 'add') ? "新增" : "編輯" }}教室</h2>
 <input type="text" [(ngModel)]="name" placeholder="教室名稱">
+
+<!-- 教室開放資訊, 與 [擁有者預設] 共用表單元件 -->
+<app-owner-default-form [form]="roomDetail"></app-owner-default-form>
+<button (click)="loadOwnerDefault(true)">重新帶入擁有者預設</button>
+
 <button *ngIf="model === 'add'" (click)="clickAddRoom()">新增</button>
 <button *ngIf="model === 'edit'" (click)="clickUpdateRoom()">更新</button>

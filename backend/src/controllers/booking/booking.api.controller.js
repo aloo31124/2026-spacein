@@ -83,7 +83,9 @@ exports.postBooking = async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         console.error("[postBooking] api Error:", error);
-        res.status(500).json({ result: '500', error: error.message });
+        // 卡控類錯誤 (教室不開放時段) 帶有 status 400, 其餘視為 500
+        const status = error.status || 500;
+        res.status(status).json({ result: String(status), error: error.message });
     }
 }
 

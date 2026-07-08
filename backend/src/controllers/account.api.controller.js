@@ -1,5 +1,6 @@
 const userToRoleService = require("../services/userToRole.service");
 const userToOwnerService = require("../services/userToOwner.service");
+const ownerService = require("../services/owner.service");
 const userToPaymentService = require("../services/userToPayment.service");
 const paymentService = require("../services/payment.service");
 const payEcpayService = require("../services/pay-ecpay.service");
@@ -15,6 +16,32 @@ exports.getOwnerByEmail = async (req, res) => {
     } catch (error) {
         console.log("[getOwnerByEmail] 失敗", error);
         res.status(500).json({ error: "[getOwnerByEmail] 失敗 發送驗證碼失敗" });
+    }
+};
+
+/* 查詢 擁有者預設資料, 依照 ownerId */
+exports.getOwnerDefault = async (req, res) => {
+    console.log("[getOwnerDefault] 開始", req.params);
+    try {
+        const result = await ownerService.getOwnerDefault(req.params.ownerId);
+        console.log("[getOwnerDefault] 成功 : ", result);
+        res.status(200).send({result});
+    } catch (error) {
+        console.log("[getOwnerDefault] 失敗", error);
+        res.status(500).json({ error: "[getOwnerDefault] 失敗 查詢擁有者預設資料失敗" });
+    }
+};
+
+/* 儲存 擁有者預設資料 (新增或更新) */
+exports.postOwnerDefault = async (req, res) => {
+    console.log("[postOwnerDefault] 開始", req.params, req.body.ownerDefault);
+    try {
+        const result = await ownerService.saveOwnerDefault(req.params.ownerId, req.body.ownerDefault);
+        console.log("[postOwnerDefault] 成功 : ", result);
+        res.status(200).send({result});
+    } catch (error) {
+        console.log("[postOwnerDefault] 失敗", error);
+        res.status(500).json({ error: "[postOwnerDefault] 失敗 儲存擁有者預設資料失敗" });
     }
 };
 
