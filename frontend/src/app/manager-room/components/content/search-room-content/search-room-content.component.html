@@ -1,4 +1,41 @@
-<h2>{{ (model === 'add') ? "新增" : "編輯" }}教室</h2>
-<input type="text" [(ngModel)]="name" placeholder="教室名稱">
-<button *ngIf="model === 'add'" (click)="clickAddRoom()">新增</button>
-<button *ngIf="model === 'edit'" (click)="clickUpdateRoom()">更新</button>
+<div class="form-container">
+    <h2>{{ (model === 'add') ? "新增" : "編輯" }}教室</h2>
+
+    <!-- 基本欄位: 加上常駐標籤, 避免僅靠 placeholder(輸入後消失)無法辨識欄位 -->
+    <div class="field-row">
+        <span class="field-title">教室名稱:</span>
+        <input type="text" [(ngModel)]="name" placeholder="輸入教室名稱">
+    </div>
+    <div class="field-row">
+        <span class="field-title">地址:</span>
+        <input type="text" [(ngModel)]="address" placeholder="輸入地址">
+    </div>
+    <div class="field-row">
+        <span class="field-title">電話:</span>
+        <input type="text" [(ngModel)]="phone" placeholder="輸入電話">
+    </div>
+
+    <!-- 教室開放限制欄位, 淺紫區塊 樣式比照 帳號頁 擁有者預設資料 -->
+    <div class="open-limit-container">
+        <div class="field-row">
+            <span class="field-title">每周不開放時段:</span>
+            <div class="weekly-day-bar">
+                <label *ngFor="let day of weeklyDayOptions">
+                    <input type="checkbox" [(ngModel)]="day.checked">{{ day.label }}
+                </label>
+            </div>
+        </div>
+        <div class="field-row">
+            <span class="field-title">每天開放時段:</span>
+            <div class="open-time-bar">
+                <input type="time" [(ngModel)]="openStartTime">
+                <span class="time-sep">~</span>
+                <input type="time" [(ngModel)]="openEndTime">
+            </div>
+        </div>
+        <button type="button" (click)="importOwnerProfile(true)">重新帶入擁有者預設</button>
+    </div>
+
+    <button *ngIf="model === 'add'" (click)="clickAddRoom()">新增</button>
+    <button *ngIf="model === 'edit'" (click)="clickUpdateRoom()">更新</button>
+</div>

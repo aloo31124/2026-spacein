@@ -1,8 +1,21 @@
 
 <div class="container">
-    <app-calendar-picker 
+    <app-calendar-picker
+        [weeklyCloseDays]="fullCloseWeekdays"
         (selectDatInfo)="getEmitterSelectDay($event)">
     </app-calendar-picker>
+
+    <!-- 教室開放限制 提醒文字 -->
+    <div class="open-limit-info" *ngIf="roomList.length > 0">
+        <div class="info-title">教室開放提醒</div>
+        <div class="info-row" *ngFor="let room of roomList">
+            {{ room.name }}：{{ getRoomLimitText(room) }}
+        </div>
+        <div class="close-warning" *ngIf="selectDateCloseRoomNames.length > 0">
+            ⚠ 所選日期({{ getSelectDateWeekdayName() }})不開放教室：{{ selectDateCloseRoomNames.join('、') }}
+        </div>
+    </div>
+
     <div class="btn-bar">
         <!-- 下一步：改用 inline SVG（取代 icon_next.png），跨平台渲染一致 -->
         <button type="button" class="next-btn" (click)="nextStep()" aria-label="下一步" title="下一步">

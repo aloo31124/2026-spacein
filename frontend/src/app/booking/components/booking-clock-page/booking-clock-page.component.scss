@@ -26,6 +26,28 @@
     }
 }
 
+// 教室開放時段 提醒文字, 淺紫底圓角 樣式比照 日期頁 .open-limit-info
+.open-limit-info {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: #FBE0FF;
+    box-sizing: border-box;
+    color: #661983;
+
+    .info-title {
+        font-weight: bold;
+    }
+
+    .info-row {
+        font-size: 16px;
+    }
+}
+
 // 下一步 SVG 按鈕：覆蓋全域 button 的紫底圓角樣式，做成透明圖示鈕
 .next-btn {
     background: transparent;

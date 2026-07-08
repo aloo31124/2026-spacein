@@ -49,6 +49,13 @@
     * 涵蓋 ECPay SDK 參數格式硬性規範（`MerchantTradeDate` 須為 `yyyy/MM/dd HH:mm:ss` 台北時區、`MerchantTradeNo` 長度限制、`TotalAmount` 整數要求）、`CheckMacValue` 驗證、`planTimeType` 到期日計算、環境變數設定等。
     * 關鍵字：ECPay、綠界、ecpay_aio_nodejs、aio_check_out_all、MerchantTradeDate、MerchantTradeNo、CheckMacValue、付款、金流、訂單、儲值、方案、pay-ecpay.service.js。
 
+### 教室開放限制（擁有者預設資料 / 每周不開放時段 / 每天開放時段）
+- **文檔**: `.github/skills/room-open-limit/SKILL.md`
+- **適用情境**:
+    * 修改或新增任何「擁有者預設資料（Owner 表）」「教室開放限制欄位（地址、電話、每周不開放時段、每天開放時段）」「預約流程行事曆不開放提醒」「時鐘頁開放時段提醒與卡控」相關前後端功能時，必須參考此檔案。
+    * 涵蓋 Owner 表 doc id 設計（= ownerId 直接 upsert）、欄位規格（weeklyCloseDays 0=周日對齊 Date.getDay()、openStartTime/openEndTime "HH:mm"）、舊資料「未設定視為不限制」相容原則、前端共用工具 room-open-limit.ts 單一事實來源、教室新增帶入擁有者預設、行事曆「休」標示、時鐘時段卡控、樣式一致性規範。
+    * 關鍵字：Owner 表、擁有者預設資料、weeklyCloseDays、openStartTime、openEndTime、每周不開放、每天開放時段、行事曆休、room-open-limit、教室地址、教室電話、帶入擁有者預設、booking 卡控。
+
 ### Cypress 前端 E2E 測試
 - **文檔**: `.github/skills/cypress-e2e/SKILL.md`
 - **補充參考**: `frontend/cypress/README.md`

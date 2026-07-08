@@ -74,6 +74,12 @@
                     color: #661983;
                     font-size: 15px;
                 }
+
+                // 每周不開放時段 標示「休」, 主題深紫小字
+                .close-mark {
+                    color: #661983;
+                    font-size: 12px;
+                }
             }
         }
     }

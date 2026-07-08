@@ -45,6 +45,22 @@ input {
     border-radius: 40px;
 }
 
+/* 勾選框: 重置全域 input 圓角框樣式, 改以主題深紫呈現勾選, 全站一致 */
+input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 4px;
+    accent-color: #661983;
+    cursor: pointer;
+}
+
+/* 時間選擇: 維持主題紫外框, 縮小內距避免欄位過寬 */
+input[type="time"] {
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
 span {
     padding: 10px;
     font-size: 20px;

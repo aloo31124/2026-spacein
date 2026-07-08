@@ -3,6 +3,39 @@ const userToOwnerService = require("../services/userToOwner.service");
 const userToPaymentService = require("../services/userToPayment.service");
 const paymentService = require("../services/payment.service");
 const payEcpayService = require("../services/pay-ecpay.service");
+const ownerService = require("../services/owner.service");
+
+
+/* 查詢 擁有者預設資料 (Owner 表), 依照 ownerId */
+exports.getOwnerProfile = async (req, res) => {
+    console.log("[getOwnerProfile] 開始", req.params);
+    try {
+        const result = await ownerService.getOwnerProfile(req.params.ownerId);
+        console.log("[getOwnerProfile] 成功 : ", result);
+        res.status(200).send({result});
+    } catch (error) {
+        console.log("[getOwnerProfile] 失敗", error);
+        res.status(500).json({ error: "[getOwnerProfile] 失敗 查詢擁有者預設資料失敗" });
+    }
+};
+
+/* 新增或更新 擁有者預設資料 (Owner 表) */
+exports.postOwnerProfile = async (req, res) => {
+    console.log("[postOwnerProfile] 開始", req.body.owner);
+    try {
+        const { owner } = req.body;
+        if(!owner || !owner.ownerId) {
+            res.status(400).json({ error: "[postOwnerProfile] 失敗 缺少 ownerId" });
+            return;
+        }
+        const result = await ownerService.saveOwnerProfile(owner);
+        console.log("[postOwnerProfile] 成功 : ", result);
+        res.status(200).send({result});
+    } catch (error) {
+        console.log("[postOwnerProfile] 失敗", error);
+        res.status(500).json({ error: "[postOwnerProfile] 失敗 儲存擁有者預設資料失敗" });
+    }
+};
 
 
 /* 查詢 擁有者, 依照 email */

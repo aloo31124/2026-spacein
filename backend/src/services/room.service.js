@@ -79,10 +79,22 @@ exports.findByName = async (name) => {
     }
 }
 
-/* [空間管理] [教室] 新增 */
+/* [空間管理] [教室] 新增
+ * 教室開放限制欄位（地址/電話/每周不開放時段/每天開放時段）補上預設值,
+ * 讓舊前端或未帶欄位的呼叫也能寫入一致的資料形狀。
+ */
 exports.add = async (room, ownerId) => {
     try {
-        const _room = {...room, ownerId, isBookingAllSite:false}
+        const _room = {
+            address: "",
+            phone: "",
+            weeklyCloseDays: [],
+            openStartTime: "",
+            openEndTime: "",
+            ...room,
+            ownerId,
+            isBookingAllSite: false,
+        }
         return await Room.add(_room);
     } catch (error) {
         console.error(" [add] Error:", error);

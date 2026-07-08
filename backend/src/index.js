@@ -66,6 +66,9 @@ app.post('/api/auth/regist/user/update', authApiController.registUserUpdate);
 app.post('/api/auth/regist/user/password', authApiController.registUserUpdatePassword);
 app.post('/api/auth/regist/verify/code', authApiController.registVerityCode);
 app.get('/api/auth/user/:email', authApiController.getUserByEmail);
+// [帳號] 擁有者預設資料 (Owner 表), 需註冊於 /owner/:email 之前, 避免 profile 被當成 email 匹配
+app.get('/api/account/owner/profile/:ownerId', accountApiController.getOwnerProfile);
+app.post('/api/account/owner/profile/save', accountApiController.postOwnerProfile);
 // [帳號] 升級, 付款
 app.get('/api/account/owner/:email', accountApiController.getOwnerByEmail);
 app.post('/api/account/owner/add', accountApiController.postUserToOwner);

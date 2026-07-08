@@ -35,4 +35,18 @@ export class AccountService {
     return this.httpClient.post<any>(`${this.BASE_URL}/role/add`,{userToRole: {userId, role: "booker"}});
   }
 
+  /*
+   * 取得 擁有者預設資料 (Owner 表), 依照 ownerId
+   */
+  getOwnerProfile(ownerId: string) {
+    return this.httpClient.get<any>(`${this.BASE_URL}/owner/profile/${ownerId}`);
+  }
+
+  /*
+   * 新增或更新 擁有者預設資料 (Owner 表)
+   */
+  saveOwnerProfile(owner: any) {
+    return this.httpClient.post<any>(`${this.BASE_URL}/owner/profile/save`, {owner});
+  }
+
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { Booking } from '../models/booking.model';
 import { Room } from 'src/app/common/room-site/models/room.model';
 import { RoomSiteIsBooking } from 'src/app/common/room-site/models/room-site-isbooking.model';
@@ -23,6 +24,8 @@ export class BookingService {
   endTime = "09:00";
   // 本次預約流程中 選擇日期 之前 已經存在之預約記錄
   selectDayAllBookingRecordList: Booking[] =[];
+  // 本次預約流程之 教室清單快取 (含開放限制欄位), 供 日期頁行事曆提醒 與 時鐘頁卡控 共用
+  private ownerRoomList: Room[] = [];
 
   constructor(
     private http: HttpClient,
@@ -91,11 +94,26 @@ export class BookingService {
     return this.http.get<any>(`${this.BASE_URL}/all`);
   }
 
-  /* 
+  /*
    * 取得所有 booking 資料
    */
   getRoomByOwnerId(userId: string): Observable<Room[]> {
     return this.http.get<any>(`${this.BASE_URL}/room/userId/${userId}`);
+  }
+
+  /*
+   * 取得 該使用者綁定擁有者 之 教室清單 (含開放限制欄位), 取得後快取
+   * 供 預約流程 日期頁(行事曆不開放提醒) 與 時鐘頁(開放時段提醒/卡控) 共用, 避免重複打 API
+   */
+  loadOwnerRoomList(userId: string): Observable<Room[]> {
+    if(this.ownerRoomList.length > 0) {
+      return of(this.ownerRoomList);
+    }
+    return this.getRoomByOwnerId(userId)
+      .pipe(
+        map(roomList => roomList.map(room => new Room(room))),
+        tap(roomList => this.ownerRoomList = roomList),
+      );
   }
 
   /* 

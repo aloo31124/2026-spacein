@@ -1,0 +1,93 @@
+
+.form-container {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    // 基本欄位 (教室名稱/地址/電話) 標籤列, 寬度與下方粉紅色區塊對齊,
+    // 並強制 box-sizing:border-box, 避免手機窄螢幕下 input 撐破容器導致整頁跑版
+    > .field-row {
+        width: 90%;
+        max-width: 640px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .field-title {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+
+    // 教室開放限制 區塊, 淺紫底圓角 樣式比照 帳號頁 擁有者預設資料
+    // 寬度加寬(640px)以容納「每天開放時段」左右兩個時間欄位, 減少手機以外裝置的換行機會
+    .open-limit-container {
+        width: 90%;
+        max-width: 640px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        margin: 10px 0;
+        padding: 10px 20px;
+        border-radius: 20px;
+        background: #FBE0FF;
+        box-sizing: border-box;
+
+        .field-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0; // 配合父層 flex 排版, 允許此列縮小至小於子內容原生寬度, 避免撐破粉紅色區塊
+
+            .field-title {
+                font-weight: bold;
+            }
+        }
+
+        .weekly-day-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+
+            label {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                white-space: nowrap;
+            }
+        }
+
+        // 每天開放時段: 破版根因是 flex 子項目預設 min-width:auto,
+        // 原生 time input 有內建最小顯示寬度, 窄螢幕下會撐破本區塊。
+        // 加上 flex-wrap 讓其可換行、min-width:0 讓 input 可縮小, 兩者搭配才能真正防止溢出。
+        .open-time-bar {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            input[type="time"] {
+                flex: 1 1 130px;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .time-sep {
+                padding: 0 2px;
+            }
+        }
+    }
+}

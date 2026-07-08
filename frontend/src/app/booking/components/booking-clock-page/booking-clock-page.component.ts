@@ -1,6 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
+import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 import { BookingService } from '../../services/booking.service';
+import { Room } from 'src/app/common/room-site/models/room.model';
+import { isCloseOnWeekday, isTimeRangeInOpen, WEEKDAY_NAMES } from 'src/app/common/room-site/models/room-open-limit';
 
 @Component({
   selector: 'app-booking-clock-page',
@@ -38,10 +41,16 @@ export class BookingClockPageComponent {
   //選擇開始時段
   isSelectStartTimeInput = true;
 
+  // 該使用者綁定擁有者 之 教室清單 (含開放限制欄位)
+  roomList: Room[] = [];
+  // 所選日期 各教室開放時段 提醒文字清單
+  openInfoTextList: string[] = [];
+
 
   constructor(
     private routeUrlRecordService: RouteUrlRecordService<{}>,
     private bookingService: BookingService,
+    private googleAuthService: GoogleAuthService,
   ) {}
 
   
@@ -87,7 +96,73 @@ export class BookingClockPageComponent {
   }
     
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // 取得 教室清單 (含開放限制欄位), 組出 所選日期 開放時段提醒文字
+    const currentUser = this.googleAuthService.getCurrentUser();
+    if(!currentUser) {
+      return;
+    }
+    const userId = currentUser.id;
+    this.bookingService
+      .loadOwnerRoomList(userId)
+      .subscribe({
+        next: roomList => {
+          this.roomList = roomList;
+          this.buildOpenInfoText();
+        },
+        error: err => {
+          console.error("教室開放資訊 取得失敗 err ", err);
+        }
+      });
+  }
+
+  /*
+   * 取得 所選日期 之 星期 (0=周日), 無選擇日期回傳 -1
+   */
+  getSelectWeekday(): number {
+    const selectDate = this.bookingService.getSelectDate();
+    if(!selectDate) {
+      return -1;
+    }
+    const [year, month, day] = selectDate.split("-").map(Number);
+    return new Date(year, month - 1, day).getDay();
+  }
+
+  /*
+   * 所選日期 顯示文字, 如「2026-7-11(週六)」
+   */
+  getSelectDateText(): string {
+    const selectDate = this.bookingService.getSelectDate();
+    const weekday = this.getSelectWeekday();
+    if(!selectDate || weekday < 0) {
+      return "";
+    }
+    return selectDate + "(" + WEEKDAY_NAMES[weekday] + ")";
+  }
+
+  /*
+   * 組出 所選日期 各教室開放時段 提醒文字清單
+   */
+  buildOpenInfoText() {
+    this.openInfoTextList = [];
+    const weekday = this.getSelectWeekday();
+    if(weekday < 0) {
+      return;
+    }
+    this.roomList.forEach(room => {
+      // 該教室 該星期不開放
+      if(isCloseOnWeekday(room, weekday)) {
+        this.openInfoTextList.push(room.name + "：" + WEEKDAY_NAMES[weekday] + " 不開放");
+        return;
+      }
+      // 該教室 有設定 每天開放時段
+      if(room.openStartTime && room.openEndTime) {
+        this.openInfoTextList.push(room.name + "：開放 " + room.openStartTime + "~" + room.openEndTime);
+        return;
+      }
+      this.openInfoTextList.push(room.name + "：無時段限制");
+    });
+  }
 
   
   selectTime(selectTime: number) {
@@ -238,6 +313,7 @@ export class BookingClockPageComponent {
     /*
    * 確認選擇時端卡控是否正確:
    *  1. 開始時間 需小於 結束時間
+   *  2. 所選時段 需落在 至少一間 該日有開放教室 的 [每天開放時段] 內
    */
     checkValidTime() {
       const [_year, _month, _dat] = this.bookingService.getSelectDate().split("-").map(Number);
@@ -245,13 +321,27 @@ export class BookingClockPageComponent {
       const [_endHour, _endTmin] = this.getEndTime().split(":").map(Number);
       const selectStarTime = new Date(_year, _month - 1, _dat, _startHour, _startmin).getTime();
       const selectEndTime = new Date(_year, _month - 1, _dat, _endHour, _endTmin).getTime();
-  
+
       if(selectStarTime >= selectEndTime) {
         alert("開始時間必須早於結束時間, 請重新選擇時段。");
         return false;
       }
+
+      // 卡控 教室開放時段: 所選時段 需有 至少一間教室 該日開放 且 時段涵蓋
+      if(this.roomList.length > 0) {
+        const weekday = this.getSelectWeekday();
+        const openRoomList = this.roomList
+          .filter(room => !isCloseOnWeekday(room, weekday))
+          .filter(room => isTimeRangeInOpen(room, this.getStartTime(), this.getEndTime()));
+        if(openRoomList.length === 0) {
+          alert("所選時段 " + this.getStartTime() + "~" + this.getEndTime()
+                  + " 不在任何教室之開放時段內, 請重新選擇。\n"
+                  + this.openInfoTextList.join("\n"));
+          return false;
+        }
+      }
       return true;
     }
-  
-  
+
+
 }

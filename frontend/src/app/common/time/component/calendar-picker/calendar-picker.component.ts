@@ -32,6 +32,9 @@ export class CalendarPickerComponent {
   // 是否 emit初始日期
   @Input() isEmitInitDate = true;
 
+  // 每周不開放時段 (0=周日 ~ 6=周六), 所有教室皆不開放之星期, 該日標示「休」且不可選擇
+  @Input() weeklyCloseDays: number[] = [];
+
   // 選擇月份, 用於 切換月份判斷
   _selectMonth = 0;
 
@@ -172,12 +175,28 @@ export class CalendarPickerComponent {
   }
 
 
-  /* 
+  /*
+   * 確認 該日期(數字) 是否為 每周不開放時段, 用於「休」標示與卡控
+   */
+  checkWeeklyClose(date: number): boolean {
+    if(date <= 0) {
+      return false;
+    }
+    return this.weeklyCloseDays.includes(this.changeDateObj(date).getDay());
+  }
+
+
+  /*
    * 選擇日期
    */
   selectDate(date: number) {
     if(!this.checkDateValid(this.changeDateObj(date))) {
       return
+    }
+    // 每周不開放時段 卡控, 文字提醒且不可選擇
+    if(this.checkWeeklyClose(date)) {
+      alert("該日為 [每周不開放時段], 教室皆不開放, 請選擇其他日期。");
+      return;
     }
     if( date > 0 ) {
       this._selectMonth = this.currentMonth;

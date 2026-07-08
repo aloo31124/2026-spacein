@@ -16,19 +16,25 @@
             <div class="grid">六</div>
         </div>
         <div class="grid-row">
-            <div class="grid" 
-                *ngFor="let number of Array.from({length: displayAllDayGrid}); let i = index"  
-                [ngStyle]="{opacity: checkDateValid(changeDateObj(i + 1 - currentMonthFirstDayWeekly))?'1':'0.4'}"
+            <div class="grid"
+                *ngFor="let number of Array.from({length: displayAllDayGrid}); let i = index"
+                [ngStyle]="{opacity: (checkDateValid(changeDateObj(i + 1 - currentMonthFirstDayWeekly)) && !checkWeeklyClose(i + 1 - currentMonthFirstDayWeekly))?'1':'0.4'}"
                 (click)="selectDate( i + 1 - currentMonthFirstDayWeekly )">
 
                     <!-- 顯示該行事曆該日文字 -->
                     <div class="no-selected"
-                         [ngClass]="{   
+                         [ngClass]="{
                                         'current-date': checkCurrentDayStyle(changeDateObj(i + 1 - currentMonthFirstDayWeekly)),
                                         'selected': checkSelectDayStyle(i + 1 - currentMonthFirstDayWeekly)
                                     }"
                          *ngIf="i + 1 > currentMonthFirstDayWeekly">
                             {{ i + 1 - currentMonthFirstDayWeekly }}
+                    </div>
+
+                    <!-- 每周不開放時段 標示「休」 -->
+                    <div class="close-mark"
+                         *ngIf="i + 1 > currentMonthFirstDayWeekly && checkWeeklyClose(i + 1 - currentMonthFirstDayWeekly)">
+                            休
                     </div>
 
                     <!-- 顯示 booking 紀錄 dot小點（已預約一律深紫色，樣式定義於 scss .dot） -->

@@ -8,6 +8,36 @@
     </div>
     <button (click)="loginOut()">登出</button>
 
+    <!-- 擁有者預設資料 (Owner 表): 僅擁有者顯示, 供教室新增時帶入 -->
+    <div class="owner-profile-container" *ngIf="isOwner">
+        <h3>擁有者預設資料</h3>
+        <div class="field-row">
+            <span class="field-title">預設地址:</span>
+            <input type="text" [(ngModel)]="ownerProfile.address" placeholder="輸入預設地址">
+        </div>
+        <div class="field-row">
+            <span class="field-title">預設電話:</span>
+            <input type="text" [(ngModel)]="ownerProfile.phone" placeholder="輸入預設電話">
+        </div>
+        <div class="field-row">
+            <span class="field-title">預設每周不開放時段:</span>
+            <div class="weekly-day-bar">
+                <label *ngFor="let day of weeklyDayOptions">
+                    <input type="checkbox" [(ngModel)]="day.checked">{{ day.label }}
+                </label>
+            </div>
+        </div>
+        <div class="field-row">
+            <span class="field-title">預設每天開放時段:</span>
+            <div class="open-time-bar">
+                <input type="time" [(ngModel)]="ownerProfile.openStartTime">
+                <span class="time-sep">~</span>
+                <input type="time" [(ngModel)]="ownerProfile.openEndTime">
+            </div>
+        </div>
+        <button (click)="clickSaveOwnerProfile()">儲存預設資料</button>
+    </div>
+
     <app-check-payment [isFromAccountPage]="true">
     </app-check-payment>
 
