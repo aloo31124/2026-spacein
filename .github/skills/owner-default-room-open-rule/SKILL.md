@@ -36,7 +36,9 @@ description: >
   `backend/src/services/booking.service.js`（卡控）、`backend/src/services/room.service.js`（欄位預設值）
 - API 路由（`backend/src/index.js`）：
   `GET/POST /api/account/owner/default/:ownerId`（注意需排在 `/api/account/owner/:email` 之前的區塊，避免路由誤匹配）
-- 前端共用：`frontend/src/app/common/owner-default/`（`OwnerDefault` model ＋ `app-owner-default-form` 元件）
+- 前端共用：`frontend/src/app/common/owner-default/`（`OwnerDefault` model ＋ `app-owner-default-form` 元件）；
+  外層粉紅圓角卡片樣式為全域 class `.owner-default-card`（定義於 `styles.scss`），
+  帳號頁與教室編輯頁共用同一份，修改卡片外觀只改全域一處
 - 前端使用處：帳號頁 `account-page`（labelPrefix="預設"、僅 owner 角色顯示）、
   教室表單 `search-room-content`（新增時自動帶入、「重新帶入擁有者預設」按鈕）
 

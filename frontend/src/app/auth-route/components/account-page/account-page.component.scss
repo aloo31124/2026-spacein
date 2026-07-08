@@ -20,24 +20,6 @@
         background: #FBE0FF;
     }
 
-    .owner-default-container {
-        width: 80%;
-        max-width: 400px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-
-        margin: 20px 0;
-        padding: 10px 20px;
-        border-radius: 20px;
-        background: #FBE0FF;
-
-        button {
-            align-self: center;
-        }
-    }
-
     .delete-container {
         display: flex;
         flex-direction: column;

@@ -76,3 +76,29 @@ button:hover {
 .iconBtn {
     cursor: pointer;
 }
+
+/* [擁有者預設] / 教室開放資訊 共用卡片
+   帳號頁面與教室新增/編輯頁面共用同一份樣式, 保持兩處視覺一致 */
+.owner-default-card {
+    width: 80%;
+    max-width: 400px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 20px;
+    background: #FBE0FF;
+
+    h3 {
+        margin: 0;
+        text-align: center;
+    }
+
+    button {
+        align-self: center;
+    }
+}

@@ -8,8 +8,8 @@
     </div>
     <button (click)="loginOut()">登出</button>
 
-    <!-- [擁有者預設] 共用區塊, 僅擁有者顯示 -->
-    <div class="owner-default-container" *ngIf="isOwner">
+    <!-- [擁有者預設] 共用區塊, 僅擁有者顯示, 卡片樣式共用 styles.scss .owner-default-card -->
+    <div class="owner-default-card" *ngIf="isOwner">
         <h3>擁有者預設</h3>
         <app-owner-default-form [form]="ownerDefault" labelPrefix="預設"></app-owner-default-form>
         <button (click)="saveOwnerDefault()">儲存預設資料</button>

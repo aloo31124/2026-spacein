@@ -1,19 +1,21 @@
 <div class="owner-default-form">
 
     <div class="field-row">
-        <label>{{ labelPrefix }}地址</label>
+        <label class="field-label">{{ labelPrefix }}地址</label>
         <input type="text" [(ngModel)]="form.address" placeholder="請輸入地址">
     </div>
 
     <div class="field-row">
-        <label>{{ labelPrefix }}電話</label>
+        <label class="field-label">{{ labelPrefix }}電話</label>
         <input type="text" [(ngModel)]="form.phone" placeholder="請輸入電話">
     </div>
 
     <div class="field-row">
-        <label>{{ labelPrefix }}每周不開放</label>
+        <label class="field-label">{{ labelPrefix }}每周不開放</label>
         <div class="weekday-list">
-            <label class="weekday-item" *ngFor="let name of weekdayNames; let i = index">
+            <label class="weekday-item"
+                   [class.checked]="isClosedWeekday(i)"
+                   *ngFor="let name of weekdayNames; let i = index">
                 <input type="checkbox"
                        [checked]="isClosedWeekday(i)"
                        (change)="toggleClosedWeekday(i)">
@@ -23,7 +25,7 @@
     </div>
 
     <div class="field-row">
-        <label>{{ labelPrefix }}每天開放時段</label>
+        <label class="field-label">{{ labelPrefix }}每天開放時段</label>
         <div class="time-range">
             <input type="time" [(ngModel)]="form.openStartTime">
             <span>~</span>
