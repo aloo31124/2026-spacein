@@ -12,15 +12,32 @@
 </div>
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isFirstSearch">開始搜尋</div>
-    <div *ngIf="paymentList.length === 0 && !isFirstSearch">沒有找到結果</div>
-    <ul  *ngIf="paymentList.length > 0">
-        <li *ngFor="let payment of paymentList">
-            <strong>名稱:</strong> {{ payment.planName }} |
-            <strong>時段:</strong> {{ payment.planTimeType }} |
-            <strong>種類:</strong> {{ payment.planType }} | 
-            <button (click)="clickEditPayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">編輯</button>
-            <button (click)="clickDeletePayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">刪除</button>
-        </li>
-    </ul>
+    <div class="result-state" *ngIf="isFirstSearch">開始搜尋</div>
+    <div class="result-state" *ngIf="paymentList.length === 0 && !isFirstSearch">沒有找到結果</div>
+    <div class="manager-table-shell" *ngIf="paymentList.length > 0">
+        <table class="manager-table">
+            <caption>金流方案搜尋結果</caption>
+            <thead>
+                <tr>
+                    <th scope="col">方案名稱</th>
+                    <th scope="col">方案期限</th>
+                    <th scope="col">方案種類</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let payment of paymentList">
+                    <td data-label="方案名稱">{{ payment.planName }}</td>
+                    <td data-label="方案期限">{{ payment.planTimeType }}</td>
+                    <td data-label="方案種類">{{ payment.planType }}</td>
+                    <td class="table-actions" data-label="操作">
+                        <div class="table-action-group">
+                            <button class="table-action" (click)="clickEditPayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">編輯</button>
+                            <button class="table-action" (click)="clickDeletePayment(payment)" [style.opacity]="payment.haveBuy ? 0.5 : 1">刪除</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

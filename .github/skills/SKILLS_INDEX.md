@@ -5,6 +5,13 @@
 
 ## 可用 Skills
 
+### 管理列表響應式表格
+- **文檔**: `.github/skills/manager-responsive-table/SKILL.md`
+- **適用情境**:
+    * 修改「空間管理」或「系統管理」的搜尋結果、列表表格、欄位標頭與操作欄時，必須參考此檔案。
+    * 涵蓋 SpaceIn 共用表格視覺、表格容器小於 400px 的卡片切換，以及瀏覽器小於 1000px 的管理側欄自動收合。
+    * 關鍵字：manager-table、manager-table-shell、data-label、container query、空間管理、系統管理、列表、表格、側欄收合。
+
 ### skills 文件創建6原則
 - **文檔**: `.github/skills/skill-design-6-principles/SKILL.md`
 - **補充參考**: `.github/skills/skill-design-6-principles/eval-loop-test.md`

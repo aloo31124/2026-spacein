@@ -1,0 +1,4 @@
+interface:
+  display_name: "管理列表響應式表格"
+  short_description: "統一空間與系統管理列表的表頭、窄版卡片及側欄響應式行為"
+  default_prompt: "使用 $manager-responsive-table 調整 SpaceIn 管理區列表並驗證響應式表格與側欄行為。"

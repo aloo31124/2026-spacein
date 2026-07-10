@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-sys-dashboard',
@@ -6,9 +6,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./sys-dashboard.component.scss']
 })
 export class SysDashboardComponent {
-  isMenuVisible: boolean = true; // 預設選單是顯示的
+  private readonly menuBreakpoint = 1000;
+  isMenuVisible = window.innerWidth >= this.menuBreakpoint;
 
-  toggleMenu() {
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth < this.menuBreakpoint) {
+      this.isMenuVisible = false;
+    }
+  }
+
+  toggleMenu(): void {
     this.isMenuVisible = !this.isMenuVisible;
   }
 

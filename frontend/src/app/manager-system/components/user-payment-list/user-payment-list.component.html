@@ -11,21 +11,35 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="userPaymentList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul *ngIf="userPaymentList.length > 0">
-        <li *ngFor="let userPayment of userPaymentList">
-            <strong>使用者id:</strong> {{ userPayment.userId }} |
-            <strong>使用者信箱:</strong> {{ userPayment.email }} |
-            <br>
-            <strong>方案名稱:</strong> {{ userPayment.planName }} |
-            <strong>空間數量:</strong> {{ userPayment.siteTotal }} |
-            <strong>方案期間:</strong> {{ userPayment.planTimeType }} |
-            <br>
-            <strong>購買日期:</strong> {{ userPayment.purchaseDate }} |
-            <strong>到期日期:</strong> {{ userPayment.expiryDate }} 
-        </li>
-    </ul>
+    <div class="result-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="result-state" *ngIf="userPaymentList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-shell" *ngIf="userPaymentList.length > 0">
+        <table class="manager-table">
+            <caption>使用者方案搜尋結果</caption>
+            <thead>
+                <tr>
+                    <th scope="col">使用者 ID</th>
+                    <th scope="col">使用者信箱</th>
+                    <th scope="col">方案名稱</th>
+                    <th scope="col">空間數量</th>
+                    <th scope="col">方案期間</th>
+                    <th scope="col">購買日期</th>
+                    <th scope="col">到期日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let userPayment of userPaymentList">
+                    <td data-label="使用者 ID">{{ userPayment.userId }}</td>
+                    <td data-label="使用者信箱">{{ userPayment.email }}</td>
+                    <td data-label="方案名稱">{{ userPayment.planName }}</td>
+                    <td data-label="空間數量">{{ userPayment.siteTotal }}</td>
+                    <td data-label="方案期間">{{ userPayment.planTimeType }}</td>
+                    <td data-label="購買日期">{{ userPayment.purchaseDate }}</td>
+                    <td data-label="到期日期">{{ userPayment.expiryDate }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>

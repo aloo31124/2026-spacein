@@ -17,14 +17,27 @@
 <button (click)="csvFileInput.click()">匯入教室座位</button>
 
 <h2>匯入結果</h2>
-<div *ngIf="resultList.length === 0 && !isLoading">尚無資料</div>
-<ul *ngIf="resultList.length !== 0 && !isLoading">
-  <li *ngFor="let result of resultList">
-    {{ result.message }}
-  </li>
-</ul>
+<div class="search-result">
+  <div class="result-state" *ngIf="resultList.length === 0 && !isLoading">尚無資料</div>
+  <div class="manager-table-shell" *ngIf="resultList.length !== 0 && !isLoading">
+    <table class="manager-table">
+      <caption>教室座位匯入結果</caption>
+      <thead>
+        <tr>
+          <th scope="col">項次</th>
+          <th scope="col">匯入結果</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let result of resultList; let i = index">
+          <td data-label="項次">{{ i + 1 }}</td>
+          <td data-label="匯入結果">{{ result.message }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 <div class="loading-gif" *ngIf="isLoading">
     <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
 </div>
-
 

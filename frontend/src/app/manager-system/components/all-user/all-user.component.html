@@ -10,15 +10,27 @@
 </div>
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul *ngIf="users.length > 0">
-        <li *ngFor="let user of users">
-            <strong>id:</strong> {{ user.id }} |
-            <strong>姓名:</strong> {{ user.name }} | 
-            <strong>信箱:</strong> {{ user.email }}
-        </li>
-    </ul>
+    <div class="result-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="result-state" *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-shell" *ngIf="users.length > 0">
+        <table class="manager-table">
+            <caption>使用者搜尋結果</caption>
+            <thead>
+                <tr>
+                    <th scope="col">使用者 ID</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">信箱</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of users">
+                    <td data-label="使用者 ID">{{ user.id }}</td>
+                    <td data-label="姓名">{{ user.name }}</td>
+                    <td data-label="信箱">{{ user.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>
