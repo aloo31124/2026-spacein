@@ -23,6 +23,13 @@ export class AccountService {
   }
 
   /*
+   * 取得 預約者目前綁定之擁有者
+   */
+  getOwnerByUserId(userId: string) {
+    return this.httpClient.get<any>(`${this.BASE_URL}/owner/user/${userId}`);
+  }
+
+  /*
    * 新增 預約者 對應 擁有者
    */
   postUserToOwner(userId: string, ownerId: string) {

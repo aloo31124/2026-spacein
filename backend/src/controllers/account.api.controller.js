@@ -19,6 +19,19 @@ exports.getOwnerByEmail = async (req, res) => {
     }
 };
 
+/* 查詢 預約者目前綁定之擁有者 */
+exports.getOwnerByUserId = async (req, res) => {
+    console.log("[getOwnerByUserId] 開始", req.params);
+    try {
+        const result = await userToOwnerService.getOwnerByUserId(req.params.userId);
+        console.log("[getOwnerByUserId] 成功 : ", result);
+        res.status(200).send({result});
+    } catch (error) {
+        console.log("[getOwnerByUserId] 失敗", error);
+        res.status(500).json({ error: "[getOwnerByUserId] 查詢綁定擁有者失敗" });
+    }
+};
+
 /* 查詢 擁有者預設資料, 依照 ownerId */
 exports.getOwnerDefault = async (req, res) => {
     console.log("[getOwnerDefault] 開始", req.params);
@@ -50,6 +63,9 @@ exports.postUserToOwner = async (req, res) => {
     console.log("[postUserToOwner] 開始", req.body.userToOwner);
     try {
         const result = await userToOwnerService.addUserToOwner(req.body.userToOwner);
+        if(result?.error) {
+            return res.status(409).json({error: result.error});
+        }
         console.log("[postUserToOwner] 成功 : ", result);
         res.status(200).send({result});
     } catch (error) {
@@ -141,4 +157,3 @@ exports.getPaySelectPageHtml = async (req, res) => {
         res.status(500).json({ error: "[getPaySelectPageHtml]  失敗 : " + error });
     }
 }
-

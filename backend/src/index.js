@@ -70,6 +70,7 @@ app.get('/api/auth/user/:email', authApiController.getUserByEmail);
 app.get('/api/account/owner/default/:ownerId', accountApiController.getOwnerDefault);
 app.post('/api/account/owner/default/:ownerId', accountApiController.postOwnerDefault);
 // [帳號] 升級, 付款
+app.get('/api/account/owner/user/:userId', accountApiController.getOwnerByUserId);
 app.get('/api/account/owner/:email', accountApiController.getOwnerByEmail);
 app.post('/api/account/owner/add', accountApiController.postUserToOwner);
 app.post('/api/account/role/add', accountApiController.postUserToRole);

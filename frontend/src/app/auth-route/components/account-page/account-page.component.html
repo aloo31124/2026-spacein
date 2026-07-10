@@ -8,6 +8,10 @@
     </div>
     <button (click)="loginOut()">登出</button>
 
+    <!-- 預約者僅顯示目前綁定的擁有者；未綁定時才顯示一次性綁定表單。 -->
+    <app-booker-select-owner *ngIf="isBooker" [navigateAfterBinding]="false">
+    </app-booker-select-owner>
+
     <!-- [擁有者預設] 共用區塊, 僅擁有者顯示, 卡片樣式共用 styles.scss .owner-default-card -->
     <div class="owner-default-card" *ngIf="isOwner">
         <h3>擁有者預設</h3>
@@ -15,7 +19,8 @@
         <button (click)="saveOwnerDefault()">儲存預設資料</button>
     </div>
 
-    <app-check-payment [isFromAccountPage]="true">
+    <!-- 僅擁有者檢查付款方案，避免預約者進入帳號頁時出現付款提醒。 -->
+    <app-check-payment *ngIf="isOwner" [isFromAccountPage]="true">
     </app-check-payment>
 
     <app-version></app-version>
@@ -35,6 +40,5 @@
     </div>
 
 </div>
-
 
 

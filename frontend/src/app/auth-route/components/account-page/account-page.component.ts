@@ -18,6 +18,7 @@ export class AccountPageComponent implements OnInit {
 
   // 是否為擁有者, 是才顯示 [擁有者預設] 區塊
   isOwner = false;
+  isBooker = false;
 
   // [擁有者預設] 表單資料
   ownerDefault = new OwnerDefault();
@@ -37,6 +38,7 @@ export class AccountPageComponent implements OnInit {
     this.homeService
       .getUserRole(this.currentUser.id)
       .subscribe(data => {
+        this.isBooker = data.result.some((userToRole: any) => userToRole.role === "booker");
         if(data.result.some((userToRole: any) => userToRole.role === "owner")) {
           this.isOwner = true;
           this.loadOwnerDefault();

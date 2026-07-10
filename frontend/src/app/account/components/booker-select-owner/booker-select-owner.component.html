@@ -1,9 +1,27 @@
 
-<h2>綁定擁有者</h2>
-<ul>
-    <li>預約者 角色確定後便不可修改為 擁有者</li>
-    <li>預約者 綁定 擁有者 後便不可修改</li>
-</ul>
-<input type="text" placeholder="輸入擁有者信箱" [(ngModel)]="ownerEmail">
-<button (click)="clickSendOwner()">送出</button>
+<section class="owner-binding-card">
+    <h2>綁定擁有者</h2>
 
+    <p *ngIf="isLoading">正在讀取綁定資料...</p>
+
+    <div class="bound-owner" *ngIf="!isLoading && owner">
+        <h3>目前綁定之擁有者</h3>
+        <p>{{ owner.name }}</p>
+        <p *ngIf="owner.email">{{ owner.email }}</p>
+    </div>
+
+    <div class="owner-binding-form" *ngIf="!isLoading && !owner">
+        <p class="binding-warning">尚未綁定擁有者，請確認信箱後再送出；綁定後不可修改。</p>
+        <label for="ownerEmail">擁有者信箱</label>
+        <input id="ownerEmail" type="email" placeholder="輸入擁有者信箱"
+            [(ngModel)]="ownerEmail" [disabled]="isSubmitting">
+        <button (click)="clickSendOwner()" [disabled]="isSubmitting">
+            {{ isSubmitting ? '綁定中...' : '確認綁定' }}
+        </button>
+    </div>
+
+    <p class="status-message" [class.error]="statusType === 'error'"
+        *ngIf="statusMessage && !owner" aria-live="polite">
+        {{ statusMessage }}
+    </p>
+</section>

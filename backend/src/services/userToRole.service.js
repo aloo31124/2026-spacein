@@ -18,6 +18,9 @@ exports.getUserRoleByUserId = async (userId) => {
 exports.addUserToRole = async (userToRole) => {
     console.log("[addUserToRole] 開始 userToRole :", userToRole);
     try {
+        const existingList = await UserToRole.findByUserId(userToRole.userId);
+        const existingRole = existingList.find(item => item.role === userToRole.role);
+        if(existingRole) return existingRole;
         return await UserToRole.add(userToRole);
     } catch (error) {
         console.log("[addUserToRole] 失敗", error);
@@ -52,4 +55,3 @@ exports.joinUserRole = async (email, role) => {
         console.error("[joinUserRole] Error:", error);
     }
 }
-
