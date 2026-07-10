@@ -116,6 +116,9 @@ app.post('/api/manager/room/booking/search/:ownerId', managerRoomApiController.s
 
 // [系統管理] 使用者
 app.post('/api/manager/system/user/search', managerSystemApiController.searchUser);
+// [系統管理] 使用者 轉/取消 系統管理員
+app.post('/api/manager/system/user/role/system/add', managerSystemApiController.addUserSystemRole);
+app.delete('/api/manager/system/user/role/system/delete/:userId', managerSystemApiController.deleteUserSystemRole);
 // [系統管理] [使用者角色]
 app.post('/api/manager/system/user/role/search', managerSystemApiController.searchUserRole);
 // [系統管理] [使用者方案]

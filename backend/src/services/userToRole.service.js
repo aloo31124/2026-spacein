@@ -29,6 +29,35 @@ exports.addUserToRole = async (userToRole) => {
 };
 
 
+/* 取消 該使用者 對應之 角色, 查無該角色時回傳 null */
+exports.removeUserToRole = async (userId, role) => {
+    console.log("[removeUserToRole] 開始 userId, role :", userId, role);
+    try {
+        const existingList = await UserToRole.findByUserId(userId);
+        const existingRole = existingList.find(item => item.role === role);
+        if(!existingRole) return null;
+        return await UserToRole.delete(existingRole.id);
+    } catch (error) {
+        console.log("[removeUserToRole] 失敗", error);
+        throw new Error("[removeUserToRole] 取消使用者角色失敗");
+    }
+};
+
+
+/* 取得 具備指定角色 的 userId 清單 */
+exports.getUserIdListByRole = async (role) => {
+    console.log("[getUserIdListByRole] 開始 role :", role);
+    try {
+        const pagingParam = { pageIndex: 1, pageSize: 1000, sort: "asc", pageTotal:-1, dataTotal:-1 };
+        const { userToRoleList } = await UserToRole.search({ role }, pagingParam);
+        return userToRoleList.map(item => item.userId);
+    } catch (error) {
+        console.log("[getUserIdListByRole] 失敗", error);
+        throw new Error("[getUserIdListByRole] 查詢角色使用者清單失敗");
+    }
+};
+
+
 /** 搜尋 [使用者角色], 使用者 join 使用者信箱, 方案 */
 exports.joinUserRole = async (email, role) => {
     try {

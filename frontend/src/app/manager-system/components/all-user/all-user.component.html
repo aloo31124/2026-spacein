@@ -20,6 +20,7 @@
                     <th scope="col">使用者 ID</th>
                     <th scope="col">姓名</th>
                     <th scope="col">信箱</th>
+                    <th scope="col">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +28,12 @@
                     <td data-label="使用者 ID">{{ user.id }}</td>
                     <td data-label="姓名">{{ user.name }}</td>
                     <td data-label="信箱">{{ user.email }}</td>
+                    <td class="table-actions" data-label="操作">
+                        <div class="table-action-group">
+                            <button class="table-action" *ngIf="!user.isSystem" (click)="clickAddSystemRole(user)">轉系統管理員</button>
+                            <button class="table-action" *ngIf="user.isSystem" (click)="clickRemoveSystemRole(user)">取消系統管理員</button>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>

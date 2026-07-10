@@ -29,6 +29,16 @@ export class SysDashboardService {
         return this.http.post<any>(`${this.BASE_URL}/system/user/search`, {user: {name, email}});
     }
 
+    /** 使用者 轉為 系統管理員 */
+    addSystemRole(userId: string): Observable<any> {
+        return this.http.post<any>(`${this.BASE_URL}/system/user/role/system/add`, {userId});
+    }
+
+    /** 取消 使用者的 系統管理員 角色 */
+    removeSystemRole(userId: string): Observable<any> {
+        return this.http.delete<any>(`${this.BASE_URL}/system/user/role/system/delete/${userId}`);
+    }
+
     /** 使用者角色 */
     searchUserRole(email: string, role: string): Observable<any> {
         return this.http.post<any>(`${this.BASE_URL}/system/user/role/search`, {email, role});

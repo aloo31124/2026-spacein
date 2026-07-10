@@ -10,10 +10,41 @@ exports.searchUser = async (req, res) => {
         console.log(" [searchUser] 開始 req.body: ", req.body);
         const { user } = req.body;
         const result = await userService.searchUserList(user);
+        // 標記每位使用者是否已具備 系統管理員(system) 角色, 供列表切換 轉/取消 系統管理員按鈕
+        const systemUserIdList = await userToRoleService.getUserIdListByRole('system');
+        result.userList = result.userList.map(u => ({ ...u, isSystem: systemUserIdList.includes(u.id) }));
         console.log(" [searchUser] 結束 result : ", result);
         res.status(200).json({ result });
     } catch (error) {
         res.status(500).json({ result: ' [searchUser] 500 錯誤', error: error.message });
+    }
+}
+
+/* [系統管理] 使用者 轉為 系統管理員 */
+exports.addUserSystemRole = async (req, res) => {
+    try {
+        console.log(" [addUserSystemRole] 開始 req.body: ", req.body);
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ message: '缺少 userId' });
+        const result = await userToRoleService.addUserToRole({ userId, role: 'system' });
+        console.log(" [addUserSystemRole] 結束 result : ", result);
+        res.status(200).json({ result });
+    } catch (error) {
+        res.status(500).json({ result: ' [addUserSystemRole] 500 錯誤', error: error.message });
+    }
+}
+
+/* [系統管理] 取消 使用者的 系統管理員 角色 */
+exports.deleteUserSystemRole = async (req, res) => {
+    try {
+        console.log(" [deleteUserSystemRole] 開始 req.params: ", req.params);
+        const { userId } = req.params;
+        const result = await userToRoleService.removeUserToRole(userId, 'system');
+        if (!result) return res.status(404).json({ message: '該使用者不具系統管理員角色' });
+        console.log(" [deleteUserSystemRole] 結束 result : ", result);
+        res.status(200).json({ result });
+    } catch (error) {
+        res.status(500).json({ result: ' [deleteUserSystemRole] 500 錯誤', error: error.message });
     }
 }
 

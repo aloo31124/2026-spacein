@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { RouteUrlRecordService } from './route-url-record.service';
 
 describe('RouteUrlRecordService', () => {
-  let service: RouteUrlRecordService;
+  let service: RouteUrlRecordService<unknown>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

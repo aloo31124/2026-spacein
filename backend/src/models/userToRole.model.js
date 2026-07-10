@@ -38,6 +38,12 @@ class UserToRole {
         const docSnapshot = await docRef.get();
         return { id: docRef.id, ...docSnapshot.data() };
     }
+
+    // 刪除 該使用者 對應之 角色, 依 文件 id
+    static async delete(id) {
+        await db.collection(COLLECTION_NAME).doc(id).delete();
+        return { id };
+    }
      
     // 取得所有 全部 使用者 權限 資訊
     static async getAllUserToRole() {
