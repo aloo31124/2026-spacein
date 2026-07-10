@@ -24,7 +24,13 @@
             <div class="select-item" (click)="isHiddenDialogRoom=false" >{{ selectRoom ? (selectRoom.name ? selectRoom.name : "請選擇教室") : "請選擇教室" }}</div>
             <!-- <img src="assets/images/icon/icon_map_position.png" (click)="selectMap()"> -->
         </div>
-        
+
+        <!-- 教室資訊 (地址/電話), 選擇教室後顯示 -->
+        <div class="row-room-info" *ngIf="selectRoom && selectRoom.name">
+            <div>地址 : {{ selectRoom.address ? selectRoom.address : "未設定" }}</div>
+            <div>電話 : {{ selectRoom.phone ? selectRoom.phone : "未設定" }}</div>
+        </div>
+
         <div class="row" *ngIf="bookingType === 'site'">
             <div class="row-txt">座位</div>
             <div class="select-item" (click)="clickSiteShowDialog()">{{ selectSite ? (selectSite.name ? selectSite.name : "請選擇座位"): "請選擇座位" }}</div>

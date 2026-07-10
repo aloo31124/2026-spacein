@@ -43,6 +43,10 @@ description: >
   帳號頁與教室編輯頁共用同一份，修改卡片外觀只改全域一處
 - 前端使用處：帳號頁 `account-page`（labelPrefix="預設"、僅 owner 角色顯示）、
   教室表單 `search-room-content`（新增時自動帶入、「重新帶入擁有者預設」按鈕）
+- 預約頁顯示（地址/電話）：[空間預約] `booking-check-form-page`（選擇教室後顯示該教室 地址/電話，
+  未設定顯示「未設定」）、[已預約] `review-booking-form`（依預約紀錄 `roomId` 走既有
+  `GET /api/booking/room/userId/:userId` 查教室後顯示；顯示為輔助資訊，取得失敗靜默、不擋取消借用流程）；
+  兩頁各自 component scss 皆以 `.row-room-info` class 呈現
 
 ## 預約卡控規則（booking.service.js `checkRoomOpenRule`）
 
@@ -99,4 +103,4 @@ description: >
 - **提醒卡片樣式為全域 class** `.room-open-hint`（定義於 `styles.scss`，緊鄰 `.owner-default-card`），
   行事曆頁與時鐘頁共用同一份。
 - 前端 `Room` model（`common/room-site/models/room.model.ts`）已含
-  `closedWeekdays`/`openStartTime`/`openEndTime` 欄位，缺值時補空陣列/空字串。
+  `address`/`phone`/`closedWeekdays`/`openStartTime`/`openEndTime` 欄位，缺值時補空陣列/空字串。
