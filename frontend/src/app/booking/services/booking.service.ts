@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { Booking } from '../models/booking.model';
 import { Room } from 'src/app/common/room-site/models/room.model';
 import { RoomSiteIsBooking } from 'src/app/common/room-site/models/room-site-isbooking.model';
@@ -23,6 +24,8 @@ export class BookingService {
   endTime = "09:00";
   // 本次預約流程中 選擇日期 之前 已經存在之預約記錄
   selectDayAllBookingRecordList: Booking[] =[];
+  // 預約流程之 教室開放資訊列表 (每周不開放星期/每天開放時段), 供 行事曆/時鐘 頁即時卡控提醒
+  openRuleRoomList: Room[] = [];
 
   constructor(
     private http: HttpClient,
@@ -105,7 +108,20 @@ export class BookingService {
     return this.http.get<any>(`${this.BASE_URL}/roomtosite/all`);
   }
 
-  /* 
+  /*
+   * 載入 教室開放資訊列表 並快取於 service:
+   * - 每次「進入頁面」重新抓一次, 教室設定 (每周不開放/每天開放時段) 被更新後, 提醒仍保持正確。
+   * - 之後 每次點選日期/時間 的檢查 皆在前端記憶體計算 (openRuleRoomList), 不再打 API,
+   *   確保即時反應與效能; 後端存檔前仍有 checkRoomOpenRule 最終卡控。
+   */
+  loadOpenRuleRoomList(userId: string): Observable<Room[]> {
+    return this.getRoomByOwnerId(userId).pipe(
+      map(roomList => (roomList || []).map(room => new Room(room))),
+      tap(roomList => this.openRuleRoomList = roomList)
+    );
+  }
+
+  /*
    * 新增一筆 booking 資料
    */
   post(booking: Booking): Observable<ArrayBuffer> {

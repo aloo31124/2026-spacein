@@ -1,6 +1,13 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
+import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 import { BookingService } from '../../services/booking.service';
+import {
+  WEEKDAY_NAMES,
+  isRoomClosedOnDate,
+  isTimeOutsideOpenRange,
+  parseWeekdayFromDateStr,
+} from 'src/app/common/owner-default/utils/room-open-rule.util';
 
 @Component({
   selector: 'app-booking-clock-page',
@@ -38,10 +45,14 @@ export class BookingClockPageComponent {
   //選擇開始時段
   isSelectStartTimeInput = true;
 
+  // 所選時段 卡控教室提醒列表 (教室名 + 卡控原因), 選時間後即時顯示
+  timeRuleHintList: { roomName: string, reason: string }[] = [];
+
 
   constructor(
     private routeUrlRecordService: RouteUrlRecordService<{}>,
     private bookingService: BookingService,
+    private googleAuthService: GoogleAuthService,
   ) {}
 
   
@@ -87,9 +98,20 @@ export class BookingClockPageComponent {
   }
     
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // 進頁面即重新載入教室開放資訊 (每次進入重抓, 教室設定被更新後 提醒仍正確),
+    // 之後每次選時間 皆在前端記憶體計算, 即時反應不打 API
+    const userId = this.googleAuthService.getCurrentUser()?.id;
+    if (!userId) {
+      return;
+    }
+    this.bookingService.loadOpenRuleRoomList(userId).subscribe({
+      next: () => this.updateTimeRuleHint(),
+      error: () => {} // 提醒屬輔助資訊, 取得失敗不擋預約流程 (後端存檔前仍會卡控)
+    });
+  }
 
-  
+
   selectTime(selectTime: number) {
     if( this.isSelectHour ) {
       this._selectHour = selectTime;
@@ -123,10 +145,38 @@ export class BookingClockPageComponent {
     const selectTime = this.getHourString() + ":" + this.getMinString();
     if(this.isSelectStartTimeInput) {
       this.bookingService.setStartTime(selectTime);
-    } 
+    }
     else {
       this.bookingService.setEndTime(selectTime);
-    } 
+    }
+    this.updateTimeRuleHint();
+  }
+
+  /*
+   * 重算 所選時段 教室卡控提醒:
+   * 純記憶體計算 (資料已由 loadOpenRuleRoomList 快取), 每次選時間即時反應。
+   * 卡控規則與後端 checkRoomOpenRule 一致:
+   *  1. 每周不開放星期 (選擇日期 落在教室 closedWeekdays)
+   *  2. 每天開放時段 (所選起訖時間 超出教室 openStartTime~openEndTime)
+   */
+  updateTimeRuleHint() {
+    const selectDate = this.bookingService.getSelectDate();
+    const startTime = this.getStartTime();
+    const endTime = this.getEndTime();
+
+    const hintList: { roomName: string, reason: string }[] = [];
+    this.bookingService.openRuleRoomList.forEach(room => {
+      // 該日整天不開放, 優先提醒 (不再重複提醒時段)
+      if (selectDate && isRoomClosedOnDate(room, selectDate)) {
+        const weekdayName = WEEKDAY_NAMES[parseWeekdayFromDateStr(selectDate)] ?? "";
+        hintList.push({ roomName: room.name, reason: `${selectDate}（${weekdayName}）不開放` });
+        return;
+      }
+      if (isTimeOutsideOpenRange(room, startTime, endTime)) {
+        hintList.push({ roomName: room.name, reason: `開放時段 ${room.openStartTime}~${room.openEndTime}` });
+      }
+    });
+    this.timeRuleHintList = hintList;
   }
 
   getRotationAngle(hour: number): number {
