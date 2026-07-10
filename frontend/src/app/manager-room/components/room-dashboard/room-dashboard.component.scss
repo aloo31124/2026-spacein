@@ -72,26 +72,6 @@
     }
 }
 
-/* 平板與窄桌面：側欄預設由元件收合，手動展開時改為上方堆疊以保留內容寬度。 */
-@media (max-width: 999px) {
-    .manager-container {
-        width: 100%;
-        padding: 24px;
-        flex-direction: column;
-        gap: 12px;
-
-        .manager-menu {
-            width: 100%;
-            min-width: 0;
-        }
-
-        .manager-container {
-            width: 100%;
-            padding: 12px 0;
-        }
-    }
-}
-
 /* 手機板 RWD：避免水平溢出、選單改為上方堆疊並等寬，操作區更易點擊 */
 @media (max-width: 600px) {
     .manager-container {

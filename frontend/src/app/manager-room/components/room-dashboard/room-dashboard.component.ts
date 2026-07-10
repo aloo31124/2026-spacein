@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-room-dashboard',
@@ -6,22 +6,10 @@ import { Component, HostListener } from '@angular/core';
   styleUrls: ['./room-dashboard.component.scss']
 })
 export class RoomDashboardComponent {
-  private isCompactViewport = window.innerWidth < 1000;
-  isMenuVisible: boolean = !this.isCompactViewport;
+  isMenuVisible: boolean = true; // 預設選單是顯示的
 
   toggleMenu() {
     this.isMenuVisible = !this.isMenuVisible;
-  }
-
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    const isCompactViewport = window.innerWidth < 1000;
-
-    // 只在跨越斷點時同步選單，避免桌面上的細微縮放覆蓋使用者手動操作。
-    if (isCompactViewport !== this.isCompactViewport) {
-      this.isCompactViewport = isCompactViewport;
-      this.isMenuVisible = !isCompactViewport;
-    }
   }
 
 }

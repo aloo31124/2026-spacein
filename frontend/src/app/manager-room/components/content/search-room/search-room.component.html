@@ -8,37 +8,21 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div class="manager-table-state" *ngIf="isDefault">開始搜尋</div>
-    <div class="manager-table-state" *ngIf="roomList.length === 0 && !isDefault && !isLoading ">沒有找到結果</div>
-    <div class="manager-table-container" *ngIf="roomList.length > 0">
-        <table class="manager-table">
-            <thead>
-                <tr>
-                    <th scope="col">擁有者 ID</th>
-                    <th scope="col">擁有者信箱</th>
-                    <th scope="col">教室名稱</th>
-                    <th scope="col">不開放日期</th>
-                    <th scope="col">開放時段</th>
-                    <th scope="col">操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let room of roomList">
-                    <td data-label="擁有者 ID">{{ room.ownerId }}</td>
-                    <td data-label="擁有者信箱">{{ room.email }}</td>
-                    <td data-label="教室名稱">{{ room.name }}</td>
-                    <td data-label="不開放日期">{{ room.closedWeekdaysText }}</td>
-                    <td data-label="開放時段">{{ room.openTimeText }}</td>
-                    <td data-label="操作">
-                        <div class="manager-table__actions">
-                            <button (click)="clickEditRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">編輯</button>
-                            <button (click)="clickDeleteRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">刪除</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <div *ngIf="isDefault">開始搜尋</div>
+    <div *ngIf="roomList.length === 0 && !isDefault && !isLoading ">沒有找到結果</div>
+    <ul *ngIf="roomList.length > 0">
+        <li *ngFor="let room of roomList">
+            <strong>擁有者id:</strong> {{ room.ownerId }} |
+            <strong>擁有者信箱:</strong> {{ room.email }} |
+            <strong>教室名稱:</strong> {{ room.name }} |
+            <br>
+            <strong>不開放日期:</strong> {{ room.closedWeekdaysText }} |
+            <strong>開放時段:</strong> {{ room.openTimeText }}
+            <br>
+            <button (click)="clickEditRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">編輯</button>
+            <button (click)="clickDeleteRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">刪除</button>
+        </li>
+    </ul>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>
