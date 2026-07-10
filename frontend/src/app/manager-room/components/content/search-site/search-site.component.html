@@ -17,20 +17,35 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="siteList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul *ngIf="siteList.length > 0">
-        <li *ngFor="let roomToSite of siteList">
-            <strong>擁有者id:</strong> {{ roomToSite.ownerId }} | 
-            <strong>擁有者信箱:</strong> {{ roomToSite.email }} | 
-            <br>
-            <strong>教室名稱:</strong> {{ roomToSite.roomName }} |
-            <strong>座位名稱:</strong> {{ roomToSite.name }} | 
-            <br>
-            <button (click)="clickEditSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">編輯</button>
-            <button (click)="clickDeleteSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">刪除</button>
-        </li>
-    </ul>
+    <div class="manager-table-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="manager-table-state" *ngIf="siteList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-container" *ngIf="siteList.length > 0">
+        <table class="manager-table">
+            <thead>
+                <tr>
+                    <th scope="col">擁有者 ID</th>
+                    <th scope="col">擁有者信箱</th>
+                    <th scope="col">教室名稱</th>
+                    <th scope="col">座位名稱</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let roomToSite of siteList">
+                    <td data-label="擁有者 ID">{{ roomToSite.ownerId }}</td>
+                    <td data-label="擁有者信箱">{{ roomToSite.email }}</td>
+                    <td data-label="教室名稱">{{ roomToSite.roomName }}</td>
+                    <td data-label="座位名稱">{{ roomToSite.name }}</td>
+                    <td data-label="操作">
+                        <div class="manager-table__actions">
+                            <button (click)="clickEditSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">編輯</button>
+                            <button (click)="clickDeleteSite(roomToSite)" [style.opacity]="roomToSite.haveBooking ? 0.5 : 1">刪除</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>

@@ -10,15 +10,26 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="payRecordList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul *ngIf="payRecordList.length > 0">
-        <li *ngFor="let payRecord of payRecordList">
-            <strong>購買者信箱:</strong> {{ payRecord.email }} | 
-            <strong>方案名稱:</strong> {{ payRecord.planName }} | 
-            <strong>資訊:</strong> {{ payRecord.message }} 
-        </li>
-    </ul>
+    <div class="manager-table-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="manager-table-state" *ngIf="payRecordList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-container" *ngIf="payRecordList.length > 0">
+        <table class="manager-table">
+            <thead>
+                <tr>
+                    <th scope="col">購買者信箱</th>
+                    <th scope="col">方案名稱</th>
+                    <th scope="col">資訊</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let payRecord of payRecordList">
+                    <td data-label="購買者信箱">{{ payRecord.email }}</td>
+                    <td data-label="方案名稱">{{ payRecord.planName }}</td>
+                    <td data-label="資訊">{{ payRecord.message }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>

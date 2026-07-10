@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-sys-dashboard',
@@ -6,10 +6,22 @@ import { Component } from '@angular/core';
   styleUrls: ['./sys-dashboard.component.scss']
 })
 export class SysDashboardComponent {
-  isMenuVisible: boolean = true; // 預設選單是顯示的
+  private isCompactViewport = window.innerWidth < 1000;
+  isMenuVisible: boolean = !this.isCompactViewport;
 
   toggleMenu() {
     this.isMenuVisible = !this.isMenuVisible;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    const isCompactViewport = window.innerWidth < 1000;
+
+    // 只在跨越斷點時同步選單，避免桌面上的細微縮放覆蓋使用者手動操作。
+    if (isCompactViewport !== this.isCompactViewport) {
+      this.isCompactViewport = isCompactViewport;
+      this.isMenuVisible = !isCompactViewport;
+    }
   }
 
 }

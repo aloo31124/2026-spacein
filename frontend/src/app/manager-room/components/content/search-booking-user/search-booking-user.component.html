@@ -10,19 +10,32 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul *ngIf="users.length > 0">
-        <li *ngFor="let user of users">
-            <strong>擁有者id:</strong> {{ user.ownerId }} |
-            <strong>擁有者姓名:</strong> {{ user.ownerName }} | 
-            <strong>擁有者信箱:</strong> {{ user.ownerEmail }}
-            <br>
-            <strong>預約者id:</strong> {{ user.id }} |
-            <strong>姓名:</strong> {{ user.name }} | 
-            <strong>信箱:</strong> {{ user.email }}
-        </li>
-    </ul>
+    <div class="manager-table-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="manager-table-state" *ngIf="users.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-container" *ngIf="users.length > 0">
+        <table class="manager-table">
+            <thead>
+                <tr>
+                    <th scope="col">擁有者 ID</th>
+                    <th scope="col">擁有者姓名</th>
+                    <th scope="col">擁有者信箱</th>
+                    <th scope="col">預約者 ID</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">信箱</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of users">
+                    <td data-label="擁有者 ID">{{ user.ownerId }}</td>
+                    <td data-label="擁有者姓名">{{ user.ownerName }}</td>
+                    <td data-label="擁有者信箱">{{ user.ownerEmail }}</td>
+                    <td data-label="預約者 ID">{{ user.id }}</td>
+                    <td data-label="姓名">{{ user.name }}</td>
+                    <td data-label="信箱">{{ user.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>

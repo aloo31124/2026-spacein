@@ -64,3 +64,10 @@
     * 涵蓋 cy.intercept 後端攔截規範、自訂彈窗（.app-dialog）操作、快閃訊息遮罩與 force 點擊、Google 登入模擬（onBeforeLoad 注入假 window.google + 假 JWT）、時鐘時段卡控、行事曆日期選取等硬性眉角。
     * 疑難排解：`bad option: --no-sandbox`（`ELECTRON_RUN_AS_NODE` 導致 Electron 被當 Node 執行）。
     * 關鍵字：Cypress、E2E、cy.intercept、loginByEmail、loginByGoogle、acceptDialog、app-dialog、ELECTRON_RUN_AS_NODE、預約測試、取消預約測試、Google 登入模擬。
+
+### 管理後台響應式表格
+- **文檔**: `.github/skills/manager-responsive-table/SKILL.md`
+- **適用情境**:
+    * 修改空間管理或系統管理的搜尋結果表格、窄版卡片、管理側欄響應式行為時，必須參考此文件。
+    * 涵蓋 `.manager-table` 共用標記、400px 容器查詢卡片切換、spacein 紫色視覺，以及 1000px 側欄自動收合。
+    * 關鍵字：空間管理、系統管理、管理表格、卡片版型、container query、側欄收合、RWD、manager-table。

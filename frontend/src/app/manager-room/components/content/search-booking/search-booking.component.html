@@ -15,18 +15,30 @@
 
 <!-- 搜尋結果列表 -->
 <div class="search-result">
-    <div *ngIf="isDefault">開始搜尋</div>
-    <div *ngIf="bookingList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
-    <ul  *ngIf="bookingList.length > 0">
-        <li *ngFor="let booking of bookingList">
-            <strong>預約者信箱:</strong> {{ booking.mail }} |
-            <strong>教室名稱:</strong> {{ booking.roomName }} |
-            <strong>座位名稱:</strong> {{ booking.siteName }} | 
-            <br>
-            <strong>預約日期:</strong> {{ booking.startDate }} | 
-            <strong>預約時間:</strong> {{ booking.startTime }} ~ {{ booking.endTime }} | 
-        </li>
-    </ul>
+    <div class="manager-table-state" *ngIf="isDefault">開始搜尋</div>
+    <div class="manager-table-state" *ngIf="bookingList.length === 0 && !isDefault && !isLoading">沒有找到結果</div>
+    <div class="manager-table-container" *ngIf="bookingList.length > 0">
+        <table class="manager-table">
+            <thead>
+                <tr>
+                    <th scope="col">預約者信箱</th>
+                    <th scope="col">教室名稱</th>
+                    <th scope="col">座位名稱</th>
+                    <th scope="col">預約日期</th>
+                    <th scope="col">預約時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let booking of bookingList">
+                    <td data-label="預約者信箱">{{ booking.mail }}</td>
+                    <td data-label="教室名稱">{{ booking.roomName }}</td>
+                    <td data-label="座位名稱">{{ booking.siteName }}</td>
+                    <td data-label="預約日期">{{ booking.startDate }}</td>
+                    <td data-label="預約時間">{{ booking.startTime }} ~ {{ booking.endTime }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="loading-gif" *ngIf="isLoading">
         <img src="assets/images/icon/icon_loading.gif" style="width: 50px;">
     </div>
