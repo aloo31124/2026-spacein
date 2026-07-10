@@ -1,8 +1,15 @@
 
 <div class="container">
-    <app-calendar-picker 
+    <app-calendar-picker
         (selectDatInfo)="getEmitterSelectDay($event)">
     </app-calendar-picker>
+
+    <!-- [教室時段卡控] 提醒: 該選擇日期 有教室不開放時, 即時顯示 -->
+    <div class="room-open-hint" *ngIf="closedRoomList.length > 0">
+        <div class="hint-title">{{ getSelectDate() }}（{{ selectDateWeekdayName }}）下列教室不開放：</div>
+        <span class="hint-room" *ngFor="let room of closedRoomList">{{ room.name }}</span>
+    </div>
+
     <div class="btn-bar">
         <!-- 下一步：改用 inline SVG（取代 icon_next.png），跨平台渲染一致 -->
         <button type="button" class="next-btn" (click)="nextStep()" aria-label="下一步" title="下一步">

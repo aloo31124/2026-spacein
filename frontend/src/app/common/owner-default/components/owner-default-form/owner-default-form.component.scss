@@ -1,0 +1,77 @@
+/* 主題沿用全域樣式 (styles.scss) 之紫色系 #661983 / #FBE0FF,
+   文字/時間輸入框不覆寫全域紫框膠囊樣式, 僅調整寬度排版 */
+.owner-default-form {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .field-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+
+        .field-label {
+            color: #661983;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+
+    .weekday-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        // 星期選項做成膠囊 chip, 勾選(不開放)時紫底白字, 與全域按鈕視覺一致
+        .weekday-item {
+            position: relative;
+            cursor: pointer;
+            padding: 6px 16px;
+            border: 2px solid #661983;
+            border-radius: 40px;
+            color: #661983;
+            background: white;
+            font-size: 20px;
+            user-select: none;
+
+            // 隱藏原生勾選框但保留可聚焦, 勾選狀態改以膠囊底色呈現
+            input[type="checkbox"] {
+                position: absolute;
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+        .weekday-item.checked {
+            background: #661983;
+            color: white;
+            font-weight: bold;
+        }
+    }
+
+    .time-range {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        input[type="time"] {
+            flex: 1;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 10px 12px; // 窄容器內兩欄並排, 縮小左右內距避免擠壓
+        }
+
+        span {
+            padding: 0 6px;
+        }
+    }
+}

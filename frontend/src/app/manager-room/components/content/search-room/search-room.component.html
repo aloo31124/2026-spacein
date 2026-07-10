@@ -12,9 +12,12 @@
     <div *ngIf="roomList.length === 0 && !isDefault && !isLoading ">沒有找到結果</div>
     <ul *ngIf="roomList.length > 0">
         <li *ngFor="let room of roomList">
-            <strong>擁有者id:</strong> {{ room.ownerId }} | 
-            <strong>擁有者信箱:</strong> {{ room.email }} | 
-            <strong>教室名稱:</strong> {{ room.name }} | 
+            <strong>擁有者id:</strong> {{ room.ownerId }} |
+            <strong>擁有者信箱:</strong> {{ room.email }} |
+            <strong>教室名稱:</strong> {{ room.name }} |
+            <br>
+            <strong>不開放日期:</strong> {{ room.closedWeekdaysText }} |
+            <strong>開放時段:</strong> {{ room.openTimeText }}
             <br>
             <button (click)="clickEditRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">編輯</button>
             <button (click)="clickDeleteRoom(room)" [style.opacity]="room.haveSite ? 0.5 : 1">刪除</button>

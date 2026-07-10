@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  domain: 'https://api-2qiy7ro3ea-uc.a.run.app',
+  domain: 'http://localhost:8082',
 
   // Firebase / Firestore 一律由後端存取, 設定集中於 backend/src/firestore.js
 

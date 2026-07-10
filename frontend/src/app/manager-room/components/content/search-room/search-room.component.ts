@@ -3,6 +3,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { RoomDashboardService } from '../../../services/room-dashboard.service';
 import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.service';
 import { ExportService } from 'src/app/common/export-import/services/export.service';
+import { formatClosedWeekdays, formatOpenTimeRange } from 'src/app/common/owner-default/utils/room-open-rule.util';
 
 @Component({
   selector: 'app-search-room',
@@ -93,7 +94,12 @@ export class SearchRoomComponent {
     const ownerId = this.googleAuthService.getCurrentUser().id;
     this.roomDashboardService.searchRoom(ownerId, searchData).subscribe({
         next: (res) => {
-            this.roomList = res.result || [];
+            // 開放資訊顯示文字 於搜尋回傳時一次算好, 避免 template 於每輪變更偵測重複運算
+            this.roomList = (res.result || []).map((room: any) => ({
+                ...room,
+                closedWeekdaysText: formatClosedWeekdays(room.closedWeekdays),
+                openTimeText: formatOpenTimeRange(room),
+            }));
             this.isLoading = false;
         },
         error: (err) => {

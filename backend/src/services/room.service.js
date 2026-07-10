@@ -82,7 +82,9 @@ exports.findByName = async (name) => {
 /* [空間管理] [教室] 新增 */
 exports.add = async (room, ownerId) => {
     try {
-        const _room = {...room, ownerId, isBookingAllSite:false}
+        // 教室開放資訊欄位 (地址/電話/每周不開放星期/每天開放時段), 未帶入時補預設值
+        const { address = "", phone = "", closedWeekdays = [], openStartTime = "", openEndTime = "" } = room;
+        const _room = {...room, address, phone, closedWeekdays, openStartTime, openEndTime, ownerId, isBookingAllSite:false}
         return await Room.add(_room);
     } catch (error) {
         console.error(" [add] Error:", error);

@@ -79,6 +79,14 @@
         </div>
     </div>
 
+    <!-- [教室時段卡控] 提醒: 所選時段 有教室卡控時, 即時顯示教室與原因 -->
+    <div class="room-open-hint" *ngIf="timeRuleHintList.length > 0">
+        <div class="hint-title">所選時段下列教室不可預約：</div>
+        <div class="hint-reason-row" *ngFor="let hint of timeRuleHintList">
+            <span class="hint-room">{{ hint.roomName }}</span>{{ hint.reason }}
+        </div>
+    </div>
+
     <div class="btn-bar">
         <!-- 下一步：改用 inline SVG（取代 icon_next.png），跨平台渲染一致 -->
         <button type="button" class="next-btn" (click)="nextStep()" aria-label="下一步" title="下一步">

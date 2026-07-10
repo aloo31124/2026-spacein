@@ -76,3 +76,62 @@ button:hover {
 .iconBtn {
     cursor: pointer;
 }
+
+/* [擁有者預設] / 教室開放資訊 共用卡片
+   帳號頁面與教室新增/編輯頁面共用同一份樣式, 保持兩處視覺一致 */
+.owner-default-card {
+    width: 80%;
+    max-width: 400px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 20px;
+    background: #FBE0FF;
+
+    h3 {
+        margin: 0;
+        text-align: center;
+    }
+
+    button {
+        align-self: center;
+    }
+}
+
+/* [教室時段卡控] 提醒卡片
+   [空間預約] 行事曆頁(當日不開放教室) 與 時鐘頁(該時段卡控教室) 共用同一份樣式 */
+.room-open-hint {
+    width: 80%;
+    max-width: 350px;
+    box-sizing: border-box;
+
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #FBE0FF;
+    color: #661983;
+    font-size: 14px;
+    text-align: left;
+
+    .hint-title {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    .hint-room {
+        display: inline-block;
+        margin: 2px 6px 2px 0;
+        padding: 2px 10px;
+        border-radius: 20px;
+        background: #661983;
+        color: #ffffff;
+    }
+
+    .hint-reason-row {
+        padding: 2px 0;
+    }
+}
