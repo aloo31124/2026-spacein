@@ -67,6 +67,13 @@ describe('BookingCheckFormPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('送出按鈕使用固定於畫面底部的共用動作列', () => {
+    const actionBar = fixture.nativeElement.querySelector('.booking-bottom-action');
+
+    expect(actionBar).toBeTruthy();
+    expect(actionBar.querySelector('.submit-btn')).toBeTruthy();
+  });
+
   it('選擇教室後 顯示該教室之 地址 與 電話', () => {
     const infoRow = fixture.nativeElement.querySelector('.row-room-info');
     expect(infoRow).toBeTruthy();

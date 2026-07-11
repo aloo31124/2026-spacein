@@ -1,54 +1,179 @@
+/* SpaceIn 品牌色系: 主色 #661983、淺紫 #FBE0FF、邊框 #e2c8eb、文字 #4b3154 */
 
 .calendar-picker {
-    width: 350px;
-    border: 1px solid #cfcfcf;
-    border-radius: 1px;
-    
-    .calendar-header {                
-        background: #661983;
+    width: min(360px, calc(100vw - 32px));
+    border: 1px solid #e2c8eb;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(102, 25, 131, 0.10);
+    overflow: hidden; // 讓標題列紫底跟隨圓角
+
+    .calendar-header {
+        background: linear-gradient(135deg, #661983, #8a2fae);
         color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px;
+        padding: 12px 14px;
         font-size: 20px;
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+
+            .year-month {
+                padding: 0;
+                font-size: 20px;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+        }
+
+        // 回今日: 快速跳回今日當月並選取今日 (覆蓋全域 button 樣式)
+        .today-btn {
+            margin: 0;
+            padding: 2px 12px;
+            font-size: 13px;
+            color: white;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 20px;
+            line-height: 1.4;
+
+            &:hover {
+                background: #FBE0FF;
+                color: #661983;
+                font-weight: normal;
+            }
+        }
+
+        // 上/下月導覽鈕 (覆蓋全域 button 樣式)
+        .nav-btn {
+            margin: 0;
+            padding: 0;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            transition: background 0.15s ease;
+
+            svg {
+                width: 22px;
+                height: 22px;
+                display: block;
+            }
+
+            &:hover:not(:disabled) {
+                background: rgba(255, 255, 255, 0.22);
+                color: white;
+            }
+
+            // 超出可預約區間 (今日 ~ +90天) 時停用
+            &:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+            }
+        }
     }
 
     .calendar-content {
-        .grid-row {
-            display: flex;
-            justify-content: flex-start;
-            flex-wrap: wrap;
+        padding: 6px 8px 10px;
+        overflow: hidden;
+        touch-action: pan-y;
+        cursor: grab;
+        user-select: none;
 
-            .grid {                
-                width: 14%;
-                //height: 40px;
-                text-align: center; /* 文本水平居中 */
-                padding: 12px 0;
+        &:active {
+            cursor: grabbing;
+        }
+
+        .grid-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+
+            // 星期列
+            &.weekday-row {
+                border-bottom: 1px solid #f0e2f5;
+                margin-bottom: 4px;
+
+                .weekday {
+                    padding: 8px 0 6px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #9a7ba8;
+
+                    // 週日 / 週六 以主色點綴
+                    &:first-child,
+                    &:last-child {
+                        color: #b565d8;
+                    }
+                }
+            }
+
+            .grid {
+                text-align: center;
+                padding: 5px 0;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between;
+                justify-content: flex-start;
                 align-items: center;
+                gap: 1px;
+                border-radius: 12px;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+
+                // 無效日期 (過去 或 超出+90天): 淡化且不可點
+                &.invalid {
+                    opacity: 0.35;
+                    cursor: not-allowed;
+                }
+
+                // 首週前置空格
+                &.blank {
+                    cursor: default;
+                }
+
+                &:focus-visible {
+                    outline: 2px solid #661983;
+                    outline-offset: -2px;
+                }
 
                 .no-selected {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-
-                    width: 35px;
-                    height: 35px;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 100%;
+                    transition: background 0.15s ease, color 0.15s ease;
                 }
 
-                .current-date {
+                // 有效日期 hover 提示可點選
+                &:not(.invalid):not(.blank):hover .no-selected:not(.selected) {
                     background: #FBE0FF;
                     color: #661983;
-                    border-radius: 100%;
-                } 
+                }
 
+                // 今日: 主色外框
+                .current-date {
+                    color: #661983;
+                    font-weight: bold;
+                    box-shadow: inset 0 0 0 2px #661983;
+                }
+
+                // 選取日: 主色實心
                 .selected {
                     background: #661983;
                     color: white;
-                    border-radius: 100%;
+                    font-weight: bold;
+                    box-shadow: 0 3px 8px rgba(102, 25, 131, 0.35);
                 }
 
                 .dot-bar {
@@ -56,23 +181,28 @@
                     flex-direction: row;
                     justify-content: center;
                     align-items: center;
-                    gap: 1px;
+                    gap: 2px;
+                    min-height: 5px;
+
                     .dot {
-                        width: 4px;
-                        height: 4px;
+                        width: 5px;
+                        height: 5px;
                         background: #661983;
-                        border-radius: 100%;                    
+                        border-radius: 100%;
                     }
                 }
 
                 .more-word {
-                    font-size: 14px;
-                    color: #FBE0FF;
+                    font-size: 12px;
+                    color: #b565d8;
+                    line-height: 1;
                 }
 
                 .rate {
                     color: #661983;
-                    font-size: 15px;
+                    font-size: 13px;
+                    min-height: 15px;
+                    line-height: 1.2;
                 }
             }
         }

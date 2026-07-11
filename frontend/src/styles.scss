@@ -311,3 +311,53 @@ button:hover {
         padding: 2px 0;
     }
 }
+
+/* [空間預約] 日期、時間與確認頁共用的底部動作列。
+   固定於 viewport 底部並保留行動裝置 safe-area，頁面內容需另留 88px 底部空間避免遮擋。 */
+.booking-bottom-action {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96) 35%);
+    pointer-events: none;
+
+    > button {
+        pointer-events: auto;
+        filter: drop-shadow(0 5px 10px rgba(102, 25, 131, 0.25));
+        transition: transform 0.16s ease, filter 0.16s ease;
+    }
+
+    > button:hover,
+    > button:focus-visible {
+        filter: drop-shadow(0 7px 14px rgba(102, 25, 131, 0.38));
+    }
+}
+
+/* 行事曆月份切換動畫放在全域樣式，避免 calendar-picker 元件超過 4KB style budget。 */
+app-calendar-picker .calendar-content {
+    &.month-next { --month-enter-x: 28px; }
+    &.month-previous { --month-enter-x: -28px; }
+
+    &.month-next .month-view,
+    &.month-previous .month-view {
+        animation: calendar-month-enter 0.26s ease-out both;
+    }
+}
+
+@keyframes calendar-month-enter {
+    from { opacity: 0; transform: translateX(var(--month-enter-x)); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    app-calendar-picker .calendar-content .month-view {
+        animation-duration: 0.01ms;
+    }
+}

@@ -6,6 +6,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    padding-bottom: 88px;
 }
 
 .dialog-container {
@@ -13,7 +15,8 @@
 }
 
 .form {
-    width: 300px;
+    width: min(360px, calc(100vw - 32px));
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -26,11 +29,16 @@
         justify-content: flex-start;
         align-items: center;
         padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 0;
 
         .row-txt {
             color: #661983;
-            margin-right: 30px;
+            margin-right: 18px;
             font-size: 25px;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .select-item {
@@ -39,7 +47,12 @@
             background: #FBE0FF;
             padding: 10px 30px;
             border-radius: 100px;
-            margin-right: 15px;
+            min-width: 0;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
         }
     }
 
@@ -53,6 +66,13 @@
         padding: 10px;
         color: #661983;
         font-size: 20px;
+
+        > div {
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     // 教室資訊 (地址/電話), 選擇教室後顯示
@@ -72,4 +92,24 @@
 
 img {
     height: 40px;
+}
+
+.submit-btn {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background: transparent;
+        transform: translateY(-2px) scale(1.06);
+        outline: none;
+    }
+
+    &:active {
+        transform: scale(0.96);
+    }
 }

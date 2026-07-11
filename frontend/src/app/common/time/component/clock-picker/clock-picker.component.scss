@@ -1,0 +1,197 @@
+/* 時鐘面幾何結構參考: https://codepen.io/JeffreyTaylor/pen/zZgKvw
+   刻度旋轉角度內聯於 template (減少編譯後樣式體積)
+   SpaceIn 品牌色系: 主色 #661983、淺紫 #FBE0FF、邊框 #e2c8eb */
+
+.clock-picker {
+    // 時鐘面尺寸統一由此變數控制 (窄螢幕自動縮小, 指針長度同步縮放)
+    --clock-size: min(300px, calc(100vw - 72px));
+
+    width: min(360px, calc(100vw - 32px));
+    border: 1px solid #e2c8eb;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(102, 25, 131, 0.10);
+    overflow: hidden; // 讓標題列紫底跟隨圓角
+}
+
+.clock-header {
+    background: linear-gradient(135deg, #661983, #8a2fae);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
+
+.time-display {
+    display: flex;
+    align-items: center;
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.55);
+
+    .colon {
+        padding: 0 2px;
+        font-size: 48px;
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    // 小時 / 分鐘 大字: 點選切換選取模式, 選取中亮起
+    .time-part {
+        padding: 0 8px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        -webkit-tap-highlight-color: transparent;
+
+        &:hover { background: rgba(255, 255, 255, 0.14); }
+
+        &.selected {
+            color: white;
+            background: rgba(255, 255, 255, 0.20);
+        }
+    }
+}
+
+.am-pm-selector {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+    overflow: hidden;
+
+    .am, .pm {
+        padding: 3px 10px;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        -webkit-tap-highlight-color: transparent;
+
+        &.selected {
+            background: white;
+            color: #661983;
+            font-weight: bold;
+        }
+    }
+}
+
+// 分鐘不可選提示 (取代 alert)
+.minute-hint {
+    background: #FBE0FF;
+    color: #661983;
+    font-size: 14px;
+    text-align: center;
+    padding: 6px 10px;
+}
+
+.clock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 16px;
+}
+
+.clock {
+    background: radial-gradient(circle at 50% 42%, #faf5fc, #F0EDF1);
+    border-radius: 50%;
+    width: var(--clock-size);
+    height: var(--clock-size);
+    position: relative;
+    box-shadow: inset 0 2px 8px rgba(102, 25, 131, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // 可拖曳指針；觸控時不觸發頁面捲動/縮放 (Android / iOS)、不選取文字
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+
+    &:active { cursor: grabbing; }
+
+    ul {
+        height: 38%;
+        width: 0;
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 50% 100%;
+    }
+
+    i {
+        font-style: normal;
+        font-weight: bold;
+        font-size: 19px;
+        color: #4b3154;
+
+        position: absolute;
+        top: 0;
+        left: 45%;
+
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+
+        &:hover:not(.selected) {
+            background: #FBE0FF;
+            color: #661983;
+        }
+
+        &.selected {
+            background: #661983;
+            color: white;
+            box-shadow: 0 2px 6px rgba(102, 25, 131, 0.35);
+        }
+    }
+}
+
+// 指針 (不攔截指標事件, 拖曳一律由時鐘面接手)
+.indicator {
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+
+    &::before {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        border-radius: 50%;
+        background: #661983;
+    }
+
+    .hand {
+        padding: 0;
+        position: absolute;
+        // 指針長度隨時鐘面縮放，末端停在選取圓圈內側並保留間距
+        height: calc(var(--clock-size) * 0.25);
+        width: 3px;
+        border-radius: 3px;
+        bottom: 7px; // 指針底端對齊中心點
+        transform-origin: bottom;
+        background: #661983;
+        // 點選數字時指針平滑轉過去 (0.15s 不影響拖曳跟手感)
+        transition: transform 0.15s ease-out;
+    }
+}

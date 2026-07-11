@@ -1,1 +1,55 @@
-<p>clock-picker works!</p>
+
+<div class="clock-picker">
+
+    <!-- 標題列: 大字時間顯示 (點選切換 選小時/選分鐘) + AM/PM 切換 -->
+    <div class="clock-header">
+        <div class="time-display">
+            <div class="time-part" (click)="selectHour()" role="button" aria-label="選擇小時"
+                 [ngClass]="{ 'selected': isSelectHour }">{{ getHourString() }}</div>
+            <span class="colon">:</span>
+            <div class="time-part" (click)="selectMin()" role="button" aria-label="選擇分鐘"
+                 [ngClass]="{ 'selected': isSelectMin }">{{ getMinString() }}</div>
+        </div>
+        <div class="am-pm-selector">
+            <div class="am" (click)="selectAm()" role="button" [ngClass]="{ 'selected': isAm }">AM</div>
+            <div class="pm" (click)="selectPm()" role="button" [ngClass]="{ 'selected': isPm }">PM</div>
+        </div>
+    </div>
+
+    <!-- 分鐘不可選之頁內提示 (取代 alert, 不中斷操作) -->
+    <div class="minute-hint" *ngIf="minuteHint">{{ minuteHint }}</div>
+
+    <div class="clock-container">
+        <!-- 時鐘面: 可點數字 或 拖曳指針 (Cypress 依賴 .clock i, 類名不可改) -->
+        <section class="clock" #clockFace
+                 (pointerdown)="onPointerDown($event)"
+                 (pointermove)="onPointerMove($event)"
+                 (pointerup)="onPointerUp()"
+                 (pointercancel)="onPointerUp()"
+                 (touchstart)="onTouchStart($event)"
+                 (touchmove)="onTouchMove($event)"
+                 (touchend)="onTouchEnd()"
+                 (touchcancel)="onTouchEnd()">
+
+            <!-- 12 刻度依 index 旋轉 30 度、數字反向轉正 (幾何內聯於 template, 減少編譯後樣式體積) -->
+            <ul *ngIf="isSelectHour">
+                <li *ngFor="let hour of hourNumbers; let i = index" [style.transform]="'rotate(' + i * 30 + 'deg)'">
+                    <i (click)="selectTime(hour)" [ngClass]="{ 'selected': _selectHour === hour }"
+                       [style.transform]="'translateX(-50%) rotate(' + i * -30 + 'deg)'">{{ hour }}</i>
+                </li>
+            </ul>
+
+            <ul *ngIf="isSelectMin">
+                <li *ngFor="let min of minuteNumbers; let i = index" [style.transform]="'rotate(' + i * 30 + 'deg)'">
+                    <i (click)="selectTime(min)" [ngClass]="{ 'selected': _selectMin === min }"
+                       [style.transform]="'translateX(-50%) rotate(' + i * -30 + 'deg)'">{{ formatMinute(min) }}</i>
+                </li>
+            </ul>
+
+            <div class="indicator">
+                <span class="hand" [style.transform]="'rotate(' + getHandAngle() + 'deg)'"></span>
+            </div>
+        </section>
+    </div>
+
+</div>

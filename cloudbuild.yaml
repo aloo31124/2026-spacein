@@ -4,7 +4,7 @@
 # ====================================
 #
 # 使用方式 (於專案根目錄執行):
-#   gcloud builds submit --config cloudbuild.yaml
+#   gcloud builds submit --config cloudbuild.yaml --project spacein-493210
 #
 # GCP 環境:
 #   專案編號: 1025423218880
