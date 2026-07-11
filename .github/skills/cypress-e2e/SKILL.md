@@ -63,7 +63,7 @@ description: >
 ## 執行方式
 
 ```bash
-npm start            # 終端機 A：啟動前端（埠 4200）
+npm start            # 終端機 A：啟動前端（埠 4201）
 npm run cy:run       # 終端機 B：無頭執行全部 E2E
 npm run cy:open      # 或開 GUI 互動執行
 npm run e2e          # 一鍵：自動起 server → 跑測試 → 關 server
