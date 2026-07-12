@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GoogleAuthService } from '../../services/google-auth.service';
 import { RegisterService } from '../../services/register.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
@@ -14,7 +14,9 @@ const REMEMBERED_EMAIL_KEY = 'rememberedEmail';
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })
-export class LoginPageComponent implements OnInit, OnDestroy {
+export class LoginPageComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('googleSignInButton') googleSignInButton?: ElementRef<HTMLElement>;
 
   email = "";
   password = "";
@@ -49,6 +51,17 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.loadingSub?.unsubscribe();
   }
 
+  ngAfterViewInit(): void {
+    if (!this.isNativeApp && this.googleSignInButton) {
+      this.googleAuthService
+        .renderGoogleWebSignInButton(this.googleSignInButton.nativeElement)
+        .catch(err => {
+          console.error('Google 登入按鈕載入失敗:', err);
+          alert('Google 登入服務暫時無法載入，請稍後再試');
+        });
+    }
+  }
+
   /** 切換密碼明文/隱藏顯示 */
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -67,11 +80,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   }
 
   async clickSignIn() {
-    if(this.isNativeApp) {
-      this.googleAuthService.loginByGoogleCap(); // 手機 app
-    } else {
-      this.googleAuthService.loginByGoogleWebFedCM(); // 網頁 web
-    }
+    this.googleAuthService.loginByGoogleCap(); // 手機 app
   }
 
   clickLogin() {

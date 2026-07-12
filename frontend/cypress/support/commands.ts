@@ -72,7 +72,7 @@ Cypress.Commands.add('loginByEmail', (user = TEST_USER) => {
   cy.location('pathname', { timeout: 15000 }).should('eq', '/home');
 });
 
-/** 以「Google 第三方（網頁 FedCM / One Tap）」完成登入，並停在 /home */
+/** 以「Google 第三方（網頁 GIS 官方按鈕）」完成登入，並停在 /home */
 Cypress.Commands.add('loginByGoogle', (user = TEST_USER) => {
   // 攔截並使真實 GSI SDK 失效，改由 onBeforeLoad 注入的假 window.google 接手
   cy.intercept('GET', 'https://accounts.google.com/gsi/client', {
@@ -90,20 +90,28 @@ Cypress.Commands.add('loginByGoogle', (user = TEST_USER) => {
 
   cy.visit('/', {
     onBeforeLoad(win) {
-      // 假 Google Identity Services：initialize 記下 callback，prompt 時回拋假憑證
+      // 假 Google Identity Services：initialize 記下 callback，官方按鈕被點擊時回拋假憑證
       (win as any).google = {
         accounts: {
           id: {
             initialize: (config: any) => {
+              (win as any).__googleInitializeCount = ((win as any).__googleInitializeCount ?? 0) + 1;
               (win as any).__googleCallback = config.callback;
             },
-            prompt: () => {
-              const cb = (win as any).__googleCallback;
-              if (cb) {
-                cb({ credential: jwt });
-              }
+            renderButton: (parent: HTMLElement) => {
+              const button = win.document.createElement('button');
+              button.type = 'button';
+              button.textContent = '使用 Google 帳號登入';
+              button.addEventListener('click', () => {
+                // 第一次模擬使用者關閉帳號選擇視窗；第二次才完成登入。
+                (win as any).__googleButtonClickCount = ((win as any).__googleButtonClickCount ?? 0) + 1;
+                if ((win as any).__googleButtonClickCount === 1) {
+                  return;
+                }
+                (win as any).__googleCallback?.({ credential: jwt });
+              });
+              parent.appendChild(button);
             },
-            renderButton: () => undefined,
             disableAutoSelect: () => undefined,
           },
         },
@@ -111,8 +119,8 @@ Cypress.Commands.add('loginByGoogle', (user = TEST_USER) => {
     },
   });
 
-  // 登入頁唯一的 app-img-btn 即為「使用 Google 登入」按鈕
-  cy.get('app-img-btn').first().click({ force: true });
+  cy.get('.google-sign-in-button button').click({ force: true }).click({ force: true });
+  cy.window().its('__googleInitializeCount').should('eq', 1);
 
   cy.wait('@findUser');
   cy.location('pathname', { timeout: 15000 }).should('eq', '/home');

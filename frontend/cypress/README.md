@@ -5,7 +5,7 @@
 | Spec 檔案 | 測試核心功能 |
 | --- | --- |
 | `e2e/login.cy.ts` | 信箱 / 密碼登入（成功、欄位卡控、後端失敗） |
-| `e2e/google-auth.cy.ts` | Google 第三方登入驗證（網頁 FedCM / One Tap） |
+| `e2e/google-auth.cy.ts` | Google 第三方登入驗證（GIS 官方按鈕、取消後重試） |
 | `e2e/booking.cy.ts` | 預約流程（日期 → 時段 → 類型 → 選座位 → 送出） |
 | `e2e/cancel-booking.cy.ts` | 取消預約（已預約清單 → 選預約 → 取消借用 → 確認） |
 
@@ -51,3 +51,4 @@ env -u ELECTRON_RUN_AS_NODE npm run cy:run
 - 登入頁「請先登入」等快閃訊息會短暫蓋上遮罩，故互動一律加 `{ force: true }`。
 - `app-input` 的點擊事件綁在內層 `.row`，切換「開始 / 結束時間」欄位需點 `.row`。
 - 取消預約的日期以「執行當日」動態產生，確保日期永遠有效且落在行事曆當月。
+- Google 登入以假的 GIS `renderButton()` 建立測試按鈕，並涵蓋第一次關閉帳號選擇、第二次重按成功的情境。

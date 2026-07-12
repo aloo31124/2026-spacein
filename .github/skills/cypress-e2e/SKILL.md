@@ -19,7 +19,7 @@ description: >
 | Spec | 核心功能 |
 | --- | --- |
 | `login.cy.ts` | 信箱 / 密碼登入（成功、欄位卡控、後端失敗） |
-| `google-auth.cy.ts` | Google 第三方登入驗證（FedCM / One Tap 模擬） |
+| `google-auth.cy.ts` | Google 第三方登入驗證（GIS 官方按鈕與取消後重試模擬） |
 | `booking.cy.ts` | 預約流程（日期→時段→類型→選座位→送出） |
 | `cancel-booking.cy.ts` | 取消預約（已預約清單→選預約→取消借用→確認） |
 
@@ -55,7 +55,10 @@ description: >
 
 ### 4. Google 登入模擬
 - 於 `cy.visit` 的 `onBeforeLoad` 注入假的 `window.google.accounts.id`，
-  `prompt()` 回拋一組可被 `GoogleAuthService.parseJwt` 解析的假 JWT（payload 需含 name、email）。
+  `renderButton()` 建立測試按鈕，點擊時回拋一組可被 `GoogleAuthService.parseJwt` 解析的假 JWT
+  （payload 需含 name、email）。
+- Google 登入回歸測試第一次點擊需模擬使用者關閉帳號選擇視窗，第二次點擊才回傳憑證，
+  並驗證 `initialize()` 全程只執行一次，避免再次引入 One Tap/FedCM cooldown 問題。
 - 全域攔截 `https://accounts.google.com/gsi/client` 回傳空腳本，避免對外連線且不覆蓋注入。
 
 ---

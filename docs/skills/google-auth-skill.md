@@ -46,7 +46,7 @@
 | 方法 | 說明 |
 |------|------|
 | `loginByGoogleCap()` | Android/iOS 原生登入，呼叫 Capacitor GoogleAuth plugin |
-| `loginByGoogleWebFedCM()` | 網頁登入，使用 Google FedCM One Tap UI |
+| `renderGoogleWebSignInButton()` | 網頁登入，顯示 Google Identity Services 官方按鈕 |
 | `checkToken()` | App 啟動時自動驗證 Token（720 小時 session） |
 | `setToken(user)` | 將使用者資訊與 Token 存入 Capacitor Preferences |
 | `cleanToken()` | 清除本地 Token（登出用） |
@@ -64,7 +64,7 @@
 if (Capacitor.isNativePlatform()) {
   this.googleAuthService.loginByGoogleCap();    // 手機
 } else {
-  this.googleAuthService.loginByGoogleWebFedCM(); // 網頁
+  this.googleAuthService.renderGoogleWebSignInButton(element); // 網頁
 }
 ```
 
@@ -226,9 +226,9 @@ Collection：`User`
 ### 網頁（Web FedCM）
 
 ```
-1. 使用者點擊「Google 登入」
-2. loginByGoogleWebFedCM() 初始化 google.accounts.id
-3. google.accounts.id.prompt() 顯示 One Tap UI
+1. 登入頁呼叫 renderGoogleWebSignInButton()
+2. 僅初始化一次 google.accounts.id 並顯示官方登入按鈕
+3. 使用者點擊官方按鈕並選擇 Google 帳號
 4. 取得 JWT credential
 5. parseJwt(credential) → 解析 { name, email, picture }
 6. 流程同手機步驟 5-7

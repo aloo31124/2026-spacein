@@ -11,8 +11,6 @@ import { BehaviorSubject } from 'rxjs';
 import { DialogService } from 'src/app/common/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 
-declare const google: any; // <- 補這行，因為是外部的 global 變數
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,6 +18,8 @@ export class GoogleAuthService {
 
   private isLoginIn = false;
   private currentUser!: GoogleAuthUser;
+  private googleIdentityInitialized = false;
+  private googleIdentitySdkReady: Promise<void>;
 
   // Google 登入流程的 loading 狀態, 供登入頁訂閱顯示等待畫面
   private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -47,26 +47,37 @@ export class GoogleAuthService {
       console.warn('GoogleAuth initialize 失敗:', err);
     }
     this.checkToken();
-    this.loadGoogleOneTapSDK();
+    this.googleIdentitySdkReady = this.loadGoogleIdentitySDK();
   }
 
   /*
-   * 載入 Google OneTap SDK（僅限網頁端）
-   * index.html 無 id，此處補 id 避免重複載入；原生 App 不需要 OneTap SDK
+   * 載入 Google Identity Services SDK（僅限網頁端）
+   * 共用同一個 Promise，避免畫面重建時重複載入或在 SDK 尚未完成前呼叫 API。
    */
-  private loadGoogleOneTapSDK() {
+  private loadGoogleIdentitySDK(): Promise<void> {
     if (Capacitor.isNativePlatform()) {
-      return;
+      return Promise.resolve();
     }
+
+    if ((window as any).google?.accounts?.id) {
+      return Promise.resolve();
+    }
+
     const existingScript = document.getElementById('google-one-tap');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.id = 'google-one-tap';
-      document.body.appendChild(script);
-    }
+    const script = existingScript ?? document.createElement('script');
+
+    return new Promise<void>((resolve, reject) => {
+      script.addEventListener('load', () => resolve(), { once: true });
+      script.addEventListener('error', () => reject(new Error('Google Identity Services SDK 載入失敗')), { once: true });
+
+      if (!existingScript) {
+        script.setAttribute('src', 'https://accounts.google.com/gsi/client');
+        script.setAttribute('async', 'true');
+        script.setAttribute('defer', 'true');
+        script.id = 'google-one-tap';
+        document.body.appendChild(script);
+      }
+    });
   }
 
 
@@ -146,58 +157,82 @@ export class GoogleAuthService {
     }
   }
 
-  /*
-   * 網頁時, google 第三方登入, 使用 FedCM
+  /**
+   * 網頁版顯示 GIS 官方登入按鈕。
+   *
+   * One Tap prompt 可能因使用者關閉而被瀏覽器套用 FedCM cooldown，不適合綁在
+   * 自訂按鈕的 click 事件；官方按鈕的 popup 流程可在取消後再次由使用者觸發。
    */
-  async loginByGoogleWebFedCM(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      google.accounts.id.initialize({
+  async renderGoogleWebSignInButton(parent: HTMLElement): Promise<void> {
+    await this.googleIdentitySdkReady;
+    const googleIdentity = (window as any).google?.accounts?.id;
+    if (!googleIdentity) {
+      throw new Error('Google Identity Services SDK 尚未就緒');
+    }
+
+    if (!this.googleIdentityInitialized) {
+      googleIdentity.initialize({
         // client_id 統一集中於 environment（src/environments/environment.ts）
         client_id: environment.googleOAuth.webClientId, // specein
-        callback: (res: any) => {
-          console.log(" OAuth FedCM res : ", res);
-          // 解析 res JWT 獲取用戶資訊, 並存入 CurrentUser
-          const { credential } = res;
-          const payload = this.parseJwt(credential);
-
-          if(!payload.name) {
-            alert("查無使用者信箱資訊");
-            return;
-          }
-
-          const user = {
-            name: payload.name,
-            email: payload.email,
-            authentication: {
-              idToken: credential,
-              accessToken: '' // One Tap 不提供 access token
-            }
-          }
-          this.setLoading(true); // 取得憑證後, 開始後端驗證, 顯示 loading
-          this.registerService
-            .findUser(user["email"])
-            .subscribe({
-              next: findRes => {
-                if(!findRes.result.user) {
-                  this.registerUserForFirstLogin(user);
-                } else {
-                  this.setCurrentUser({...user, id: findRes.result.user.id}); // 把 google user id 替換
-                  this.setToken();
-                  this.checkLogin(user);
-                }
-              },
-              error: err => {
-                this.setLoading(false);
-                alert("Google 登入失敗: " + (err?.error?.message || err.message || '未知錯誤'));
-              }
-            });
-        },
+        callback: (res: any) => this.handleGoogleWebCredential(res),
         auto_select: false,
-        //cancel_on_tap_outside: false,
+        use_fedcm_for_button: true,
       });
+      this.googleIdentityInitialized = true;
+    }
 
-      google.accounts.id.prompt(); // 出現 OneTap 登入 UI
+    parent.replaceChildren();
+    googleIdentity.renderButton(parent, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'pill',
+      logo_alignment: 'left',
+      width: 260,
     });
+  }
+
+  private handleGoogleWebCredential(res: any): void {
+    console.log(" OAuth FedCM res : ", res);
+    const credential = res?.credential;
+    if (!credential) {
+      alert("Google 登入失敗: 無法取得登入憑證");
+      return;
+    }
+
+    const payload = this.parseJwt(credential);
+    if(!payload.name || !payload.email) {
+      alert("查無使用者信箱資訊");
+      return;
+    }
+
+    const user = {
+      name: payload.name,
+      email: payload.email,
+      authentication: {
+        idToken: credential,
+        accessToken: '' // GIS 登入按鈕不提供 access token
+      }
+    };
+    this.setLoading(true);
+    this.registerService
+      .findUser(user.email)
+      .subscribe({
+        next: findRes => {
+          if(!findRes.result.user) {
+            this.registerUserForFirstLogin(user);
+          } else {
+            this.setCurrentUser({...user, id: findRes.result.user.id});
+            this.setToken();
+            this.checkLogin(user);
+          }
+        },
+        error: err => {
+          this.setLoading(false);
+          alert("Google 登入失敗: " + (err?.error?.message || err.message || '未知錯誤'));
+        }
+      });
   }
 
   parseJwt(token: string): any {

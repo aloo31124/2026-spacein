@@ -35,6 +35,13 @@
         width: 100px;
     }
 
+    .google-sign-in-button {
+        width: 260px;
+        min-height: 44px;
+        display: flex;
+        justify-content: center;
+    }
+
     // 密碼欄位 + 顯示/隱藏切換 icon
     .password-field {
         position: relative;
@@ -79,4 +86,3 @@
         }
     }
 }
-
