@@ -4,16 +4,22 @@
         <div class="dialog-mask" (click)="hiddenDialog()">
         </div>
 
-        <div class="dialog">
+        <div class="dialog" role="dialog" aria-modal="true" [attr.aria-label]="dialogTitle">
 
             <div class="dialog-header">
                 <div class="title"> {{ dialogTitle }} </div>
             </div>
 
             <div class="dialog-content">
-                <div class="row" [ngClass]="{'row-click': selectItemId === item.id}"
+                <div class="row" [ngClass]="{'row-click': selectItemId === item.id, 'disabled': item.isDisabled}"
                     *ngFor="let item of itemList"
                     [ngStyle]="{opacity:item.isDisabled ? '0.5' : '1'}"
+                    role="button"
+                    [attr.tabindex]="item.isDisabled ? -1 : 0"
+                    [attr.aria-disabled]="item.isDisabled ? true : null"
+                    [attr.aria-pressed]="selectItemId === item.id"
+                    (keydown.enter)="clickItem(item.id, item.isDisabled?item.isDisabled:false)"
+                    (keydown.space)="clickItem(item.id, item.isDisabled?item.isDisabled:false); $event.preventDefault()"
                     (click)="clickItem(item.id, item.isDisabled?item.isDisabled:false)" > 
                         {{ item.name }}
                 </div>
@@ -21,7 +27,9 @@
 
             
             <div class="dialog-footer">
-                <img class="img-next" src="assets/images/icon/icon_check_ok.png" (click)="emitSelectItem()">    
+                <button type="button" class="confirm-btn" (click)="emitSelectItem()" aria-label="確認選擇">
+                    <img class="img-next" src="assets/images/icon/icon_check_ok.png" alt="">
+                </button>
             </div>
             
         </div>

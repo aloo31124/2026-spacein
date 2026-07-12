@@ -204,6 +204,25 @@ describe('CalendarPickerComponent', () => {
     expect(component.currentMonth).toBe(expectedMonth);
   });
 
+  it('在白色日期區向右拖曳超過門檻時切換至上個月', () => {
+    fixture.detectChanges();
+    component.nextMonth();
+    const target = fixture.nativeElement.querySelector('.calendar-content') as HTMLElement;
+
+    component.onCalendarPointerDown({
+      isPrimary: true,
+      button: 0,
+      clientX: 100,
+      pointerId: 1,
+      currentTarget: target,
+    } as unknown as PointerEvent);
+    component.onCalendarPointerUp({ clientX: 180 } as PointerEvent);
+
+    expect(component.currentYear).toBe(todayYear);
+    expect(component.currentMonth).toBe(todayMonth);
+    expect(component.monthTransitionDirection).toBe('previous');
+  });
+
   it('水平拖曳未達門檻時不切換月份', () => {
     fixture.detectChanges();
 
