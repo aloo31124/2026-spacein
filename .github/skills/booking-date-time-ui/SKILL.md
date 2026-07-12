@@ -2,7 +2,7 @@
 name: 空間預約日期時間與共用選擇視窗
 description: >
   修改空間預約行事曆、時鐘選擇器、booking 欄位排版或共用 app-dialog 時必須參考。
-  涵蓋行事曆白色區域左右拖曳換月、日期與時間的選取狀態、單行欄位、80vh 置中視窗、
+  涵蓋行事曆白色區域左右拖曳換月、日期與時間的選取狀態、單行欄位、可視區內置中視窗、
   粉紅反白與以頁內文字取代阻斷式 alert。關鍵字：calendar-picker、clock-picker、booking、
   app-dialog、左右拖曳、選擇時段、粉紅反白、欄位不換行、彈出視窗。
 ---
@@ -16,13 +16,14 @@ description: >
 
 - `calendar-picker`：白色 `.calendar-content` 使用 Pointer Events；水平位移超過 48px 才換月，向左為下月、向右為上月，並保留垂直頁面捲動。一般 pointerdown 不可立即 capture，否則日期格收不到 click。
 - `clock-picker`：時間以 `HH:mm` 輸入／輸出；預約最小單位為一小時時，點分鐘顯示頁內文字，不呼叫原生 alert。
-- `app-dialog`：固定覆蓋 viewport、內容置中且高度為 `80vh`；選項可用滑鼠或鍵盤操作，hover 有位移與陰影回饋。
+- `app-dialog`：固定覆蓋 viewport、內容依清單自然增高，但不得超過扣除安全邊距後的可視區；選項可用滑鼠或鍵盤操作，hover 有位移與陰影回饋。
 - booking 欄位：標題與值維持單行，空間不足時以省略號收斂，不用換行撐壞版面。
 - booking 底部動作：日期頁、時間頁與確認頁共用 `.booking-bottom-action`，下一步／送出 icon 固定於 viewport 底部並保留 safe-area；頁面內容保留 88px 底部空間避免遮擋。
 
 ## 視覺與狀態契約
 
 - 主色維持 `#661983`，一般淺底維持 `#FBE0FF`。
+- 共用視窗的長文字選項必須完整換行，並以圓角卡片維持多行文字的舒適間距；清單超過視窗可用高度時，只捲動 `.dialog-content`，標題與確認按鈕保持可見。
 - 共用視窗選取項目使用粉紅底 `#f3a9d3` 與深粉紅框 `#d95b9f`，不可改回深紫實心，以免和確認按鈕混淆。
 - hover／focus-visible 必須同時提供回饋，確保滑鼠與鍵盤操作一致。
 - 停用日期、停用選項及超出 90 天的月份不得因拖曳或鍵盤事件繞過既有卡控。
