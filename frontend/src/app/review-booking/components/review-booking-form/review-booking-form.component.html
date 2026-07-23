@@ -22,13 +22,18 @@
         <div class="row">
             <label>教室</label>
             <div class="select-item">{{ selectRoom | wordShroten:6 }}</div>
-            <!-- <img src="assets/images/icon/icon_map_position.png" (click)="selectMap()"> -->
         </div>
 
         <!-- 教室資訊 (地址/電話), 依 roomId 查詢後顯示 -->
         <div class="row-room-info" *ngIf="selectRoomInfo">
-            <div>地址 : {{ selectRoomInfo.address ? selectRoomInfo.address : "未設定" }}</div>
-            <div>電話 : {{ selectRoomInfo.phone ? selectRoomInfo.phone : "未設定" }}</div>
+            <div class="contact-info-row">
+                <span>地址 : {{ selectRoomInfo.address ? selectRoomInfo.address : "未設定" }}</span>
+                <app-contact-action-icon actionType="map" [value]="selectRoomInfo.address"></app-contact-action-icon>
+            </div>
+            <div class="contact-info-row">
+                <span>電話 : {{ selectRoomInfo.phone ? selectRoomInfo.phone : "未設定" }}</span>
+                <app-contact-action-icon actionType="phone" [value]="selectRoomInfo.phone"></app-contact-action-icon>
+            </div>
         </div>
 
         <div class="row" *ngIf="bookingType === 'site'">
@@ -43,4 +48,3 @@
     </button>
 
 </div>
-

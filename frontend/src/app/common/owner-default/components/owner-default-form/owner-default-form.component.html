@@ -2,7 +2,10 @@
 
     <div class="field-row">
         <label class="field-label">{{ labelPrefix }}地址</label>
-        <input type="text" [(ngModel)]="form.address" placeholder="請輸入地址">
+        <div class="input-with-action">
+            <input type="text" [(ngModel)]="form.address" placeholder="請輸入地址">
+            <app-contact-action-icon actionType="map" [value]="form.address"></app-contact-action-icon>
+        </div>
     </div>
 
     <div class="field-row">

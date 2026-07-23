@@ -59,6 +59,7 @@ import { UserRoleListComponent } from './manager-system/components/user-role-lis
 import { UserPaymentListComponent } from './manager-system/components/user-payment-list/user-payment-list.component';
 import { AppVersionComponent } from './common/version/components/app-version/app-version.component';
 import { OwnerDefaultFormComponent } from './common/owner-default/components/owner-default-form/owner-default-form.component';
+import { ContactActionIconComponent } from './common/contact-action/components/contact-action-icon/contact-action-icon.component';
 
 @NgModule({
   declarations: [
@@ -113,6 +114,7 @@ import { OwnerDefaultFormComponent } from './common/owner-default/components/own
     UserPaymentListComponent,
     AppVersionComponent,
     OwnerDefaultFormComponent,
+    ContactActionIconComponent,
   ],
   imports: [
     BrowserModule,

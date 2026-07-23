@@ -9,6 +9,7 @@ import { GoogleAuthService } from 'src/app/auth-route/services/google-auth.servi
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
 import { WordShrotenPipe } from 'src/app/common/pipe/word-shroten.pipe';
 import { DateToDayOfWeekPipe } from 'src/app/common/pipe/date-to-day-of-week.pipe';
+import { ContactActionIconComponent } from 'src/app/common/contact-action/components/contact-action-icon/contact-action-icon.component';
 
 describe('BookingCheckFormPageComponent', () => {
   let component: BookingCheckFormPageComponent;
@@ -49,7 +50,12 @@ describe('BookingCheckFormPageComponent', () => {
     spyOn(window, 'alert');
 
     TestBed.configureTestingModule({
-      declarations: [BookingCheckFormPageComponent, WordShrotenPipe, DateToDayOfWeekPipe],
+      declarations: [
+        BookingCheckFormPageComponent,
+        WordShrotenPipe,
+        DateToDayOfWeekPipe,
+        ContactActionIconComponent,
+      ],
       providers: [
         {provide: BookingService, useValue: bookingService},
         {provide: GoogleAuthService, useValue: googleAuthService},
@@ -79,6 +85,10 @@ describe('BookingCheckFormPageComponent', () => {
     expect(infoRow).toBeTruthy();
     expect(infoRow.textContent).toContain('地址 : 台北市中正區測試路1號');
     expect(infoRow.textContent).toContain('電話 : 02-12345678');
+
+    const actionLinks: NodeListOf<HTMLAnchorElement> = infoRow.querySelectorAll('.contact-action-icon');
+    expect(actionLinks[0].getAttribute('href')).toContain('google.com/maps/search/');
+    expect(actionLinks[1].getAttribute('href')).toBe('tel:02-12345678');
   });
 
   it('切換教室後 地址電話同步更新, 未設定時顯示 未設定', () => {
@@ -88,6 +98,8 @@ describe('BookingCheckFormPageComponent', () => {
     const infoRow = fixture.nativeElement.querySelector('.row-room-info');
     expect(infoRow.textContent).toContain('地址 : 未設定');
     expect(infoRow.textContent).toContain('電話 : 未設定');
+    expect(infoRow.querySelectorAll('a').length).toBe(0);
+    expect(infoRow.querySelectorAll('.contact-action-icon.disabled').length).toBe(2);
   });
 
   it('未選擇教室時 不顯示地址電話區塊', () => {

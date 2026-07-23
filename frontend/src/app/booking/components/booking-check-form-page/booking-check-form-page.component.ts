@@ -275,8 +275,4 @@ export class BookingCheckFormPageComponent {
       }
     });
   }
-
-  selectMap() {
-    //this.router.navigate(["map"]);
-  }
 }

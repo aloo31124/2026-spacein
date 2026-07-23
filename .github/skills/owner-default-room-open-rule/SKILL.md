@@ -40,13 +40,17 @@ description: >
   `GET/POST /api/account/owner/default/:ownerId`（注意需排在 `/api/account/owner/:email` 之前的區塊，避免路由誤匹配）
 - 前端共用：`frontend/src/app/common/owner-default/`（`OwnerDefault` model ＋ `app-owner-default-form` 元件）；
   外層粉紅圓角卡片樣式為全域 class `.owner-default-card`（定義於 `styles.scss`），
-  帳號頁與教室編輯頁共用同一份，修改卡片外觀只改全域一處
+  帳號頁與教室編輯頁共用同一份，修改卡片外觀只改全域一處；地址輸入框旁的 map icon
+  也由此表單統一提供，地址有值時另開 Google Maps 搜尋視窗，空值時顯示停用狀態
+- 地址／電話動作 icon：`frontend/src/app/common/contact-action/` 的 `app-contact-action-icon`；
+  map 使用 Google Maps Search URL（地址須 `encodeURIComponent`）並加上 `noopener noreferrer`，
+  phone 使用 `tel:` 交由裝置通話介面處理；未設定資料時不可產生空連結
 - 前端使用處：帳號頁 `account-page`（labelPrefix="預設"、僅 owner 角色顯示）、
   教室表單 `search-room-content`（新增時自動帶入、「重新帶入擁有者預設」按鈕）
 - 預約頁顯示（地址/電話）：[空間預約] `booking-check-form-page`（選擇教室後顯示該教室 地址/電話，
   未設定顯示「未設定」）、[已預約] `review-booking-form`（依預約紀錄 `roomId` 走既有
   `GET /api/booking/room/userId/:userId` 查教室後顯示；顯示為輔助資訊，取得失敗靜默、不擋取消借用流程）；
-  兩頁各自 component scss 皆以 `.row-room-info` class 呈現
+  兩頁各自 component scss 皆以 `.row-room-info` class 呈現，地址與電話旁分別提供深紫色 map／phone icon
 
 ## 預約卡控規則（booking.service.js `checkRoomOpenRule`）
 

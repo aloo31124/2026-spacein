@@ -1,0 +1,60 @@
+<a *ngIf="href; else disabledIcon"
+   class="contact-action-icon"
+   [href]="href"
+   [attr.target]="actionType === 'map' ? '_blank' : null"
+   [attr.rel]="actionType === 'map' ? 'noopener noreferrer' : null"
+   [attr.aria-label]="actionLabel"
+   [attr.title]="actionLabel">
+    <svg *ngIf="actionType === 'map'; else phoneIcon"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2.2"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         aria-hidden="true">
+        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.5" />
+    </svg>
+    <ng-template #phoneIcon>
+        <svg viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2.2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M6.6 3.5 9 8.3 6.9 10a16 16 0 0 0 7.1 7.1l1.7-2.1 4.8 2.4-1.1 3.1c-.3.8-1.1 1.3-2 1.2C9.3 20.8 3.2 14.7 2.3 6.6c-.1-.9.4-1.7 1.2-2Z" />
+        </svg>
+    </ng-template>
+</a>
+
+<ng-template #disabledIcon>
+    <span class="contact-action-icon disabled"
+          aria-disabled="true"
+          [attr.aria-label]="actionLabel"
+          [attr.title]="actionLabel">
+        <svg *ngIf="actionType === 'map'; else disabledPhoneIcon"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2.2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+            <circle cx="12" cy="10" r="2.5" />
+        </svg>
+        <ng-template #disabledPhoneIcon>
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <path d="M6.6 3.5 9 8.3 6.9 10a16 16 0 0 0 7.1 7.1l1.7-2.1 4.8 2.4-1.1 3.1c-.3.8-1.1 1.3-2 1.2C9.3 20.8 3.2 14.7 2.3 6.6c-.1-.9.4-1.7 1.2-2Z" />
+            </svg>
+        </ng-template>
+    </span>
+</ng-template>
