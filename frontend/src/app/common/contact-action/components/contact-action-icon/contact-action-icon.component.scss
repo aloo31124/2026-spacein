@@ -1,0 +1,40 @@
+:host {
+    display: inline-flex;
+    flex: 0 0 auto;
+}
+
+.contact-action-icon {
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border-radius: 50%;
+    color: #661983;
+    background: transparent;
+    transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+
+    svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: #4a0f61;
+        background: #FBE0FF;
+        outline: none;
+        transform: translateY(-1px) scale(1.06);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    &.disabled {
+        opacity: 0.38;
+        cursor: not-allowed;
+    }
+}

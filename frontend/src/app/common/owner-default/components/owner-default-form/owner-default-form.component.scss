@@ -25,6 +25,18 @@
         }
     }
 
+    .input-with-action {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
     .weekday-list {
         display: flex;
         flex-direction: row;
