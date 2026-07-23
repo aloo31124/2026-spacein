@@ -9,7 +9,7 @@
 - **文檔**: `.github/skills/booking-date-time-ui/SKILL.md`
 - **適用情境**:
     * 修改空間預約行事曆、時鐘選擇器、booking 欄位排版或共用 `app-dialog` 時，必須參考此檔案。
-    * 涵蓋白色行事曆區左右拖曳換月、欄位單行省略、80vh 置中視窗、hover 互動、粉紅選取狀態，以及以頁內文字取代時段 alert。
+    * 涵蓋白色行事曆區左右拖曳換月、欄位單行省略、可視區內置中視窗、長選項換行與清單滾動、hover 互動、粉紅選取狀態，以及以頁內文字取代時段 alert。
     * 關鍵字：calendar-picker、clock-picker、booking、app-dialog、左右拖曳、選擇時段、粉紅反白、欄位不換行、彈出視窗。
 
 ### 管理列表響應式表格
