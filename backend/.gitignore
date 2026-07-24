@@ -25,6 +25,14 @@
 .env.test.local
 .env.production.local
 
+# 本機環境變數與雲端服務帳戶憑證不得提交
+.env
+.env.*
+!.env.example
+src/firestroekey*.json
+src/firestorekey*.json
+src/*service-account*.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

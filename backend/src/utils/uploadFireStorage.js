@@ -2,15 +2,9 @@ const multer = require('multer');
 const { getStorage } = require('firebase-admin/storage');
 const path = require('path');
 
-// 初始化 Firebase
-/*
-const admin = require('firebase-admin');
-const serviceAccount = require('../firestroekey.json'); // 确保 JSON 文件路径正确
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: "gs://newshop-e45ca.firebasestorage.app" // 你的 Firebase Storage Bucket
-});
-*/
+// 確保共用 Firebase App 已以 Application Default Credentials 初始化。
+require('../firestore');
+
 const bucket = getStorage().bucket();
 
 // Multer 配置（使用内存存储，避免在服务器磁盘上存放）

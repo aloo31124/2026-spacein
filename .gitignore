@@ -1,1 +1,9 @@
 node_modules/
+
+# 本機環境變數與雲端服務帳戶憑證不得提交
+.env
+.env.*
+!.env.example
+backend/src/firestroekey*.json
+backend/src/firestorekey*.json
+backend/src/*service-account*.json

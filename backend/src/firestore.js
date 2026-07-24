@@ -1,6 +1,8 @@
 /*
  * Firebase / Firestore 存取集中於後端, 前端一律透過 API 請求, 不得直連。
- * 連線憑證使用 service account (firestroekey.json), 專案: spacein-ec8ab。
+ * 連線憑證使用 Google Application Default Credentials：
+ * - Cloud Run 使用執行服務帳戶。
+ * - 本機以 GOOGLE_APPLICATION_CREDENTIALS 指向版本庫外的金鑰檔。
  *
  * 原前端 web SDK 設定 (2026/07 自 frontend/src/environments/environment*.ts 移除, 備援紀錄):
  *   projectId: 'spacein-ec8ab'
@@ -11,14 +13,19 @@
  *   messagingSenderId: '328066296243'
  *   measurementId: 'G-54HYGJ7ZDQ'
  */
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 
-var serviceAccount = require("./firestroekey.json");
+const firebaseOptions = {
+  credential: admin.credential.applicationDefault(),
+};
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  //storageBucket: "gs://newshop-e45ca.firebasestorage.app" // 你的 Firebase Storage Bucket
-});
+if (process.env.FIREBASE_STORAGE_BUCKET) {
+  firebaseOptions.storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+}
 
-const db = admin.firestore();
+const firebaseApp = admin.apps.length
+  ? admin.app()
+  : admin.initializeApp(firebaseOptions);
+
+const db = firebaseApp.firestore();
 module.exports = db;

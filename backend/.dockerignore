@@ -9,3 +9,9 @@ notes
 oldServer
 functions
 README.md
+.env
+.env.*
+!.env.example
+src/firestroekey*.json
+src/firestorekey*.json
+src/*service-account*.json

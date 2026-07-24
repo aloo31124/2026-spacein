@@ -10,9 +10,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
-# 複製原始碼 (包含 firestroekey.json 等金鑰)
+# 複製原始碼；執行期憑證由 Cloud Run 服務帳戶或環境變數提供
 COPY src/ ./src/
-COPY .env .env
 
 # Cloud Run 會以環境變數 PORT 傳入 (預設 8080)，
 # 但 src/index.js 內 PORT 硬編碼為 8082，故對外 expose 8082，
