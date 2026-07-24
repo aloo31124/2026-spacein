@@ -51,6 +51,8 @@ description: >
   未設定顯示「未設定」）、[已預約] `review-booking-form`（依預約紀錄 `roomId` 走既有
   `GET /api/booking/room/userId/:userId` 查教室後顯示；顯示為輔助資訊，取得失敗靜默、不擋取消借用流程）；
   兩頁各自 component scss 皆以 `.row-room-info` class 呈現，地址與電話旁分別提供深紫色 map／phone icon
+  。聯絡文字需以 `flex: 1 1 auto` 占用 icon 以外的剩餘空間，搭配 `min-width: 0` 與
+  `overflow-wrap: anywhere` 處理無空白長字串；icon 固定不可壓縮，避免地址或電話過長時撐破版面
 
 ## 預約卡控規則（booking.service.js `checkRoomOpenRule`）
 
