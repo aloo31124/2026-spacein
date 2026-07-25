@@ -76,7 +76,7 @@ exports.registUserUpdatePassword = async (req, res) => {
 
 /* 登入 */
 exports.login = async (req, res) => {
-    logger("[login] 開始", req.body);
+    logger("[login] 開始", { email: req.body.email });
     try {
         const { email, password } = req.body;
         const isSuccess = await authService.login(email, password);
@@ -85,11 +85,14 @@ exports.login = async (req, res) => {
             return res.status(401).json({ isSuccess, message: "登入失敗, 帳密錯誤" });
         }
         const token = await authService.createJwtToken(req);
-        logger("[login] 成功", { email, token });
+        logger("[login] 成功", { email });
         res.status(200).json({ isSuccess, message: "帳密登入成功", token });
     } catch (error) {
         errorLogger("[login] 失敗", error);
-        res.status(500).json({ error: "登入失敗" });
+        res.status(500).json({
+            isSuccess: null,
+            message: "登入服務暫時無法使用，請稍後再試"
+        });
     }
 };
 

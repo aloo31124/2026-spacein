@@ -5,6 +5,13 @@
 
 ## 可用 Skills
 
+### Firebase Admin 憑證與登入連線
+- **文檔**: `.github/skills/firebase-admin-credentials/SKILL.md`
+- **適用情境**:
+    * 修改或診斷後端 Firebase Admin、Firestore 初始化、服務帳戶金鑰、Application Default Credentials、登入 401 或資料庫連線錯誤時，必須參考此檔案。
+    * 涵蓋本機 `firestroekey.json` 優先順序、部署環境預設憑證、安全排除規則，以及帳密錯誤與資料庫例外的 HTTP 狀態區分。
+    * 關鍵字：Firebase Admin、Firestore、firestroekey、服務帳戶、ADC、登入、401、資料庫連線。
+
 ### 空間預約日期時間與共用選擇視窗
 - **文檔**: `.github/skills/booking-date-time-ui/SKILL.md`
 - **適用情境**:

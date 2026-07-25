@@ -32,6 +32,7 @@
 src/firestroekey*.json
 src/firestorekey*.json
 src/*service-account*.json
+src/*firebase-adminsdk*.json
 
 npm-debug.log*
 yarn-debug.log*

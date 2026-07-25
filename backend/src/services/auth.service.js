@@ -60,7 +60,7 @@ exports.login = async (email, password) => {
         return await userService.login(email, password);
     } catch (error) {
         console.error("[login] error:", error);
-        return null;
+        throw error;
     }
 };
 
@@ -79,11 +79,11 @@ exports.logout = (req) => {
 /* 產生 jwt token */
 exports.createJwtToken = async (req) => {
     try {
-        const { account } = req.body;
-        const user = await userService.getUserByAccount(account);
+        const { email } = req.body;
+        const user = await userService.findByMail(email);
         if (!user) throw new Error("User not found");
         const userAgent = req.headers['user-agent'];
-        return utils.createToken({ userId: user.id, account, userAgent }, '5m');
+        return utils.createToken({ userId: user.id, email, userAgent }, '5m');
     } catch (error) {
         console.error("[createJwtToken] error:", error);
         return null;

@@ -15,3 +15,4 @@ README.md
 src/firestroekey*.json
 src/firestorekey*.json
 src/*service-account*.json
+src/*firebase-adminsdk*.json
