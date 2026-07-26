@@ -15,13 +15,18 @@ RUN npm install --legacy-peer-deps --no-audit --no-fund
 
 COPY . .
 
-# 後端 API URL 透過 build arg 注入，替換 environment.prod.ts 的 domain
-ARG BACKEND_URL=http://localhost:8082
+# 後端 API URL 可透過 build arg 覆寫；預設留空，代表沿用 environment.prod.ts 既有 domain
+# 注意：預設值不可再設為任何實際網址，否則會蓋掉版控中的正式 API domain
+ARG BACKEND_URL=
 ENV BACKEND_URL=${BACKEND_URL}
 
-# 僅替換 domain 欄位，保留 googleOAuth 等其餘設定，避免整份覆寫造成編譯錯誤
-RUN echo "前端建置使用後端 URL: ${BACKEND_URL}" && \
-    sed -i "s|domain: '[^']*'|domain: '${BACKEND_URL}'|" src/environments/environment.prod.ts && \
+# 有指定 BACKEND_URL 時才替換 domain 欄位，保留 googleOAuth 等其餘設定，避免整份覆寫造成編譯錯誤
+RUN if [ -n "${BACKEND_URL}" ]; then \
+      echo "前端建置覆寫後端 URL: ${BACKEND_URL}"; \
+      sed -i "s|domain: '[^']*'|domain: '${BACKEND_URL}'|" src/environments/environment.prod.ts; \
+    else \
+      echo "前端建置沿用 environment.prod.ts 既有 domain"; \
+    fi && \
     cat src/environments/environment.prod.ts
 
 # 放寬 angular.json budgets，避免 main bundle 超過預設 500KB 限制而報 error

@@ -4,7 +4,12 @@
 # ====================================
 #
 # 使用方式 (於專案根目錄執行):
+#   # 前端 API domain 沿用 environment.prod.ts (預設、常用)
 #   gcloud builds submit --config cloudbuild.yaml --project spacein-493210
+#
+#   # 需要改讓前端打本次部署的 spacein-server 時，才明確指定 _BACKEND_URL
+#   gcloud builds submit --config cloudbuild.yaml --project spacein-493210 \
+#       --substitutions=_BACKEND_URL=https://spacein-server-xxxxxxxxxx-de.a.run.app
 #
 # GCP 環境:
 #   專案編號: 1025423218880
@@ -26,6 +31,11 @@ substitutions:
   _CLIENT_SERVICE: spacein-client
   _SERVER_PORT: '8082'
   _CLIENT_PORT: '8080'
+  # 前端呼叫的後端 API domain：
+  #   留空 (預設) = 沿用 frontend/src/environments/environment.prod.ts 中設定的 domain
+  #   有填值      = 建置時覆寫該 domain（例如要改打本次部署的 spacein-server 時才填）
+  # 不可再自動帶入 spacein-server 的 Cloud Run URL，否則會蓋掉版控中的正式 API domain
+  _BACKEND_URL: ''
 
 steps:
   # ========== 後端部署 ==========
@@ -66,43 +76,35 @@ steps:
     id: 'deploy-server'
     waitFor: ['push-server']
 
-  # Step 4: 取得後端 URL 供前端建置使用
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: bash
-    args:
-      - '-c'
-      - |
-        SERVER_URL=$(gcloud run services describe ${_SERVER_SERVICE} \
-          --project=${_GCP_PROJECT_ID} --region=${_REGION} \
-          --format='value(status.url)')
-        echo "$${SERVER_URL}" > /workspace/server_url.txt
-        echo "後端 URL: $${SERVER_URL}"
-    id: 'get-server-url'
-    waitFor: ['deploy-server']
-
   # ========== 前端部署 ==========
-  # Step 5: 建置前端 Docker Image (注入後端 URL)
+  # Step 4: 建置前端 Docker Image
+  # 預設不注入後端 URL，前端 API domain 一律以 environment.prod.ts 為準；
+  # 僅在 _BACKEND_URL 有填值時才覆寫，避免部署後前端被改指向 spacein-server 的 Cloud Run URL
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: bash
     args:
       - '-c'
       - |
-        SERVER_URL=$(cat /workspace/server_url.txt)
-        echo "前端建置使用後端 URL: $${SERVER_URL}"
+        BACKEND_URL='${_BACKEND_URL}'
+        if [ -n "$${BACKEND_URL}" ]; then
+          echo "前端建置覆寫後端 URL: $${BACKEND_URL}"
+        else
+          echo "前端建置沿用 environment.prod.ts 既有 domain"
+        fi
         docker build \
-          --build-arg BACKEND_URL=$${SERVER_URL} \
+          --build-arg BACKEND_URL="$${BACKEND_URL}" \
           -t gcr.io/${_GCP_PROJECT_ID}/${_CLIENT_SERVICE}:latest \
           ./frontend
     id: 'build-client'
-    waitFor: ['get-server-url']
+    waitFor: ['deploy-server']
 
-  # Step 6: 推送前端 Image
+  # Step 5: 推送前端 Image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/${_GCP_PROJECT_ID}/${_CLIENT_SERVICE}:latest']
     id: 'push-client'
     waitFor: ['build-client']
 
-  # Step 7: 部署前端至 Cloud Run
+  # Step 6: 部署前端至 Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -122,7 +124,7 @@ steps:
     id: 'deploy-client'
     waitFor: ['push-client']
 
-  # Step 8: 顯示最終部署資訊
+  # Step 7: 顯示最終部署資訊
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: bash
     args:
@@ -138,6 +140,7 @@ steps:
         echo "✅ 部署完成"
         echo "後端 (API)  : $${SERVER_URL}"
         echo "前端 (Web) : $${CLIENT_URL}"
+        echo "前端實際呼叫的 API domain 以 environment.prod.ts 為準 (_BACKEND_URL='${_BACKEND_URL}')"
         echo "===================================="
     id: 'show-urls'
     waitFor: ['deploy-client']

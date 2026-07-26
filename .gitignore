@@ -4,6 +4,3 @@ node_modules/
 .env
 .env.*
 !.env.example
-backend/src/firestroekey*.json
-backend/src/firestorekey*.json
-backend/src/*service-account*.json

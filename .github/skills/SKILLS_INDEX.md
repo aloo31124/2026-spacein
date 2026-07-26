@@ -5,6 +5,13 @@
 
 ## 可用 Skills
 
+### Cloud Run 部署與前端 API domain
+- **文檔**: `.github/skills/cloud-run-deploy/SKILL.md`
+- **適用情境**:
+    * 修改 `cloudbuild.yaml`、`frontend/Dockerfile`、`backend/Dockerfile`，或診斷「部署後前端呼叫錯誤的 API domain、打到舊後端、CORS 失敗」時，必須參考此檔案。
+    * 涵蓋前端 API domain 的唯一來源（`environment.prod.ts` + angular fileReplacements）、`_BACKEND_URL` / `ARG BACKEND_URL` 預設留空的硬性規範、禁止部署流程自動覆寫 domain，以及 Cloud Run 網址區域代碼（`-de` asia-east1 / `-uc` us-central1）判讀。
+    * 關鍵字：cloudbuild、Cloud Run、部署、BACKEND_URL、_BACKEND_URL、environment.prod.ts、domain、fileReplacements、spacein-server、spacein-client、a.run.app。
+
 ### Firebase Admin 憑證與登入連線
 - **文檔**: `.github/skills/firebase-admin-credentials/SKILL.md`
 - **適用情境**:
