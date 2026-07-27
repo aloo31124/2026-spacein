@@ -9,7 +9,11 @@ const config: CapacitorConfig = {
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: environment.googleOAuth.webClientId,
+      // iOS 專用 client id; 不可改用共用鍵 clientId, 否則 Android 會誤用 iOS client
+      // (Android 端優先序: androidClientId → clientId → strings.xml 的 server_client_id)
+      iosClientId: environment.googleOAuth.iosClientId,
+      // serverClientId 必須與原生 client 同專案, 否則 Google 回傳 invalid_audience
+      serverClientId: environment.googleOAuth.nativeServerClientId,
       forceCodeForRefreshToken: true,
     },
     SplashScreen: {
