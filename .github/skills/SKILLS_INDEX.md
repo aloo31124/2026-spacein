@@ -1,9 +1,28 @@
 # Skills 索引
 
-本專案的 Skills 文檔位於 `.github/skills/` 目錄。
+本專案的功能規範 Skills 位於 `.github/skills/`，可重複執行的 Agent Skills 位於
+`.agents/skills/`。
 進行相關功能開發時，請優先閱讀對應的 SKILL.md。
 
 ## 可用 Skills
+
+### Android AAB 正式版部署 v1
+- **文檔**: `.agents/skills/deploy-android-aab-v1/SKILL.md`
+- **補充參考**: `.agents/skills/deploy-android-aab-v1/references/play-console-production.md`
+- **適用情境**:
+    * 依目前程式碼建立下一個 Android 版本、產生已簽署 AAB、升版 versionCode、
+      上傳或送審 Google Play 正式版，以及驗證 Console 發布狀態時使用。
+    * 優先重用 `scripts/android-release.sh` 與 Publisher API；沒有服務帳號時才改走
+      已登入的 Play Console UI 備援流程。
+    * 關鍵字：Android AAB、版本升版、正式版發布、Google Play 送審、
+      Play Console、deploy-android-aab-v1。
+
+### Android Google Play 自動部署
+- **文檔**: `.github/skills/android-google-play-deploy/SKILL.md`
+- **適用情境**:
+    * 修改、執行或診斷 Android AAB 建置、release 簽章、versionCode、GitHub Actions、Google Play Console 發布或 Play 軌道驗證時，必須參考此檔案。
+    * 涵蓋 `com.spacein` 固定 App ID、既有 upload key 憑證指紋、五項 Actions secrets、Google Play API 自動版本碼，以及上傳後 API 查核成功標準。
+    * 關鍵字：Android 部署、Google Play、Play Console、AAB、upload key、keystore、bundleRelease、android-release.yml、com.spacein。
 
 ### Cloud Run 部署與前端 API domain
 - **文檔**: `.github/skills/cloud-run-deploy/SKILL.md`

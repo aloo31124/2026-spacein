@@ -7,6 +7,20 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def environmentKeystoreFile = System.getenv("ANDROID_KEYSTORE_FILE")
+def environmentSigningConfigured = environmentKeystoreFile &&
+        System.getenv("KEYSTORE_PASSWORD") &&
+        System.getenv("KEY_ALIAS") &&
+        System.getenv("KEY_PASSWORD")
+def propertySigningConfigured = keystorePropertiesFile.exists() &&
+        keystoreProperties['storeFile'] &&
+        keystoreProperties['storePassword'] &&
+        keystoreProperties['keyAlias'] &&
+        keystoreProperties['keyPassword']
+def releaseSigningConfigured = environmentSigningConfigured || propertySigningConfigured
+def configuredVersionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "20").toInteger()
+def configuredVersionName = System.getenv("ANDROID_VERSION_NAME") ?: "1.20"
+
 android {
     namespace "com.spacein"
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -14,8 +28,9 @@ android {
         applicationId "com.spacein"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20
-        versionName "1.20"
+        // CI 由 Google Play API 查詢目前最大版本後注入，避免重複 versionCode。
+        versionCode configuredVersionCode
+        versionName configuredVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -25,17 +40,17 @@ android {
     }
     signingConfigs {
         release {
-            if (keystorePropertiesFile.exists()) {
+            if (environmentSigningConfigured) {
+                // 自動部署使用暫存金鑰檔；腳本結束後立即刪除，不寫入專案目錄。
+                storeFile file(environmentKeystoreFile)
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+                keyAlias System.getenv("KEY_ALIAS")
+                keyPassword System.getenv("KEY_PASSWORD")
+            } else if (propertySigningConfigured) {
                 storeFile file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-            } else if (System.getenv("KEYSTORE_BASE64")) {
-                // CI/CD 環境：從環境變數讀取（keystore 已 base64 解碼至 release/keystore.jks）
-                storeFile file("release/keystore.jks")
-                storePassword System.getenv("KEYSTORE_PASSWORD")
-                keyAlias System.getenv("KEY_ALIAS")
-                keyPassword System.getenv("KEY_PASSWORD")
             }
         }
     }
@@ -48,6 +63,18 @@ android {
         debug {
             debuggable true
         }
+    }
+}
+
+// release 產物若沒有 upload key 簽章，Google Play 必定拒絕；在昂貴建置前直接失敗。
+gradle.taskGraph.whenReady { taskGraph ->
+    def buildsRelease = taskGraph.allTasks.any {
+        it.project == project && it.name in ['bundleRelease', 'assembleRelease']
+    }
+    if (buildsRelease && !releaseSigningConfigured) {
+        throw new GradleException(
+                "Release 簽章未設定。請使用 scripts/android-release.sh，" +
+                "或建立未納入版控的 android/keystore.properties。")
     }
 }
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android AAB 正式版部署"
+  short_description: "建置、驗證並發布 Android AAB 至 Google Play"
+  default_prompt: "使用 $deploy-android-aab-v1 依目前程式碼建立新版 AAB，發布至 Google Play Console 並驗證結果。"

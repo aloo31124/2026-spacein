@@ -1,15 +1,10 @@
-name: Android Build & Release
+name: Android Google Play Deployment
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       track:
-        description: 'Play Store 發布軌道 (internal / alpha / beta / production)'
+        description: 'Google Play 發布軌道'
         required: true
         default: 'internal'
         type: choice
@@ -18,96 +13,113 @@ on:
           - alpha
           - beta
           - production
+      status:
+        description: 'Release 狀態'
+        required: true
+        default: 'completed'
+        type: choice
+        options:
+          - completed
+          - draft
+      version_name:
+        description: '顯示版本；留空時使用 frontend/package.json version'
+        required: false
+        type: string
+  push:
+    tags:
+      - 'android-v*'
 
 env:
   NODE_VERSION: '20.18.0'
   JAVA_VERSION: '17'
+  PACKAGE_NAME: 'com.spacein'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: google-play-com-spacein
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
-    name: Build Android AAB & Deploy
+    name: Build、Deploy、Verify com.spacein
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      # ── 1. 取得程式碼 ──────────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # ── 2. 設定 Node.js ────────────────────────────────────────
       - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      # ── 3. 設定 Java (Gradle 需要) ─────────────────────────────
       - name: Setup Java ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+          cache-dependency-path: |
+            frontend/android/*.gradle
+            frontend/android/gradle/wrapper/gradle-wrapper.properties
 
-      # ── 4. 安裝前端依賴 ────────────────────────────────────────
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      # ── 5. Angular Production Build ────────────────────────────
-      - name: Build Angular (production)
-        working-directory: frontend
-        run: npm run build:prod
-
-      # ── 6. Capacitor sync to Android ──────────────────────────
-      - name: Capacitor sync Android
-        working-directory: frontend
-        run: npx cap sync android
-
-      # ── 7. 解碼 Keystore 並建立 keystore.properties ───────────
-      - name: Decode keystore
-        working-directory: frontend/android
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release/keystore.jks
-          cat > keystore.properties <<EOF
-          storeFile=release/keystore.jks
-          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.KEY_ALIAS }}
-          keyPassword=${{ secrets.KEY_PASSWORD }}
-          EOF
-
-      # ── 8. Gradle Build — Release AAB ─────────────────────────
-      - name: Build release AAB
-        working-directory: frontend/android
-        run: ./gradlew bundleRelease --no-daemon
+      - name: Validate required GitHub secrets
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          missing=0
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD GOOGLE_PLAY_SERVICE_ACCOUNT_JSON; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::GitHub Actions secret ${name} 未設定或為空"
+              missing=1
+            fi
+          done
+          [ "${missing}" -eq 0 ]
 
-      # ── 9. 上傳 AAB artifact（方便手動下載）────────────────────
+      - name: Build、deploy and verify Android release
+        id: android-deploy
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_PLAY_TRACK: ${{ inputs.track || 'internal' }}
+          GOOGLE_PLAY_RELEASE_STATUS: ${{ inputs.status || 'completed' }}
+          ANDROID_VERSION_NAME: ${{ inputs.version_name }}
+        run: scripts/android-release.sh deploy
+
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: app-release-${{ github.run_number }}
-          path: frontend/android/app/build/outputs/bundle/release/app-release.aab
+          name: com.spacein-${{ steps.android-deploy.outputs.version_code }}
+          path: ${{ steps.android-deploy.outputs.aab_path }}
+          if-no-files-found: error
           retention-days: 30
 
-      # ── 10. 上傳至 Google Play Store ──────────────────────────
-      - name: Upload to Google Play
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.spacein
-          releaseFiles: frontend/android/app/build/outputs/bundle/release/app-release.aab
-          track: ${{ github.event.inputs.track || 'internal' }}
-          status: completed
-          whatsNewDirectory: .github/whatsnew
-
-      # ── 11. 清除敏感檔案 ───────────────────────────────────────
-      - name: Clean up keystore
-        if: always()
-        working-directory: frontend/android
+      - name: Write deployment summary
+        env:
+          TRACK: ${{ inputs.track || 'internal' }}
+          RELEASE_STATUS: ${{ inputs.status || 'completed' }}
+          VERSION_CODE: ${{ steps.android-deploy.outputs.version_code }}
+          VERSION_NAME: ${{ steps.android-deploy.outputs.version_name }}
+          COMMITTED_EDIT_ID: ${{ steps.android-deploy.outputs.committed_edit_id }}
         run: |
-          rm -f app/release/keystore.jks
-          rm -f keystore.properties
+          {
+            echo "## Android Google Play 部署成功"
+            echo
+            echo "- Package: \`${PACKAGE_NAME}\`"
+            echo "- Version: \`${VERSION_NAME} (${VERSION_CODE})\`"
+            echo "- Track: \`${TRACK}\`"
+            echo "- Status: \`${RELEASE_STATUS}\`"
+            echo "- Google Play edit: \`${COMMITTED_EDIT_ID}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

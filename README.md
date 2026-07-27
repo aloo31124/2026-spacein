@@ -1,5 +1,15 @@
 # 2026-spacein
 
+## Android Google Play 自動部署
+
+Android App ID 固定為 `com.spacein`。正式 AAB 的建置、upload key 驗證、
+Google Play 上傳與軌道查核由 `.github/workflows/android-release.yml` 完成，
+可從 GitHub Actions 手動選擇 `internal`、`alpha`、`beta` 或 `production`。
+
+部署前須在 GitHub Actions 設定 `KEYSTORE_BASE64`、`KEYSTORE_PASSWORD`、
+`KEY_ALIAS`、`KEY_PASSWORD`、`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` 五項 secrets。
+本機與 CI 共用入口為 `scripts/android-release.sh`，完整操作與成功判定請見
+`.github/skills/android-google-play-deploy/SKILL.md`。
 
 ## google OAuth 授權
 
@@ -66,5 +76,4 @@ export LANG=en_US.UTF-8 && npx cap sync ios   # 不加 LANG 會踩到 CocoaPods 
 
 `ios/App/App/capacitor.config.json` 與 `android/app/src/main/assets/capacitor.config.json`
 為 `cap sync` 產生檔，不可手改。
-
 
