@@ -1,7 +1,0 @@
-
-https://api-hxybsyp7aa-uc.a.run.app/api/auth/user/aloo31124@gmail.com
-
-https://api-hxybsyp7aa-uc.a.run.app/api/account/role/F0gY5gNP4nW4EkHpfq2k
-
-https://api-hxybsyp7aa-uc.a.run.app/api/pay/ecpay/pay/result
-
