@@ -20,6 +20,13 @@
     * 疑難排解：`invalid_audience`（iOS code `-61440`）、`DEVELOPER_ERROR`（Android code `10`）、回呼導不回 App、`pod install` 的 `ASCII-8BIT` 編碼錯誤。
     * 關鍵字：Google 登入、OAuth、client id、invalid_audience、-61440、GoogleAuth、capacitor.config、iosClientId、serverClientId、server_client_id、GoogleService-Info.plist、REVERSED_CLIENT_ID、URL Scheme、cap sync。
 
+### iOS WebView 繁體中文字型
+- **文檔**: `.github/skills/ios-traditional-chinese-font/SKILL.md`
+- **適用情境**:
+    * 修改或診斷 Capacitor iOS、WKWebView、iOS Simulator 的繁體中文顯示成問號、方框或缺字時，必須參考此檔案。
+    * 涵蓋 HTML `zh-Hant-TW` 語系、Fontsource 內嵌 Noto Sans TC、表單控制項字型繼承，以及 production build、`cap sync ios` 與 Simulator 快取排查。
+    * 關鍵字：iOS、WKWebView、Simulator、繁體中文、問號、缺字、font-family、Noto Sans TC、Fontsource、input、button、placeholder。
+
 ### Firebase Admin 憑證與登入連線
 - **文檔**: `.github/skills/firebase-admin-credentials/SKILL.md`
 - **適用情境**:

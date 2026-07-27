@@ -1,5 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* 將 OFL-1.1 授權的繁中字型隨 App 打包，不依賴 Simulator runtime 的系統字型。
+   iOS 13+ 支援 WOFF2，因此只載入 WOFF2，避免同時打包重複的 WOFF 檔。 */
+@font-face {
+    font-family: "Noto Sans TC";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url("../node_modules/@fontsource/noto-sans-tc/files/noto-sans-tc-chinese-traditional-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Noto Sans TC";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 700;
+    src: url("../node_modules/@fontsource/noto-sans-tc/files/noto-sans-tc-chinese-traditional-700-normal.woff2") format("woff2");
+}
+
+/* iOS WKWebView 的表單控制項不保證繼承頁面字型。
+   將內嵌的 Noto Sans TC 設為第一順位，避免文字與 placeholder 顯示成缺字符號。 */
+html {
+    font-family:
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "PingFang TC",
+        "Microsoft JhengHei",
+        sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
 /* 防止手機 / Capacitor (Android、iOS) 畫面可左右拖曳：
    重置預設 margin、鎖定寬度、隱藏水平溢出，並關閉水平彈跳。 */
 html, body {
