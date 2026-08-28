@@ -21,8 +21,10 @@ description: >
   並以環境變數注入 Gradle。
 - release AAB 必須同時通過 JAR 簽章、bundletool manifest 與憑證指紋驗證，
   才能交給上傳步驟。
-- 腳本會依日期驗證 Google Play target API：2026-08-31 前至少 API 35，
-  當日起至少 API 36，避免把政策必定拒絕的 AAB 送進上傳步驟。
+- `compileSdkVersion` 與 `targetSdkVersion` 固定為 36（Android 16）。
+  Google Play 自 2026-08-31 起要求一般手機 App 至少 target API 36，
+  `scripts/android-release.sh` 以 `MINIMUM_TARGET_SDK=36` 驗證 AAB manifest，
+  避免把政策必定拒絕的 AAB 送進上傳步驟。降回 API 35 會直接建置失敗。
 - 自動部署只允許手動 dispatch 或 `android-v*` tag 觸發；
   一般 push 不應直接發布 Android 版本。
 
@@ -123,5 +125,11 @@ node scripts/tests/google-play-api.integration.mjs
 - 簽章憑證不符：停止部署，確認使用既有 `key20241001.jks`，不可改用 debug key。
 - `Precondition check failed`：確認目標軌道已完成 Play Console 必要設定，
   production 首次發布前先完成測試軌道發布。
-- 一般手機 App 自 2026-08-31 起需 target Android 16（API 36）；目前 API 35
-  只保證該日期前可提交。升級 target SDK 時必須另做 Android 16 相容性測試。
+- `targetSdkVersion` 低於 36：Play Console 會以「應用程式必須指定 Android 16
+  (API 級別 36) 以上版本」封鎖更新。修正處為 `frontend/android/variables.gradle`，
+  compileSdk 亦須同步 ≥ 36（targetSdk 不得高於 compileSdk）。
+- `Failed to find target with hash string 'android-36'`：本機缺少 API 36 platform。
+  AGP 通常會自動下載；否則以 Android Studio SDK Manager 或
+  `sdkmanager "platforms;android-36"` 安裝。
+- 再次調整 target SDK 時必須另做該 Android 版本的相容性測試
+  （edge-to-edge 版面、返回鍵、前後台切換）。

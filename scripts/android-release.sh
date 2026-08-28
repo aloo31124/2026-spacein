@@ -7,7 +7,9 @@ readonly DEFAULT_UPLOAD_CERT_SHA256="62:02:4B:38:3E:B7:87:B4:BE:9E:75:05:38:B3:9
 readonly BUNDLETOOL_VERSION="1.18.3"
 readonly BUNDLETOOL_SHA256="a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29"
 readonly BUNDLETOOL_URL="https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
-readonly API_36_POLICY_START_DATE="20260831"
+# Google Play 自 2026-08-31 起要求一般手機 App 至少 target Android 16。
+# 專案已完成升級，這裡固定為 36，避免日後誤退回 API 35。
+readonly MINIMUM_TARGET_SDK=36
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -168,10 +170,7 @@ verify_aab() {
     actual_target_sdk="$(printf '%s\n' "${manifest}" |
         sed -n 's/.*android:targetSdkVersion="\([^"]*\)".*/\1/p' | head -1)"
     actual_cert="$(certificate_sha256_from_aab "${aab_path}")"
-    minimum_target_sdk=35
-    if [[ "$(date -u +%Y%m%d)" -ge "${API_36_POLICY_START_DATE}" ]]; then
-        minimum_target_sdk=36
-    fi
+    minimum_target_sdk="${MINIMUM_TARGET_SDK}"
 
     [[ "${actual_package}" == "${EXPECTED_APP_ID}" ]] ||
         fail "AAB package 為 ${actual_package:-未知}，預期 ${EXPECTED_APP_ID}。"
