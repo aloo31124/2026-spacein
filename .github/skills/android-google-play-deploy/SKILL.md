@@ -25,8 +25,9 @@ description: >
   Google Play 自 2026-08-31 起要求一般手機 App 至少 target API 36，
   `scripts/android-release.sh` 以 `MINIMUM_TARGET_SDK=36` 驗證 AAB manifest，
   避免把政策必定拒絕的 AAB 送進上傳步驟。降回 API 35 會直接建置失敗。
-- 自動部署只允許手動 dispatch 或 `android-v*` tag 觸發；
-  一般 push 不應直接發布 Android 版本。
+- 自動部署只允許手動 dispatch 或版本 tag 觸發；一般 push 不應直接發布 Android 版本。
+  tag 前綴決定軌道：`android-v*` → internal、`android-prod-v*` → production。
+  手動 dispatch 時以輸入的 track 為準，覆寫 tag 規則。
 
 ## 唯一入口
 

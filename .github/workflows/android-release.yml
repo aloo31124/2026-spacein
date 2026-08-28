@@ -27,7 +27,9 @@ on:
         type: string
   push:
     tags:
+      # android-v* 只送內部測試軌道；android-prod-v* 直接送正式版審查。
       - 'android-v*'
+      - 'android-prod-v*'
 
 env:
   NODE_VERSION: '20.18.0'
@@ -46,6 +48,11 @@ jobs:
     name: Build、Deploy、Verify com.spacein
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
+    env:
+      # 手動 dispatch 以輸入為準；tag 觸發時由 tag 前綴決定軌道，預設維持 internal。
+      RESOLVED_TRACK: ${{ inputs.track || (startsWith(github.ref_name, 'android-prod-v') && 'production' || 'internal') }}
+      RESOLVED_STATUS: ${{ inputs.status || 'completed' }}
 
     steps:
       - name: Checkout repository
@@ -93,8 +100,8 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          GOOGLE_PLAY_TRACK: ${{ inputs.track || 'internal' }}
-          GOOGLE_PLAY_RELEASE_STATUS: ${{ inputs.status || 'completed' }}
+          GOOGLE_PLAY_TRACK: ${{ env.RESOLVED_TRACK }}
+          GOOGLE_PLAY_RELEASE_STATUS: ${{ env.RESOLVED_STATUS }}
           ANDROID_VERSION_NAME: ${{ inputs.version_name }}
         run: scripts/android-release.sh deploy
 
@@ -108,8 +115,8 @@ jobs:
 
       - name: Write deployment summary
         env:
-          TRACK: ${{ inputs.track || 'internal' }}
-          RELEASE_STATUS: ${{ inputs.status || 'completed' }}
+          TRACK: ${{ env.RESOLVED_TRACK }}
+          RELEASE_STATUS: ${{ env.RESOLVED_STATUS }}
           VERSION_CODE: ${{ steps.android-deploy.outputs.version_code }}
           VERSION_NAME: ${{ steps.android-deploy.outputs.version_name }}
           COMMITTED_EDIT_ID: ${{ steps.android-deploy.outputs.committed_edit_id }}
