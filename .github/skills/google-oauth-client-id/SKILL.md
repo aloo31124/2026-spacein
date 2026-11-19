@@ -2,7 +2,7 @@
 name: Google OAuth Client ID 與原生登入設定
 description: >
   修改或診斷 Google 登入設定時，必須參考此文件。適用於 capacitor.config.ts 的
-  GoogleAuth 區塊、environment.ts / environment.prod.ts 的 googleOAuth 欄位、
+  SocialLogin 區塊與 GoogleAuthService 的 SocialLogin.initialize、environment.ts / environment.prod.ts 的 googleOAuth 欄位、
   iOS 的 GoogleService-Info.plist 與 Info.plist URL Scheme、Android 的
   strings.xml server_client_id，以及排查 invalid_audience（iOS code -61440）、
   DEVELOPER_ERROR（Android code 10）、登入彈窗開不起來等 OAuth 錯誤時。
@@ -10,7 +10,8 @@ description: >
 
 # Google OAuth Client ID 與原生登入設定
 
-本專案使用 `@codetrix-studio/capacitor-google-auth`。
+本專案自 2.3.0（Capacitor 8）起使用 `@capgo/capacitor-social-login`，
+取代已停止維護、僅支援 Capacitor 5 的 `@codetrix-studio/capacitor-google-auth`。
 Client ID 散落在多個平台檔案，且**各平台讀取來源不同**，是登入錯誤的主要來源。
 
 ## 硬性規範
@@ -30,30 +31,30 @@ iOS 對應錯誤碼 `-61440`（AppAuth 的 OAuth authorization error）。
 
 ## 各平台的 Client ID 讀取來源
 
-外掛在各平台的解析優先序不同，**不可混用同一個 `clientId` 鍵**：
+Client ID 由 `GoogleAuthService.initNativeGoogleLogin()` 以 `SocialLogin.initialize({ google })`
+傳入（僅原生平台；網頁端走 FedCM，不初始化外掛）。`capacitor.config.ts` 的 `SocialLogin`
+區塊只設定要打包的 providers（僅 `google: true`），**不放任何 client id**：
 
-| 平台 | 解析優先序 | 本專案實際使用 |
-|------|-----------|--------------|
-| iOS | `iosClientId` → `clientId` → `GoogleService-Info.plist` 的 `CLIENT_ID` | `iosClientId`（capacitor.config.ts） |
-| Android | `androidClientId` → `clientId` → `strings.xml` 的 `server_client_id` | `strings.xml` 的 `server_client_id` |
-| iOS serverClientID | 只讀 `serverClientId` | `nativeServerClientId` |
-| Android serverClientID | **完全不讀 `serverClientId`** | 同上表的 client id |
+| `initialize` 欄位 | 平台 | 本專案實際使用 |
+|------|------|--------------|
+| `webClientId` | Android（Credential Manager 的 token audience） | `nativeServerClientId`（= `strings.xml` 的 `server_client_id`） |
+| `iOSClientId` | iOS 原生 client | `iosClientId` |
+| `iOSServerClientId` | iOS idToken audience | `nativeServerClientId` |
 
-**禁止在 `capacitor.config.ts` 設定共用鍵 `clientId`**：
-iOS 與 Android 都會讀到它，等於讓其中一方套用另一平台的 client id。
-要指定平台專屬值時，一律使用 `iosClientId` / `androidClientId`。
-
-**Android 不讀 `serverClientId`**，所以「Android 正常、iOS 失敗」是此類設定錯誤的典型症狀，
-不能因為 Android 可登入就推論設定正確。
+- Android 的 `webClientId` 必須填 **Web 類型** client；填 Android 類型 client 會回傳 DEVELOPER_ERROR。
+  Android client 只需在 GCP 登記「套件名稱 + SHA-1」，程式不引用。
+- Android 標準 `BridgeActivity` 下 `SocialLogin.login()` **不可傳 `scopes`**（email/profile 已為預設，
+  傳入會被外掛拒絕）；要額外 scope 需改寫 MainActivity。
+- 失敗時以 Logcat 過濾 `GoogleProvider` / `CapgoSocialLogin`，外掛會印出 package、signing SHA-1、遮罩後的 webClientId。
 
 ## Client ID 集中管理
 
 所有 client id 集中於 `frontend/src/environments/environment.ts` 與 `environment.prod.ts`
-的 `googleOAuth`，`capacitor.config.ts` 只做引用，不可寫死字面值：
+的 `googleOAuth`，其他檔案只做引用，不可寫死字面值：
 
 | 欄位 | 用途 | 專案 |
 |------|------|------|
-| `initClientId` | `GoogleAuth.initialize()` 使用；**僅網頁端生效**（iOS/Android 的 `initialize` 都是 no-op） | 587558372608 |
+| `initClientId` | 舊 codetrix 外掛 `GoogleAuth.initialize()` 使用；**2.3.0 起程式未引用**，待與 README 三組 client id 對齊時清除 | 587558372608 |
 | `webClientId` | 網頁 FedCM / One Tap 登入；**不可用於原生 serverClientId** | 1025423218880 |
 | `iosClientId` | iOS OAuth Client，須與 `GoogleService-Info.plist` 的 `CLIENT_ID` 一致 | 328066296243 |
 | `nativeServerClientId` | 原生端 serverClientId，須與原生 client 同專案；與 `strings.xml` 的 `server_client_id` 一致 | 328066296243 |
@@ -66,7 +67,7 @@ iOS 與 Android 都會讀到它，等於讓其中一方套用另一平台的 cli
 2. `frontend/ios/App/App/Info.plist` 的 `CFBundleURLSchemes`
    （必須等於 `REVERSED_CLIENT_ID`，即 `com.googleusercontent.apps.<client id>`，
    否則 OAuth 回呼無法導回 App）
-3. `capacitor.config.ts` 的 `iosClientId` 與 `serverClientId`
+3. `environment*.ts` 的 `iosClientId` 與 `nativeServerClientId`（經 `SocialLogin.initialize` 傳入）
 
 `ios/App/App/capacitor.config.json` 與 `android/app/src/main/assets/capacitor.config.json`
 是 `npx cap sync` 由 `capacitor.config.ts` 產生的檔案。
@@ -86,8 +87,8 @@ iOS 與 Android 都會讀到它，等於讓其中一方套用另一平台的 cli
 
 改完設定後至少確認：
 
-1. `npm run build:prod && npx cap sync ios` 後，檢查
-   `ios/App/App/capacitor.config.json` 的 `iosClientId` 與 `serverClientId` 專案編號相同。
+1. `environment*.ts` 的 `iosClientId` 與 `nativeServerClientId` 專案編號相同（2.3.0 起 client id
+   不再寫入 `capacitor.config.json`，改由 `SocialLogin.initialize` 於執行期傳入）。
 2. 建置後的 App bundle 內，`capacitor.config.json`、`GoogleService-Info.plist` 的
    `CLIENT_ID`、`Info.plist` 的 URL Scheme 三者專案編號一致：
    ```bash

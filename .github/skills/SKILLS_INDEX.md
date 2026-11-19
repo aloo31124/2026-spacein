@@ -34,7 +34,7 @@
 ### Google OAuth Client ID 與原生登入設定
 - **文檔**: `.github/skills/google-oauth-client-id/SKILL.md`
 - **適用情境**:
-    * 修改或診斷 Google 登入設定時，必須參考此檔案。涵蓋 `capacitor.config.ts` 的 GoogleAuth 區塊、`environment.ts` / `environment.prod.ts` 的 `googleOAuth` 欄位、iOS `GoogleService-Info.plist` 與 `Info.plist` URL Scheme、Android `strings.xml` 的 `server_client_id`。
+    * 修改或診斷 Google 登入設定時，必須參考此檔案。涵蓋 `capacitor.config.ts` 的 SocialLogin 區塊、`@capgo/capacitor-social-login` 初始化、`environment.ts` / `environment.prod.ts` 的 `googleOAuth` 欄位、iOS `GoogleService-Info.plist` 與 `Info.plist` URL Scheme、Android `strings.xml` 的 `server_client_id`。
     * 涵蓋「原生 client 與 serverClientId 必須同 GCP 專案」之硬性規範、各平台 client id 解析優先序差異（禁用共用鍵 `clientId`、Android 不讀 `serverClientId`）、client id 集中於 environment 的管理方式、iOS 三處設定同步規則，以及 `npx cap sync` 產生檔不可手改的規範。
     * 疑難排解：`invalid_audience`（iOS code `-61440`）、`DEVELOPER_ERROR`（Android code `10`）、回呼導不回 App、`pod install` 的 `ASCII-8BIT` 編碼錯誤。
     * 關鍵字：Google 登入、OAuth、client id、invalid_audience、-61440、GoogleAuth、capacitor.config、iosClientId、serverClientId、server_client_id、GoogleService-Info.plist、REVERSED_CLIENT_ID、URL Scheme、cap sync。

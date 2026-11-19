@@ -34,7 +34,7 @@ App ID（Bundle ID / 套件名稱）一律為 `com.spacein`，設定於：
     * http://localhost:4201/\_\_/auth/handler
     * https://spacein.duckdns.org/\_\_/auth/handler
 - client id: `1025423218880-ae9p8055o7jllcfja72jfd1smipdlf35.apps.googleusercontent.com`
-- 用途：網頁 FedCM 登入、`GoogleAuth.initialize()`，並同時作為 iOS / Android 的 `serverClientId`
+- 用途：網頁 FedCM 登入（原生端 `SocialLogin.initialize` 目前使用 `nativeServerClientId`，對齊待辦見 google-oauth-client-id SKILL）
 
 #### Android 用戶端 1（GCP 專案 328066296243）
 
@@ -63,7 +63,7 @@ App ID（Bundle ID / 套件名稱）一律為 `com.spacein`，設定於：
 | `frontend/android/app/src/main/res/values/strings.xml` | `server_client_id` | 網路用戶端 |
 | `frontend/ios/App/App/GoogleService-Info.plist` | `CLIENT_ID` / `REVERSED_CLIENT_ID` | iOS 用戶端 |
 | `frontend/ios/App/App/Info.plist` | `CFBundleURLSchemes` | iOS 用戶端（反轉格式） |
-| `frontend/src/app/auth-route/services/google-auth.service.ts` | `GoogleAuth.initialize` / FedCM `client_id` | 網路用戶端 |
+| `frontend/src/app/auth-route/services/google-auth.service.ts` | `SocialLogin.initialize` / FedCM `client_id` | 網路用戶端 |
 
 改完 `capacitor.config.ts` 或 `environment*.ts` 後，必須執行：
 
