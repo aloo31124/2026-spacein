@@ -32,8 +32,9 @@ on:
       - 'android-prod-v*'
 
 env:
-  NODE_VERSION: '20.18.0'
-  JAVA_VERSION: '17'
+  # Capacitor 8 CLI 需 Node >= 22；Capacitor 7 起 Android 以 Java 21 編譯。
+  NODE_VERSION: '22'
+  JAVA_VERSION: '21'
   PACKAGE_NAME: 'com.spacein'
 
 permissions:
