@@ -10,7 +10,7 @@ export const environment = {
   // 否則 Google 會回傳 invalid_audience (iOS 錯誤碼 -61440)。
   // 本專案原生端一律使用專案編號 328066296243。
   googleOAuth: {
-    // Capacitor GoogleAuth 外掛初始化 (GoogleAuth.initialize) 使用, 僅網頁端生效
+    // 舊 codetrix GoogleAuth 外掛 (已移除) 使用; 目前程式未引用, 待 client id 對齊時一併清理
     initClientId: '587558372608-jnei0k5eh8japakn4hs4kok2mld4m0qj.apps.googleusercontent.com',
     // 網頁 FedCM 登入使用（specein）; 僅網頁端, 不可用於原生 serverClientId
     webClientId: '1025423218880-ae9p8055o7jllcfja72jfd1smipdlf35.apps.googleusercontent.com',

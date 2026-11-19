@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { SocialLogin } from '@capgo/capacitor-social-login';
 import { GoogleAuthUser } from '../models/google-auth-user.model';
 import { RegisterService } from './register.service';
 import { RouteUrlRecordService } from 'src/app/auth-route/services/route-url-record.service';
@@ -35,19 +35,35 @@ export class GoogleAuthService {
     private registerService: RegisterService,
     private dialogService: DialogService,
   ) { 
-    // 於此取得初始資料，並捕捉 iOS 26 可能拋出的初始化錯誤
-    // 注意：GoogleAuth.initialize() 型別定義回傳 void，因此使用 try/catch 而非 .catch()
-    try {
-      GoogleAuth.initialize({
-        clientId: environment.googleOAuth.initClientId,
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
-      });
-    } catch (err) {
-      console.warn('GoogleAuth initialize 失敗:', err);
-    }
+    this.initNativeGoogleLogin();
     this.checkToken();
     this.loadGoogleOneTapSDK();
+  }
+
+  /*
+   * 初始化原生 Google 登入（@capgo/capacitor-social-login，僅 iOS / Android）
+   * 網頁端改走 loginByGoogleWebFedCM，不需初始化外掛。
+   * - webClientId：Android Credential Manager 與 token audience 使用，
+   *   須與 android strings.xml 的 server_client_id 一致（environment.nativeServerClientId）
+   * - iOSClientId：iOS 原生 client，須與 Info.plist URL Scheme、GoogleService-Info.plist 一致
+   * - iOSServerClientId：沿用舊外掛 serverClientId，讓 iOS idToken audience 與 Android 相同
+   */
+  private nativeGoogleReady?: Promise<void>;
+
+  private initNativeGoogleLogin() {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+    this.nativeGoogleReady = SocialLogin.initialize({
+      google: {
+        webClientId: environment.googleOAuth.nativeServerClientId,
+        iOSClientId: environment.googleOAuth.iosClientId,
+        iOSServerClientId: environment.googleOAuth.nativeServerClientId,
+        mode: 'online',
+      },
+    }).catch(err => {
+      console.warn('SocialLogin initialize 失敗:', err);
+    });
   }
 
   /*
@@ -82,7 +98,9 @@ export class GoogleAuthService {
    * 登出 
    */
   logout() {
-    GoogleAuth.signOut();
+    if (Capacitor.isNativePlatform()) {
+      SocialLogin.logout({ provider: 'google' }).catch(err => console.warn('Google 登出失敗:', err));
+    }
     this.currentUser = new GoogleAuthUser({});
     this.isLoginIn = false;
     this.cleanToken();
@@ -98,10 +116,27 @@ export class GoogleAuthService {
     this.setLoading(true);
     try {
       // 登入判斷 (彈出 Google 帳號選擇視窗)
-      const googleUser = await GoogleAuth.signIn();
-      const {id:_, ...rest} = googleUser;
-      const user = {...rest, googleUserId: googleUser.id};
-      if(googleUser["email"]) {
+      // 注意：Android 標準 BridgeActivity 不可傳 scopes（email/profile 已為預設），否則會被外掛拒絕
+      await this.nativeGoogleReady;
+      const { result } = await SocialLogin.login({ provider: 'google', options: {} });
+      if (result.responseType !== 'online') {
+        throw new Error('Google 登入模式錯誤, 未取得使用者資料');
+      }
+      const profile = result.profile;
+      // 欄位對應舊外掛 (codetrix GoogleAuth.signIn) 的 User 結構, 後續註冊 / 登入流程不需變動
+      const user: any = {
+        email: profile.email,
+        name: profile.name,
+        familyName: profile.familyName,
+        givenName: profile.givenName,
+        imageUrl: profile.imageUrl,
+        googleUserId: profile.id,
+        authentication: {
+          idToken: result.idToken,
+          accessToken: result.accessToken?.token ?? '',
+        },
+      };
+      if(user["email"]) {
         this.registerService
           .findUser(user["email"])
           .subscribe({
@@ -130,13 +165,13 @@ export class GoogleAuthService {
       this.setLoading(false);
       console.error('Google 登入失敗:', err);
 
-      // 取出 Capacitor 外掛回傳的狀態碼與訊息
-      // (GoogleAuth.java 失敗時以 call.reject(message, statusCode) 回傳, statusCode 會進到 err.code)
+      // 取出 Capacitor 外掛回傳的狀態碼與訊息 (call.reject 的 code 會進到 err.code)
       const code = err?.code ?? err?.errorCode ?? '';
       const message = err?.message || err?.error?.message || '未知錯誤';
 
-      // 使用者自行取消 (Android 狀態碼 12501) 不需跳出錯誤警告
-      if (String(code) === '12501' || /cancel/i.test(message)) {
+      // 使用者自行取消不需跳出錯誤警告
+      // (舊外掛 Android 狀態碼 12501；Credential Manager 與 iOS 以 cancel 訊息回傳)
+      if (String(code) === '12501' || /cancel/i.test(String(code)) || /cancel/i.test(message)) {
         return;
       }
 

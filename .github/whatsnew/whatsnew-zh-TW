@@ -1,1 +1,1 @@
-本版將應用程式目標 API 升級至 Android 16（API 36），符合 Google Play 政策，並包含穩定性改善。
+本版升級 App 核心框架（Capacitor 8）並更新 Google 登入元件，提升新版 Android 系統相容性與穩定性。
